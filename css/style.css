@@ -1,0 +1,9 @@
+body{
+    background-image: url(./img/background_gearprod.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.GameSession:hover{
+    cursor: zoom-in;
+}
