@@ -24,24 +24,42 @@
 
         <main class="container">
 
-            <div class="my-3 text-white border p-3">
-                <div class="d-flex my-2 GameSession">
-                    <div class="d-flex col-3">
+            <div class="my-3 text-white border p-3 ">
+                <div class="d-flex my-2 GameSession justify-content-around">
+                    <div class="d-flex col-2">
                         <div class="">Room Id : </div><div id="RoomId"></div>
                     </div>
-                    <div class="d-flex col-5">
+                    <div class="d-flex col-2">
                         <div class="">Room Name : </div><div id="RoomName"></div>
                     </div>
+
+                    <button id="GameSessionsButton" class="col-3" onclick="ShowGameSessions()">Les GameSessions - Parties -</button>
+                    <button id="RoomSessionsButton" class="col-3" onclick="ShowRoomSessions()">Les RoomSessions - Soft -</button>
+
                 </div>
+            </div>
+            <div class="my-3 text-white border p-3 d-none">
                 <div class="d-flex justify-content-between my-2 align-items-center">
-                    <div class="col-3 text-center">RoomSessionId</div>
-                    <div class="col-3 text-center">Date Début</div>
-                    <div class="col-3 text-center">Date Fin</div>
-                    <div class="col-3 text-center">IsActive</div>
+                    <div class="col-2 text-center">RoomSessionId</div>
+                    <div class="col-2 text-center">Date Début</div>
+                    <div class="col-2 text-center">Date Fin</div>
+                    <div class="col-2 text-center">IsActive</div>
+                    
                 </div>
-                <div id="Sessions"></div>
+                <div id="RoomSessions"></div>
             </div>
 
+            <div class="my-3 text-white border p-3">
+                <div class="d-flex justify-content-between my-2 align-items-center">
+                    <div class="col-2 text-center">GameSessionId</div>
+                    <div class="col-2 text-center">Date Début</div>
+                    <div class="col-2 text-center">Date Fin</div>
+                    <div class="col-2 text-center">IsActive</div>
+                    <div class="col-2 text-center">MissionId</div>
+                    
+                </div>
+                <div id="GameSessions"></div>
+            </div>
 
             <div class="my-3 text-white border p-3 d-flex flex-column justify-content-center align-items-center">
                 <div class="text-center col-3">DATA REGROUPANT TOUTES LES ROOMSESSIONS D'UNE ROOM</div>
@@ -57,11 +75,7 @@
                     <div>Nombre de parties aujourd'hui : </div>
                     <div id="NbreGameSessionsDay"></div>
                 </div>
-                <!-- <SELECT class="col-3" id="MissionSelect">
-                    <option value="1" selected="selected">En eaux troubles - 45 min</option>
-                    <option value="4">En eaux troubles - 60 min</option>
-                    <option value="2">Battle</option>
-                </SELECT> -->
+               
             </div>
 
         </main>
