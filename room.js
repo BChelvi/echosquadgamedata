@@ -43,6 +43,7 @@ var RoomId=location.hash.substring(1,10);
 
 function initRoom(){
     getRoomSession(RoomId);
+    ShowCalendar();
     
 }
 
@@ -165,3 +166,62 @@ function ShowGameSessions(){
 function ShowRoomSessions(){
     document.getElementById("RoomSessionsButton").classList.add("border");
 }
+
+// ---------------------------JQUERY-------------------------------------------
+
+function ShowCalendar(){
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+       
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+      },
+     
+        
+        dateClick: function() {
+        alert('voir détail de la journée');
+        },
+        events: [
+            {
+              title:  'My Event',
+              start:  '2022-11-01T14:30:00',
+              allDay: false,
+              backgroundColor: 'green',
+             borderColor: 'green',
+             Color:"green" ,
+            },
+            {
+                title:  'My Event test 2',
+                start:  '2022-11-01T14:30:00',
+                end: '2022-11-02T16:30:00',
+                allDay: true,
+                backgroundColor: 'red',
+               borderColor: 'blue',
+               Color:"red" ,
+               text:"white",
+              },
+              {
+                title:  'My Event test 3',
+                start:  '2022-11-01T11:30:00',
+                end: '2022-11-02T17:30:00',
+                allDay: false,
+                backgroundColor: 'yellow',
+               borderColor: 'yellow',
+               Color:"red" ,
+               text:"white",
+              },
+
+        ],
+           
+    });
+    calendar.render();
+    calendar.setOption('locale', 'fr');
+    calendar.on('dateClick', function(info) {
+        console.log('clicked on ' + info.dateStr);
+      });
+};
+
+ 
