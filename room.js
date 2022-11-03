@@ -70,6 +70,15 @@ RoomSelected.addEventListener('change', function() {
     getRoom(RoomSelected.value);
 })
 
+var Nofilter = document.getElementById('nofilter');
+Nofilter.addEventListener('change', function() {
+   if(Nofilter.checked==true){
+    console.log("afficher toutes les missions")
+   }
+   else console.log("afficher avec le filtre")
+   
+})
+
 function initRoom(){
     liste_rooms();
     getRoom(RoomId);
@@ -198,7 +207,7 @@ function ShowRoomSessions(){
     document.getElementById("GameSessionsButton").classList.replace("btn-light","btn-dark");
     document.getElementById("RoomSessionsButton").classList.replace("btn-dark","btn-light");
     
-    alert("Vue Calendar RoomSessions")
+    alert("Vue RoomSessions")
 }
 
 // ---------------------------VUE CALENDRIER-------------------------------------------
