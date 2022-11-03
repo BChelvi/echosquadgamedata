@@ -4,6 +4,28 @@ var tableau_RoomSessions=[];
 
 var tableau_GameSessions=[];
 
+var GameSessions_List = [
+//     {
+//     title:  'My Event',
+//     start:  '2022-11-01T14:30:00',
+//     allDay: false,
+//     backgroundColor: 'green',
+//    borderColor: 'green',
+//    Color:"green" ,
+//   },
+
+//     {
+//       title:  'My Event test 3',
+//       start:  '2022-11-01T11:30:00',
+//       end: '2022-11-02T17:30:00',
+//       allDay: false,
+//       backgroundColor: 'yellow',
+//      borderColor: 'yellow',
+//      Color:"red" ,
+//      text:"white",
+//     },
+];
+
 
 var template_Missions=`                                         
                       <div class="text-center col-3">%MissionName%</div>
@@ -42,52 +64,50 @@ var RoomId=location.hash.substring(1,10);
 
 
 function initRoom(){
-    getRoomSession(RoomId);
-    ShowCalendar();
+    getRoom(RoomId);
+
     
 }
 
-function getRoomSession(RoomId){
+function getRoom(RoomId){
     var httpRequest = new XMLHttpRequest();
-    var hostserver = "api.php?action=getroomsessions&RoomId="+RoomId;
+    var hostserver = "api.php?action=getroom&RoomId="+RoomId;
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
         tableau_RoomSessions = JSON.parse(httpRequest.responseText);
         console.log(tableau_RoomSessions);
-        Showtableau_RoomSessions();
-        Showtableau_GameSessions();   
+        
+        ShowCalendar();   
     };
     httpRequest.send();
 }
 
-function Showtableau_RoomSessions(){
+// function Showtableau_RoomSessions(){
 
-    document.getElementById("RoomId").innerHTML=tableau_RoomSessions['SiteId'];
+   
 
-    document.getElementById("RoomName").innerHTML=tableau_RoomSessions['Name'];
+//     document.getElementById("RoomSessions").innerHTML="";
 
-    document.getElementById("RoomSessions").innerHTML="";
+//     ShowNbreGameSessions();
 
-    ShowNbreGameSessions();
+//     document.getElementById("NbreGameSessionsMonth").innerHTML="";
 
-    document.getElementById("NbreGameSessionsMonth").innerHTML="";
-
-    document.getElementById("NbreGameSessionsDay").innerHTML="";
+//     document.getElementById("NbreGameSessionsDay").innerHTML="";
     
-    for (let i = 0; i < tableau_RoomSessions['RoomSessions'].length; i++) {
+//     for (let i = 0; i < tableau_RoomSessions['RoomSessions'].length; i++) {
 
-        var html = template_RoomSessions
-            .replaceAll("%SessionId%", tableau_RoomSessions['RoomSessions'][i].Id)
-            .replaceAll("%StartDate%", tableau_RoomSessions['RoomSessions'][i].StartDate)
-            .replaceAll("%EndDate%", tableau_RoomSessions['RoomSessions'][i].EndDate)
-            .replaceAll("%IsActive%", tableau_RoomSessions['RoomSessions'][i].IsActive)
+//         var html = template_RoomSessions
+//             .replaceAll("%SessionId%", tableau_RoomSessions['RoomSessions'][i].Id)
+//             .replaceAll("%StartDate%", tableau_RoomSessions['RoomSessions'][i].StartDate)
+//             .replaceAll("%EndDate%", tableau_RoomSessions['RoomSessions'][i].EndDate)
+//             .replaceAll("%IsActive%", tableau_RoomSessions['RoomSessions'][i].IsActive)
         
-            var elt = document.createElement("div");
-            document.getElementById("RoomSessions").appendChild(elt);
-            elt.outerHTML = html;  
+//             var elt = document.createElement("div");
+//             document.getElementById("RoomSessions").appendChild(elt);
+//             elt.outerHTML = html;  
     
-    } 
-}
+//     } 
+// }
 
 function FillTableauGameSessions(){
     for (var i=0;i<tableau_RoomSessions['RoomSessions'].length;i++){
@@ -96,39 +116,39 @@ function FillTableauGameSessions(){
             tableau_GameSessions.push(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j]);
         }
     }
-    console.log(tableau_GameSessions);
+    
 }
 
-function Showtableau_GameSessions(){
+// function Showtableau_GameSessions(){
 
-    document.getElementById("RoomId").innerHTML=tableau_RoomSessions['SiteId'];
+//     document.getElementById("RoomId").innerHTML=tableau_RoomSessions['SiteId'];
 
-    document.getElementById("RoomName").innerHTML=tableau_RoomSessions['Name'];
+//     document.getElementById("RoomName").innerHTML=tableau_RoomSessions['Name'];
 
-    document.getElementById("GameSessions").innerHTML="";
+//     document.getElementById("GameSessions").innerHTML="";
 
-    document.getElementById("NbreGameSessionsMonth").innerHTML="";
+//     document.getElementById("NbreGameSessionsMonth").innerHTML="";
     
-    document.getElementById("NbreGameSessionsDay").innerHTML="";
+//     document.getElementById("NbreGameSessionsDay").innerHTML="";
     
-    FillTableauGameSessions();
+//     FillTableauGameSessions();
     
-    ShowNbreGameSessions();
+//     ShowNbreGameSessions();
 
-    for (let i = 0; i < tableau_GameSessions.length; i++) {
+//     for (let i = 0; i < tableau_GameSessions.length; i++) {
 
-        var html = template_GameSessions
-            .replaceAll("%SessionId%", tableau_GameSessions[i].Id)
-            .replaceAll("%StartDate%", tableau_GameSessions[i].StartDate)
-            .replaceAll("%EndDate%", tableau_GameSessions[i].EndDate)
-            .replaceAll("%IsActive%", tableau_GameSessions[i].IsActive)
-            .replaceAll("%MissionId%", tableau_GameSessions[i].MissionId)
+//         var html = template_GameSessions
+//             .replaceAll("%SessionId%", tableau_GameSessions[i].Id)
+//             .replaceAll("%StartDate%", tableau_GameSessions[i].StartDate)
+//             .replaceAll("%EndDate%", tableau_GameSessions[i].EndDate)
+//             .replaceAll("%IsActive%", tableau_GameSessions[i].IsActive)
+//             .replaceAll("%MissionId%", tableau_GameSessions[i].MissionId)
         
-            var elt = document.createElement("div");
-            document.getElementById("GameSessions").appendChild(elt);
-            elt.outerHTML = html;  
-    } 
-}  
+//             var elt = document.createElement("div");
+//             document.getElementById("GameSessions").appendChild(elt);
+//             elt.outerHTML = html;  
+//     } 
+// }  
 
 
 function getMissions(){
@@ -152,24 +172,66 @@ function ShowNbreGameSessions(){
 
 }
 
-function ShowGames(id){
+// function ShowGames(id){
 
-    document.getElementById(id).classList.replace("d-none","d-flex");
-    document.getElementById(id).innerHTML=id;
-    console.log(id);
-}
+//     document.getElementById(id).classList.replace("d-none","d-flex");
+//     document.getElementById(id).innerHTML=id;
+//     console.log(id);
+// }
 
 function ShowGameSessions(){
-    document.getElementById("GameSessionsButton").classList.add("border");
+    document.getElementById("RoomSessionsButton").classList.replace("btn-light","btn-dark");
+    document.getElementById("GameSessionsButton").classList.replace("btn-dark","btn-light");
 }
 
 function ShowRoomSessions(){
-    document.getElementById("RoomSessionsButton").classList.add("border");
+    document.getElementById("GameSessionsButton").classList.replace("btn-light","btn-dark");
+    document.getElementById("RoomSessionsButton").classList.replace("btn-dark","btn-light");
+    
+    alert("Vue Calendar RoomSessions")
 }
 
-// ---------------------------JQUERY-------------------------------------------
+// ---------------------------VUE CALENDRIER-------------------------------------------
+
+function FillTGameSessions_List(){
+    console.log(tableau_GameSessions);
+    for (var i=0;i<tableau_GameSessions.length;i++){
+        var tableau=[];
+        switch (tableau_GameSessions[i].MissionId){
+            case  1:
+                tableau['title']="En eaux troubles(60min)";
+                tableau['backgroundColor']="red";
+            break;
+            case  4:
+                tableau['title']="En eaux troubles(45min)";
+                tableau['backgroundColor']="green";
+            break;
+            case  2:
+                tableau['title']="Battle";
+                tableau['backgroundColor']="blue";
+            break;
+            case  3:
+                tableau['title']="Teaser";
+                tableau['backgroundColor']="black";
+            break;
+        } 
+        tableau['start']=tableau_GameSessions[i].StartDate;
+        tableau['end']=tableau_GameSessions[i].EndDate;
+     
+        GameSessions_List.push(tableau);       
+    }
+    console.log(GameSessions_List);
+}
 
 function ShowCalendar(){
+
+    document.getElementById("RoomId").innerHTML=tableau_RoomSessions['RoomId'];
+    document.getElementById("RoomName").innerHTML=tableau_RoomSessions['Name'];
+    document.getElementById("Site").innerHTML=tableau_RoomSessions['SiteName'];
+
+    FillTableauGameSessions();
+    ShowNbreGameSessions();
+    FillTGameSessions_List();
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
        
@@ -182,39 +244,9 @@ function ShowCalendar(){
      
         
         dateClick: function() {
-        alert('voir détail de la journée');
+        alert('Vue Day');
         },
-        events: [
-            {
-              title:  'My Event',
-              start:  '2022-11-01T14:30:00',
-              allDay: false,
-              backgroundColor: 'green',
-             borderColor: 'green',
-             Color:"green" ,
-            },
-            {
-                title:  'My Event test 2',
-                start:  '2022-11-01T14:30:00',
-                end: '2022-11-02T16:30:00',
-                allDay: true,
-                backgroundColor: 'red',
-               borderColor: 'blue',
-               Color:"red" ,
-               text:"white",
-              },
-              {
-                title:  'My Event test 3',
-                start:  '2022-11-01T11:30:00',
-                end: '2022-11-02T17:30:00',
-                allDay: false,
-                backgroundColor: 'yellow',
-               borderColor: 'yellow',
-               Color:"red" ,
-               text:"white",
-              },
-
-        ],
+        events: GameSessions_List,
            
     });
     calendar.render();
@@ -223,5 +255,3 @@ function ShowCalendar(){
         console.log('clicked on ' + info.dateStr);
       });
 };
-
- 

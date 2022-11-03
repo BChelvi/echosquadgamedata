@@ -39,8 +39,8 @@ switch($params["action"])
           
     break;
 
-    case "getroomsessions":
-        GetRoomSessions ::Run($params['RoomId']);
+    case "getroom":
+        GetRoom ::Run($params['RoomId']);
           
     break;
 

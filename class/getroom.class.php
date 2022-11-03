@@ -1,6 +1,6 @@
 <?php
 
-class GetRoomSessions {
+class GetRoom {
 
     public static function run($id){
 
@@ -16,8 +16,16 @@ class GetRoomSessions {
         
         $room= $db -> select_sql($sql2);
         
-        $RoomSessions['Name']=$room[0]['Name'];
-        $RoomSessions['SiteId']=$room[0]['Id'];
+        $Room['Name']=$room[0]['Name'];
+        $Room['RoomId']=$room[0]['Id'];
+
+        $SiteId= $room[0]["SiteId"];
+
+        $sql4 ="SELECT Name FROM site WHERE site.Id=$SiteId";
+
+        $SiteName= $db -> select_sql($sql4);
+
+        $Room['SiteName'] = $SiteName[0]['Name'];
 
         for ($i=0;$i<count($sessions);$i++){
 
@@ -31,9 +39,9 @@ class GetRoomSessions {
             
         }
 
-        $RoomSessions['RoomSessions']=$sessions;
+        $Room['RoomSessions']=$sessions;
         
-        echo json_encode($RoomSessions);
+        echo json_encode($Room);
         
     }
 }
