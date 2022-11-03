@@ -272,9 +272,14 @@ function ShowSiteRooms(){
             var elt = document.createElement("div");
             document.getElementById("Rooms").appendChild(elt);
             elt.outerHTML = html;         
-    }     
+    }
+    localStorage.setItem('site',JSON.stringify(tableau_SiteRooms['rooms']));
+    
 }
+
+
 
 function ToRoom(id){
     document.location.href="./room.html#"+id; 
 }
+
