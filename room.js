@@ -10,6 +10,9 @@ var GameSessions_List = [];
 
 var calendarEl = document.getElementById('calendar');
 
+//variable indiquant si la case filtre durée mission est cochée ou non
+var isFiltered =false;
+
 //On récupère l'ID de la Room(Sous-Marin) dans l'url
 var RoomId=location.hash.substring(1,10);
 
@@ -57,11 +60,12 @@ RoomSelected.addEventListener('change', function() {
 var Nofilter = document.getElementById('nofilter');
 Nofilter.addEventListener('change', function() {
    if(Nofilter.checked==true){
-    console.log("afficher toutes les missions")
-   }
-   else console.log("afficher avec le filtre")
-   
-})
+    isFiltered=true;   
+    getRoom(RoomSelected.value)}
+   else{      
+       isFiltered=false;
+       getRoom(RoomSelected.value);
+    } })
 
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
 
@@ -78,9 +82,7 @@ function getRoom(RoomId){
     var hostserver = "api.php?action=getroom&RoomId="+RoomId;
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
-        tableau_RoomSessions = JSON.parse(httpRequest.responseText);
-       
-
+        tableau_RoomSessions = JSON.parse(httpRequest.responseText);       
         ShowCalendar();   
     };
     httpRequest.send();
@@ -92,7 +94,19 @@ function FillTableauGameSessions(){
     for (var i=0;i<tableau_RoomSessions['RoomSessions'].length;i++){
         
         for (var j=0;j<tableau_RoomSessions['RoomSessions'][i]['GameSession'].length;j++){
-            tableau_GameSessions.push(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j]);
+
+            //variable qui calcule la durée d'une mission
+      
+            var MissionDuration = CalculMissionTime (tableau_RoomSessions['RoomSessions'][i]['GameSession'][j].StartDate,tableau_RoomSessions['RoomSessions'][i]['GameSession'][j].EndDate);
+
+            //filtre les parties de durée inférieure à 10 min
+
+            if (isFiltered==true){
+                if(MissionDuration==false) continue;
+                else tableau_GameSessions.push(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j]);         
+            }
+            else
+             tableau_GameSessions.push(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j]);
         }
     }
     
@@ -177,6 +191,7 @@ function ShowCalendar(){
 
     var Selected= document.getElementById("RoomDefault");
     Selected.innerHTML=tableau_RoomSessions.Name+" - "+tableau_RoomSessions.RoomId;
+    Selected.value=tableau_RoomSessions.RoomId;
 
     var calendar = new FullCalendar.Calendar(calendarEl, {   
         initialView: 'dayGridMonth',
@@ -198,6 +213,17 @@ function ShowCalendar(){
 };
 
 
+// -------------------------------------------------------------FONCTION DE CALCUL-------------------------------------------
 
+//Fonction qui calcul si une mission à une durée supérieure ou non à 10 minutes
+function CalculMissionTime(dateX,dateY){
+    var datumX = Date.parse(dateX);
+    var datumY = Date.parse(dateY);
+    var diff = (datumY-datumX)/1000;
 
+    if(diff>600){
+        return true;
+    }
+    else return false;
+}
 
