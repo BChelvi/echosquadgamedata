@@ -1,31 +1,19 @@
+// --------------------------------------DECLARATIONS DE VARIABLES----------------------------------------------------------------
+
 var tableau_Missions=[];
 
 var tableau_RoomSessions=[];
 
 var tableau_GameSessions=[];
 
-var GameSessions_List = [
-//     {
-//     title:  'My Event',
-//     start:  '2022-11-01T14:30:00',
-//     allDay: false,
-//     backgroundColor: 'green',
-//    borderColor: 'green',
-//    Color:"green" ,
-//   },
+var GameSessions_List = [];
 
-//     {
-//       title:  'My Event test 3',
-//       start:  '2022-11-01T11:30:00',
-//       end: '2022-11-02T17:30:00',
-//       allDay: false,
-//       backgroundColor: 'yellow',
-//      borderColor: 'yellow',
-//      Color:"red" ,
-//      text:"white",
-//     },
-];
+var calendarEl = document.getElementById('calendar');
 
+//On récupère l'ID de la Room(Sous-Marin) dans l'url
+var RoomId=location.hash.substring(1,10);
+
+// --------------------------------------TEMPLATES----------------------------------------------------------------
 
 var template_Missions=`                                         
                       <div class="text-center col-3">%MissionName%</div>
@@ -54,22 +42,18 @@ var template_GameSessions=`
 
 var template_room =`<option value=%RoomId%>%RoomName% - %RoomId%</option>`
 
-var RoomId=location.hash.substring(1,10);
 
 
+// --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
 
-// var MissionSelect = document.getElementById('MissionSelect')
-// MissionSelect.addEventListener('change', function() {
-    
-   
-// })
 
+//Changement du selecteur Room(Sous-Marin)
 var RoomSelected = document.getElementById('RoomSelected');
-RoomSelected.addEventListener('change', function() {
-   
+RoomSelected.addEventListener('change', function() {   
     getRoom(RoomSelected.value);
 })
 
+//addEventListener permettant d'afficher ou non toutes les missions
 var Nofilter = document.getElementById('nofilter');
 Nofilter.addEventListener('change', function() {
    if(Nofilter.checked==true){
@@ -79,12 +63,14 @@ Nofilter.addEventListener('change', function() {
    
 })
 
+// --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
+
 function initRoom(){
     liste_rooms();
-    getRoom(RoomId);
-
-    
+    getRoom(RoomId);   
 }
+
+// --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
 
 function getRoom(RoomId){
 
@@ -100,32 +86,6 @@ function getRoom(RoomId){
     httpRequest.send();
 }
 
-// function Showtableau_RoomSessions(){
-
-   
-
-//     document.getElementById("RoomSessions").innerHTML="";
-
-//     ShowNbreGameSessions();
-
-//     document.getElementById("NbreGameSessionsMonth").innerHTML="";
-
-//     document.getElementById("NbreGameSessionsDay").innerHTML="";
-    
-//     for (let i = 0; i < tableau_RoomSessions['RoomSessions'].length; i++) {
-
-//         var html = template_RoomSessions
-//             .replaceAll("%SessionId%", tableau_RoomSessions['RoomSessions'][i].Id)
-//             .replaceAll("%StartDate%", tableau_RoomSessions['RoomSessions'][i].StartDate)
-//             .replaceAll("%EndDate%", tableau_RoomSessions['RoomSessions'][i].EndDate)
-//             .replaceAll("%IsActive%", tableau_RoomSessions['RoomSessions'][i].IsActive)
-        
-//             var elt = document.createElement("div");
-//             document.getElementById("RoomSessions").appendChild(elt);
-//             elt.outerHTML = html;  
-    
-//     } 
-// }
 
 function FillTableauGameSessions(){
     tableau_GameSessions=[];
@@ -138,65 +98,12 @@ function FillTableauGameSessions(){
     
 }
 
-// function Showtableau_GameSessions(){
-
-//     document.getElementById("RoomId").innerHTML=tableau_RoomSessions['SiteId'];
-
-//     document.getElementById("RoomName").innerHTML=tableau_RoomSessions['Name'];
-
-//     document.getElementById("GameSessions").innerHTML="";
-
-//     document.getElementById("NbreGameSessionsMonth").innerHTML="";
-    
-//     document.getElementById("NbreGameSessionsDay").innerHTML="";
-    
-//     FillTableauGameSessions();
-    
-//     ShowNbreGameSessions();
-
-//     for (let i = 0; i < tableau_GameSessions.length; i++) {
-
-//         var html = template_GameSessions
-//             .replaceAll("%SessionId%", tableau_GameSessions[i].Id)
-//             .replaceAll("%StartDate%", tableau_GameSessions[i].StartDate)
-//             .replaceAll("%EndDate%", tableau_GameSessions[i].EndDate)
-//             .replaceAll("%IsActive%", tableau_GameSessions[i].IsActive)
-//             .replaceAll("%MissionId%", tableau_GameSessions[i].MissionId)
-        
-//             var elt = document.createElement("div");
-//             document.getElementById("GameSessions").appendChild(elt);
-//             elt.outerHTML = html;  
-//     } 
-// }  
-
-
-function getMissions(){
-    var httpRequest = new XMLHttpRequest();
-    var hostserver = "api.php?action=getmissions";
-    httpRequest.open("GET", hostserver);
-    httpRequest.onload = () => {
-        tableau_Missions = JSON.parse(httpRequest.responseText);
-        
-    };
-    httpRequest.send();
-}
-
-
-function ToGame(id){
-    document.location.href="./game.html#"+id; 
-}
+// --------------------------------------FONCTIONS GERANTS DIFFERENTS BLOCS D'AFFICHAGE----------------------------------------------------------------
 
 function ShowNbreGameSessions(){
     document.getElementById("NbreGameSessions").innerHTML=tableau_GameSessions.length;
 
 }
-
-// function ShowGames(id){
-
-//     document.getElementById(id).classList.replace("d-none","d-flex");
-//     document.getElementById(id).innerHTML=id;
-//     console.log(id);
-// }
 
 function ShowGameSessions(){
     document.getElementById("RoomSessionsButton").classList.replace("btn-light","btn-dark");
@@ -210,8 +117,23 @@ function ShowRoomSessions(){
     alert("Vue RoomSessions")
 }
 
-// ---------------------------VUE CALENDRIER-------------------------------------------
+function liste_rooms(){
+    var tableau_rooms=JSON.parse(localStorage.getItem('site'));
+  
+    for (var i=0;i<tableau_rooms.length;i++){
+        var html = template_room.replaceAll("%RoomName%",tableau_rooms[i].Name)
+                                .replaceAll("%RoomId%",tableau_rooms[i].Id)
+        const elt = document.createElement("option");
+        document.getElementById("RoomSelected").appendChild(elt);
+       
+        elt.outerHTML = html;
+        
+    }
+}
 
+// -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
+
+//On remplie un tableau avec la syntaxe correspondant à 'events' de FullCalendar
 function FillTGameSessions_List(){
     
     GameSessions_List=[];
@@ -236,59 +158,46 @@ function FillTGameSessions_List(){
                 tableau['backgroundColor']="black";
             break;
         } 
+        tableau['id']=tableau_GameSessions[i].Id;
         tableau['start']=tableau_GameSessions[i].StartDate;
         tableau['end']=tableau_GameSessions[i].EndDate;
      
-        GameSessions_List.push(tableau);
-        
-    }
-    
+        GameSessions_List.push(tableau);       
+    }    
 }
-var calendarEl = document.getElementById('calendar');
 
+
+//la fonction qui render le FullCalendar
 function ShowCalendar(){
-
 
     document.getElementById("Site").innerHTML=tableau_RoomSessions['SiteName'];
     FillTableauGameSessions();
     ShowNbreGameSessions();
     FillTGameSessions_List();
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-       
-      initialView: 'dayGridMonth',
-      headerToolbar: {
-        left: 'prev,next',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-      },
-     
-        
-        dateClick: function() {
-        alert('Vue Day');
+
+    var Selected= document.getElementById("RoomDefault");
+    Selected.innerHTML=tableau_RoomSessions.Name+" - "+tableau_RoomSessions.RoomId;
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {   
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next',
+            center: 'title',
+            right: 'today,dayGridMonth,timeGridWeek,timeGridDay,listMonth'
         },
         events: GameSessions_List,
-           
+        eventClick :  function(info) {
+            console.log(info.event.id);}      
     });
+
     calendar.render();
     calendar.setOption('locale', 'fr');
     calendar.on('dateClick', function(info) {
         console.log('clicked on ' + info.dateStr);
-      });
+    });
 };
 
 
 
-function liste_rooms(){
-    var tableau_rooms=JSON.parse(localStorage.getItem('site'));
-  
-    for (var i=0;i<tableau_rooms.length;i++){
-        var html = template_room.replaceAll("%RoomName%",tableau_rooms[i].Name)
-                                .replaceAll("%RoomId%",tableau_rooms[i].Id)
-        const elt = document.createElement("option");
-        document.getElementById("RoomSelected").appendChild(elt);
-       
-        elt.outerHTML = html;
-        
-    }
-}
+
 

@@ -11,15 +11,17 @@
 <body onload="iniSite()">
 
     <container class="container">
-        <header class="d-flex p-3 justify-content-between">
+        <header class="d-flex p-3 text-white  justify-content-between">
+            
+            <div  onclick="window.location='./index.html'" class="text-center col-3">Acceuil</div>
+
+            <div class="text-center col-3">Projet GearProd</div>
+            
+           
+            
             <figure class="col-3">
                 <img src="./css/img/Logo-Gearprod-1-1.png">
             </figure>
-            
-            <div class="text-center text-white items-cente col-3">Projet GearProd</div>
-
-            <div class="text-center text-white items-cente col-3">MENU</div>
-           
         </header>
 
         <main class="container">
@@ -27,10 +29,10 @@
             <div class="my-3 text-white border p-3">
                 <div class="d-flex my-2 GameSession">
                     <div class="d-flex col-3">
-                        <div class="">Site Id : </div><div id="siteId"></div>
+                        <div class="">Site Id : <span id="siteId"></span></div>
                     </div>
                     <div class="d-flex col-5">
-                        <div class="">Site Name : </div><div id="siteName"></div>
+                        <div class="">Site Name : <span id="siteName"></span></div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between my-2 align-items-center">
