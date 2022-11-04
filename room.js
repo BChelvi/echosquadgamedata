@@ -101,7 +101,7 @@ function FillTableauGameSessions(){
 
             //filtre les parties de durée inférieure à 10 min
 
-            if (isFiltered==true){
+            if (isFiltered==false){
                 if(MissionDuration==false) continue;
                 else tableau_GameSessions.push(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j]);         
             }
