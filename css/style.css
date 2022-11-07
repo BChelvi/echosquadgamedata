@@ -2,9 +2,35 @@ body{
     background-image: url(./img/background_gearprod.png);
     background-repeat: no-repeat;
     background-size: cover;
+    font-family: 'Roboto';
 }
 
-.GameSession:hover{
-    cursor: zoom-in;
+.site:hover{
+
+    box-shadow: 0 0 1px 5px white;
+    background-color: white;
+    color : #020E20;
+    transform: scale(1.1);
+    cursor: pointer;
+    font-weight: 600;
 }
 
+.site{
+    font-weight: 400;
+    font-size: 20px;
+    
+}
+
+@font-face{
+    font-family : "Roboto", sans-serif;
+    src : url("./fonts/Roboto-Regular.ttf") format("opentype");
+}
+
+.opac{
+    background-color:  rgba(0,0,0,.5)
+    
+}
+
+.acceuil{
+    cursor: pointer;
+}

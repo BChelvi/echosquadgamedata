@@ -31,16 +31,15 @@ var template_GameSessionId = `
                             `;
 
 var template_AllSites = `
-                            <div onclick="ToSite(%SiteId%)" class="d-flex my-2 GameSession">
-                                <div class="col-4 text-center" id=%SiteId%>%SiteId%</div>
-                                <div class="col-4 text-center">%name%</div>
+                            <div onclick="ToSite(%SiteId%)" class="d-flex my-4 justify-content-center">                                
+                                <div class="col-4 text-center site font-weight-bold">%name%</div>
                             </div>
                             `;
 
 var template_SiteRooms = `
-                        <div class="d-flex justify-content-between GameSession my-2" onclick="ToRoom(%RoomId%)">
+                        <div class="d-flex justify-content-between GameSession my-4" onclick="ToRoom(%RoomId%)">
                             <div class="col-3 text-center">%RoomId%</div>
-                            <div class="col-3 text-center">%RoomName%</div>
+                            <div class="col-3 text-center  site">%RoomName%</div>
                             <div class="col-3 text-center">%RoomVerbosity%</div>
                         </div>
                         `;
@@ -258,7 +257,7 @@ function getSiteRooms(id){
 function ShowSiteRooms(){
     document.getElementById("Rooms").innerHTML="";
 
-    document.getElementById("siteId").innerHTML=tableau_SiteRooms['SiteId'];
+    // document.getElementById("siteId").innerHTML=tableau_SiteRooms['SiteId'];
 
     document.getElementById("siteName").innerHTML=tableau_SiteRooms['Name'];
     
