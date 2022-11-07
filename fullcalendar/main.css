@@ -1476,7 +1476,8 @@ A VERTICAL event
   .fc-theme-bootstrap5 .fc-scrollgrid,
   .fc-theme-bootstrap5 td,
   .fc-theme-bootstrap5 th {
-    border: 1px solid var(--bs-gray-400);
+    border: 1px solid #ddd;
+    
   }
 
 .fc-theme-bootstrap5 {

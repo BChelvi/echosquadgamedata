@@ -34,3 +34,12 @@ body{
 .acceuil{
     cursor: pointer;
 }
+
+a{
+    color : black;
+    text-decoration: none;      
+}
+
+a:hover{
+    color : rgb(0, 0, 44);
+}

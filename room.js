@@ -166,6 +166,7 @@ function FillTGameSessions_List(){
             case  2:
                 tableau['title']="Battle";
                 tableau['backgroundColor']="blue";
+                tableau['textColor']='blue !important';
             break;
             case  3:
                 tableau['title']="Teaser";
@@ -193,7 +194,8 @@ function ShowCalendar(){
     Selected.innerHTML=tableau_RoomSessions.Name+" - "+tableau_RoomSessions.RoomId;
     Selected.value=tableau_RoomSessions.RoomId;
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {   
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        themeSystem: '',   
         initialView: 'dayGridMonth',
         headerToolbar: {
             left: 'prev,next',
@@ -202,11 +204,13 @@ function ShowCalendar(){
         },
         events: GameSessions_List,
         eventClick :  function(info) {
-            console.log(info.event.id);}      
+            localStorage.setItem('RoomName', tableau_RoomSessions.Name);
+            document.location.href="./mission.html#"+info.event.id;
+        }      
     });
 
     calendar.render();
-    calendar.setOption('locale', 'fr');
+    calendar.setOption('locale','fr');
     calendar.on('dateClick', function(info) {
         console.log('clicked on ' + info.dateStr);
     });
