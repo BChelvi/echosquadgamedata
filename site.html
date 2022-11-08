@@ -20,7 +20,7 @@
 
   <container class="container">
 
-    <div class="mb-3 text-white border rounded opac p-1 container">
+    <div class="mb-3 text-white border rounded opac py-1 px-3 container">
         <div class="d-flex my-2 GameSession justify-content-around">
 
             <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil">Acceuil</div>
@@ -36,24 +36,26 @@
                   
                 </div>
             </div>
+            <a href="javascript:history.go(-1)" class="text-white acceuil">Retour</a>
+    
            
 
             <!-- <button type="button" id="GameSessionsButton"  class="btn btn-light  " onclick="ShowGameSessions()">Les GameSessions</button>
             <button type="button" id="RoomSessionsButton"  class="btn btn-dark  " onclick="ShowRoomSessions()">Les RoomSessions</button> -->
 
         </div>
-        <div class="d-flex justify-content-between">
-          <div>Nombre de Missions affichées : <span  id="NbreGameSessions"></span></div>
+        <div class="">
+          <div>Nombre de Missions : <span  id="NbreGameSessions"></span></div>
           <div class="d-flex ">
-            <div class="" style="font-style:italic;font-weight:lighter">(Par défaut, les missions de durée inférieure à 10 minutes ne sont pas affichées. Afficher toutes les missions
+            <div class="" style="font-style:italic;font-weight:lighter">(Afficher toutes les missions
               <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter"><span>)</span></div>
             </div>
           </div>
         </div>
     </div>
       
-    <div class="container bg-light p-3">
-      <div class="grid ">
+    <div class="container-fluid">
+      <div class="grid bg-light p-3">
         <div class="sixteen column">
           <div id="calendar"></div>
         </div>

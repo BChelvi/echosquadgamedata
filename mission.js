@@ -58,7 +58,3 @@ function ShowEvents(){
     }
 }
 
-function ReturnRoom(){
-    window.location='./site.html#'+tableau_Mission.SiteId;
-}
-

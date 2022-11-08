@@ -254,10 +254,19 @@ function ShowCalendar(){
     var calendar = new FullCalendar.Calendar(calendarEl, {
         themeSystem: '',   
         initialView: 'dayGridMonth',
+        firstDay:1,
+        height:'auto',
         headerToolbar: {
             left: 'prev,next',
             center: 'title',
             right: 'today,dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        },
+        buttonText:{
+            today:"Aujourd'hui",
+            month:"Mois",
+            week:"Semaine",
+            day:"Jour",
+            list:"liste",
         },
         events: GameSessions_List,
         eventClick :  function(info) {
