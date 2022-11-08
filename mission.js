@@ -59,6 +59,6 @@ function ShowEvents(){
 }
 
 function ReturnRoom(){
-    window.location='./room.html#'+tableau_Mission['Room'].Id;
+    window.location='./site.html#'+tableau_Mission.SiteId;
 }
 

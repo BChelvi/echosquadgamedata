@@ -34,6 +34,11 @@ switch($params["action"])
         
     break;
 
+    case "getallrooms":
+        GetAllRooms ::Run($params['SiteId']);
+          
+    break;
+
     case "getroom":
         GetRoom ::Run($params['RoomId']);
           
@@ -41,5 +46,13 @@ switch($params["action"])
 
     case 'getgamesession':
         GetGameSession :: Run($params['GameSessionId']);
+    
+    break;
+    
+    case 'getmissions':
+        GetMissions :: Run();
+    
+    break;
+
 
 }

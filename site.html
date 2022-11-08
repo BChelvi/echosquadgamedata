@@ -7,58 +7,68 @@
     <title>ECHO SQUAD GAME DATA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="./css/style.css">
+    <link href='fullcalendar/main.css' rel='stylesheet' />
+    <script src='fullcalendar/main.js'></script>
+    <script>
+
+      
+
+    </script>
+
 </head>
-<body onload="iniSite()">
+<body onload="initSite()">
 
-    <container class="container">
-        <header class="d-flex p-3 text-white  justify-content-between">
-            
-            <div  onclick="window.location='./index.html'" class="text-center col-3 acceuil">Acceuil</div>
+  <container class="container">
 
-            <div class="text-center col-3">ECHO SQUAD GAME DATA</div>
-            
-           
-            
-            <figure class="col-3">
-                <img src="./css/img/Logo-Gearprod-1-1.png">
-            </figure>
-        </header>
+    <div class="mb-3 text-white border rounded opac p-1 container">
+        <div class="d-flex my-2 GameSession justify-content-around">
 
-        <main class="container">
-
-            <div class="my-3 text-white p-3 border rounded opac">
-                <div class="d-flex my-2 GameSession">
-                    <!-- <div class="d-flex col-3">
-                        <div class="h4">Site Id : <span id="siteId"></span></div>
-                    </div> -->
-                    <div class="d-flex col-5">
-                        <div class="h4">Exploitant: <span id="siteName"></span></div>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between mt-4 mb-5 align-items-center h5">
-                    <div class="col-3 text-center">Room Id</div>
-                    <div class="col-3 text-center">Room Name</div>
-                    <div class="col-3 text-center">Room Verbosity</div>
-                </div>
-                
-                    <div id="Rooms" class=""></div>
-                
+            <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil">Acceuil</div>
+          
+            <div class="d-flex col-2">
+              <div class="acceuil" onclick="window.location='./index.html'">Site : <span id="Site"></span></div>
             </div>
+            <div class="d-flex col-4">
+                <div class="">Salle : 
+                  <select id="RoomSelected">
+                    <option class="text-center">Toutes</span>                    
+                  </select>
+                  
+                </div>
+            </div>
+           
 
-            <!-- <div class="my-3 text-white border p-3">
-                <div class="text-center">DATAS REGROUPANT TOUTES LES ROOMS D'UN SITE</div>
-            </div> -->
+            <!-- <button type="button" id="GameSessionsButton"  class="btn btn-light  " onclick="ShowGameSessions()">Les GameSessions</button>
+            <button type="button" id="RoomSessionsButton"  class="btn btn-dark  " onclick="ShowRoomSessions()">Les RoomSessions</button> -->
 
-        </main>
+        </div>
+        <div class="d-flex justify-content-between">
+          <div>Nombre de Missions affichées : <span  id="NbreGameSessions"></span></div>
+          <div class="d-flex ">
+            <div class="" style="font-style:italic;font-weight:lighter">(Par défaut, les missions de durée inférieure à 10 minutes ne sont pas affichées. Afficher toutes les missions
+              <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter"><span>)</span></div>
+            </div>
+          </div>
+        </div>
+    </div>
+      
+    <div class="container bg-light p-3">
+      <div class="grid ">
+        <div class="sixteen column">
+          <div id="calendar"></div>
+        </div>
+      </div>
+    </div>
 
-<footer>
 
-</footer>
+  </container>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script
+    src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+    crossorigin="anonymous"></script>
 
+  <script src="./site.js"></script>
 
-</container>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<script src="./index.js"></script>
 </body>
 </html>

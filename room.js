@@ -71,7 +71,7 @@ Nofilter.addEventListener('change', function() {
 
 function initRoom(){
     liste_rooms();
-    getRoom(RoomId);   
+    getAllRoom(SiteId);   
 }
 
 // --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
@@ -88,6 +88,17 @@ function getRoom(RoomId){
     httpRequest.send();
 }
 
+function getAllRoom(SiteId){
+
+    var httpRequest = new XMLHttpRequest();
+    var hostserver = "api.php?action=getallroom&SiteId="+SiteId;
+    httpRequest.open("GET", hostserver);
+    httpRequest.onload = () => {
+        tableau_RoomSessions = JSON.parse(httpRequest.responseText);       
+        ShowCalendar();   
+    };
+    httpRequest.send();
+}
 
 function FillTableauGameSessions(){
     tableau_GameSessions=[];

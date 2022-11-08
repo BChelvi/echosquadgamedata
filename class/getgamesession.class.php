@@ -20,11 +20,14 @@ class GetGameSession {
 
         $RoomName=$Room['Name'];
 
-        $sql3 ="SELECT site.Name FROM room INNER JOIN site ON (room.SiteId=site.Id) WHERE room.Name='$RoomName'";
+        $sql3 ="SELECT site.Name,site.Id FROM room INNER JOIN site ON (room.SiteId=site.Id) WHERE room.Name='$RoomName'";
 
         $SiteName = $db -> select_sql($sql3)[0]['Name'];
 
+        $SiteId = $db -> select_sql($sql3)[0]['Id'];
+
         $mission[0]["SiteName"] = $SiteName;
+        $mission[0]["SiteId"] = $SiteId;
 
         $sql4="SELECT * from gameevent INNER JOIN gamesession ON (gamesession.Id=gameevent.GameSessionId) WHERE gamesession.Id=$id";
 

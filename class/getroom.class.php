@@ -35,6 +35,10 @@ class GetRoom {
 
             $GameSessions= $db -> select_sql($sql3);
 
+            for  ($j=0;$j<count($GameSessions);$j++){
+                $GameSessions[$j]['RoomId']=$Room["RoomId"];
+            }
+
             $sessions[$i]['GameSession']=$GameSessions;
             
         }
