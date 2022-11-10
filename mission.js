@@ -33,6 +33,7 @@ function ShowInfos(){
     ShowSucces(tableau_Mission['Succes']);
 
     document.getElementById('Room').innerHTML=tableau_Mission['Room'].Name;
+    document.getElementById('Site').innerHTML=tableau_Mission.SiteName;
     document.getElementById('Date').innerHTML=DateGameSession;
     document.getElementById('Start').innerHTML=StartGameSession;
     document.getElementById('End').innerHTML=EndGameSession;

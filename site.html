@@ -21,14 +21,14 @@
   <container class="container">
 
     <div class="mb-3 text-white border rounded opac py-1 px-3 container">
-        <div class="d-flex my-2 GameSession justify-content-around">
+        <div class="d-flex my-2 GameSession justify-content-around align-items-center">
 
-            <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil">Acceuil</div>
+            <div  onclick="window.location='./index.html'" class="d-flex col-1 acceuil">Acceuil</div>
           
-            <div class="d-flex col-2">
+            <div class="d-flex col-1">
               <div class="acceuil" onclick="window.location='./index.html'">Site : <span id="Site"></span></div>
             </div>
-            <div class="d-flex col-4">
+            <div class="d-flex col-3 justify-content-center">
                 <div class="">Salle : 
                   <select id="RoomSelected">
                     <option class="text-center">Toutes</span>                    
@@ -36,7 +36,9 @@
                   
                 </div>
             </div>
-            <a href="javascript:history.go(-1)" class="text-white acceuil">Retour</a>
+            <button type="button" id="CalendarButton"  class=" col-2 btn btn-light  " onclick="VueCalendar()">Calendrier</button>
+            <button type="button" id="RapportButton"  class=" col-2 btn btn-dark  " onclick="VueRapport()">Rapport</button>
+            <a href="javascript:history.go(-1)" class="text-white acceuil col-1 text-end">Retour</a>
     
            
 
@@ -53,7 +55,7 @@
           </div>
         </div>
     </div>
-      
+
     <div class="container-fluid">
       <div class="grid bg-light p-3">
         <div class="sixteen column">

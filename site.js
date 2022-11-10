@@ -18,10 +18,6 @@ var isFiltered =false;
 //On récupère l'ID de la Room(Sous-Marin) dans l'url
 var SiteId=location.hash.substring(1,10);
 
-
-//variable qui check si la liste des Rooms a déja injectée afin d'eivter un remplissage a chaque itération
-var listeRoomOn=false;
-
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
 var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`
@@ -117,7 +113,6 @@ function liste_rooms(){
     var SiteName = localStorage.getItem('SiteName');
     document.getElementById("Site").innerHTML=SiteName;
 
-    if(listeRoomOn==false){
         for (var i=0;i<tableau_AllRooms.length;i++){
             var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
                                     .replaceAll("%RoomId%",tableau_AllRooms[i].Id)
@@ -125,9 +120,17 @@ function liste_rooms(){
             const elt = document.createElement("option");
             document.getElementById("RoomSelected").appendChild(elt);       
             elt.outerHTML = html;        
-        }
-        listeRoomOn=true;
-    }
+        }   
+}
+
+function VueCalendar(){
+    document.getElementById("RapportButton").classList.replace("btn-light","btn-dark");
+    document.getElementById("CalendarButton").classList.replace("btn-dark","btn-light");
+}
+
+function VueRapport(){
+    document.getElementById("RapportButton").classList.replace("btn-light","btn-dark");
+    document.getElementById("CalendarButton").classList.replace("btn-dark","btn-light");
 }
 
 // -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
@@ -140,30 +143,42 @@ function FillGameSessions_List(){
     console.log(tableau_GameSessions)
     for (var i=0;i<tableau_GameSessions.length;i++){
         var tableau=[];
-       
-        var min = calculMinute(tableau_GameSessions[i].Duration);
 
-        tableau['backgroundColor'] = tableau_GameSessions[i].RoomColor;  
-
-        switch (tableau_GameSessions[i].MissionId){
-            case 1 :
-                tableau['title']=tableau_Missions[1].CodeName+" "+min;
-            break;
-            case 2 :
-                tableau['title']=tableau_Missions[2].CodeName+" "+min;
-            case 3 :
-                tableau['title']=tableau_Missions[3].CodeName+" "+min;
-            break;
-            case 4 :
-                tableau['title']=tableau_Missions[4].CodeName+" "+min;
-            break;
-        }
- 
+        tableau['backgroundColor'] = tableau_GameSessions[i].RoomColor; 
         tableau['id']=tableau_GameSessions[i].Id;
         tableau['start']=tableau_GameSessions[i].StartDate;
         tableau['end']=tableau_GameSessions[i].EndDate;
         tableau['description']="test";
-     
+       
+        //switch case pour les icones de Succes
+        var success = tableau_GameSessions[i].Succes;
+        var icone;
+
+        switch (success){
+            case 1 : icone = "SS";
+                
+            break;
+            case 2 : icone ="S";
+                
+            case 3 : icone ="F";
+                
+            break;
+            case 4 : icone="A";
+                
+            break;
+        }
+
+        //on appelle une fonction qui transforme le timesptamp de la BDD
+        var min = calculMinute(tableau_GameSessions[i].Duration);
+
+
+        //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
+        for (var j=0;j<tableau_Missions.length;j++){
+            if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
+                tableau['title']=tableau_Missions[j].CodeName+" "+min+" "+icone;
+            }
+        }
+
         GameSessions_List.push(tableau);       
     }    
 }
@@ -173,7 +188,8 @@ function FillGameSessions_List(){
 function ShowCalendar(){
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        themeSystem: '',   
+        themeSystem: '',
+        locale: 'fr' , 
         initialView: 'dayGridMonth',
         firstDay:1,
         height:'auto',
@@ -195,7 +211,6 @@ function ShowCalendar(){
 
         // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
-            localStorage.setItem('RoomName', tableau_RoomSessions.Name);
             document.location.href="./mission.html#"+info.event.id;
         }      
     });
@@ -213,8 +228,7 @@ function ShowCalendar(){
         //add each new source to the calendar
         sources.forEach(eventSource => {
           calendar.addEventSource(eventSource);
-        });
-    
+        });  
     });
 
     //fonction qui écoute le filtre durée mission
@@ -231,9 +245,7 @@ function ShowCalendar(){
           //add each new source to the calendar
           sources.forEach(eventSource => {
             calendar.addEventSource(eventSource);
-          });
-        
-              
+          });          
     })
 }
 
@@ -242,6 +254,7 @@ function getEventSources() {
     var sources = []; 
     FillTableau_AllGameSessions();
     FillGameSessions_List();
+    ShowNbreGameSessions();
     sources.push({events:GameSessions_List});
     return sources;
 }
@@ -275,7 +288,7 @@ function CaclculMinDuration(DateX,DateY){
 //on converti le timestamp de la bdd pour l'affichade de la durée de la mission dans le titre
 function calculMinute(secondes){
     var minutes = Math.floor(secondes / 60);
-    timestring = minutes.toString().padStart(2, '0') + 'min'
+    timestring = minutes.toString().padStart(2, '0') + 'm'
     return timestring;
 }
 
