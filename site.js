@@ -24,47 +24,16 @@ var listeRoomOn=false;
 
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
-var template_room =`<option value=%RoomId%>%RoomName% - %RoomId%</option>`
+var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`
 
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
 
-
 //Changement du selecteur Room(Sous-Marin)
 var RoomSelected = document.getElementById('RoomSelected');
-RoomSelected.addEventListener('change', function() {  
-    
-    if(RoomSelected.value!='Toutes')
-        getRoom(RoomSelected.value);
-    else(
-        getAllRoom(SiteId) 
-    )
-})
+
 
 //addEventListener permettant d'afficher ou non toutes les missions
 var Nofilter = document.getElementById('nofilter');
-Nofilter.addEventListener('change', function() {
-   if(Nofilter.checked==true){
-
-        if(RoomSelected.value!='Toutes'){
-            isFiltered=true;
-            getRoom(RoomSelected.value)
-        }
-        else{
-            isFiltered=true;
-            getAllRoom(SiteId)
-        }
-   }   
-    else{
-        if(RoomSelected.value!='Toutes'){      
-            isFiltered=false;
-            getRoom(RoomSelected.value);
-        }
-        else{
-            isFiltered=false;
-            getAllRoom(SiteId)
-        }
-    }
-})
 
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
 
@@ -75,7 +44,7 @@ function initSite(){
 
 // --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
 
-
+//function ajax qui récupère la table Mission
 function getMissions(){
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getmissions";
@@ -86,21 +55,7 @@ function getMissions(){
     httpRequest.send();
 }
 
-function getRoom(RoomId){
-
-    var httpRequest = new XMLHttpRequest();
-    var hostserver = "api.php?action=getroom&RoomId="+RoomId;
-    httpRequest.open("GET", hostserver);
-    httpRequest.onload = () => {
-        tableau_RoomSessions = JSON.parse(httpRequest.responseText);
-        FillTableauGameSessions();
-        FillGameSessions_List();   
-        ShowCalendar();   
-        ShowNbreGameSessions();
-    };
-    httpRequest.send();
-}
-
+//function ajax qui récupère toutes les Rooms d'un Site Unique avec les gamesessions y correspondant
 function getAllRoom(SiteId){
 
     var httpRequest = new XMLHttpRequest();
@@ -118,48 +73,35 @@ function getAllRoom(SiteId){
 
 }
 
-function FillTableauGameSessions(){
-    tableau_GameSessions=[];
-    
-    for (var i=0;i<tableau_RoomSessions['RoomSessions'].length;i++){
-        
-        for (var j=0;j<tableau_RoomSessions['RoomSessions'][i]['GameSession'].length;j++){
-            console.log(tableau_RoomSessions['RoomSessions'][i]);
-            if (isFiltered==false){
-                if(CaclculMinDuration(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j].Duration,600)){
-                    tableau_GameSessions.push(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j]);
-                }
-                else continue;
-            }
-            else {
-                tableau_GameSessions.push(tableau_RoomSessions['RoomSessions'][i]['GameSession'][j]);
-            }
-        }
-    }
-    
-}
-
+//function qui remplie un tableau avec les gamessesions à afficher celon les différents filtres
 function FillTableau_AllGameSessions(){
     tableau_GameSessions=[];
-  
+    
     for (var i=0;i<tableau_AllRooms.length;i++){
+       
+        //filtre sur le selecteur de Salle
+        if(!RoomFilter(tableau_AllRooms[i].Id)) continue;
+
+        else{
         
-        for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
-      
-            for (var k=0 ; k<tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'].length;k++){
+            for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
+        
+                for (var k=0 ; k<tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'].length;k++){
 
-            var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
+                var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
 
-                if (isFiltered==false){
-                    if(CaclculMinDuration(duration,600)){
+                    //filtre sur la durée de la mission
+                    if (isFiltered==false){
+                        if(CaclculMinDuration(duration,600)){
+                            tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
+                        }
+                        else continue;
+                    }
+                    else {
                         tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                     }
-                    else continue;
-                }
-                else {
-                    tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
-                }
-            }   
+                }   
+            }
         }
         
     }
@@ -168,9 +110,9 @@ function FillTableau_AllGameSessions(){
 
 function ShowNbreGameSessions(){
     document.getElementById("NbreGameSessions").innerHTML=tableau_GameSessions.length;
-
 }
 
+//function qui remplie le selecteur de Salles
 function liste_rooms(){
     var SiteName = localStorage.getItem('SiteName');
     document.getElementById("Site").innerHTML=SiteName;
@@ -179,17 +121,13 @@ function liste_rooms(){
         for (var i=0;i<tableau_AllRooms.length;i++){
             var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
                                     .replaceAll("%RoomId%",tableau_AllRooms[i].Id)
+                                    .replaceAll("%RoomColor%",tableau_AllRooms[i].color)
             const elt = document.createElement("option");
             document.getElementById("RoomSelected").appendChild(elt);       
             elt.outerHTML = html;        
         }
         listeRoomOn=true;
     }
-}
-
-function ShowNbreGameSessions(){
-    document.getElementById("NbreGameSessions").innerHTML=tableau_GameSessions.length;
-
 }
 
 // -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
@@ -203,27 +141,10 @@ function FillGameSessions_List(){
     for (var i=0;i<tableau_GameSessions.length;i++){
         var tableau=[];
        
-        var min = calculMinute(tableau_GameSessions[i].Duration)
+        var min = calculMinute(tableau_GameSessions[i].Duration);
 
-        switch (tableau_GameSessions[i].RoomId){
+        tableau['backgroundColor'] = tableau_GameSessions[i].RoomColor;  
 
-            case 348300 :
-                tableau['backgroundColor'] = "blue";
-            break;
-            
-            case 348301 :
-                tableau['backgroundColor'] = "red";
-            break;
-
-            case 348307 :
-                tableau['backgroundColor'] = "green";
-            break;
-
-            case 3483012 :
-                tableau['backgroundColor'] = "black";
-            break;
-
-        }
         switch (tableau_GameSessions[i].MissionId){
             case 1 :
                 tableau['title']=tableau_Missions[1].CodeName+" "+min;
@@ -260,7 +181,7 @@ function ShowCalendar(){
             left: 'prev,next',
             center: 'title',
             right: 'today,dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-        },
+        },     
         buttonText:{
             today:"Aujourd'hui",
             month:"Mois",
@@ -268,24 +189,79 @@ function ShowCalendar(){
             day:"Jour",
             list:"liste",
         },
-        events: GameSessions_List,
+
+        //fetch des events
+        eventSources:getEventSources(),
+
+        // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
             localStorage.setItem('RoomName', tableau_RoomSessions.Name);
             document.location.href="./mission.html#"+info.event.id;
-        },
-        eventRender: function(event, element) {
-            element.children().last().append(event.description);}      
+        }      
     });
-  
+    calendar.render();  
 
-    calendar.render();
-    calendar.setOption('locale','fr');
-    calendar.on('dateClick', function(info) {
-        console.log('clicked on ' + info.dateStr);
+    //fonction qui écoute le tri de la Salle
+    RoomSelected.addEventListener('change', function(){        //remove event sources
+        
+        calendar.getEventSources().forEach(eventSource => {
+          eventSource.remove();
+        });
+        //get currently selected sources
+        var sources = getEventSources();
+        
+        //add each new source to the calendar
+        sources.forEach(eventSource => {
+          calendar.addEventSource(eventSource);
+        });
+    
     });
-};
 
+    //fonction qui écoute le filtre durée mission
+    Nofilter.addEventListener('change', function() {
+           if(Nofilter.checked==true) isFiltered=true;
+           else isFiltered = false;
 
+           calendar.getEventSources().forEach(eventSource => {
+            eventSource.remove();
+          });
+          //get currently selected sources
+          var sources = getEventSources();
+          
+          //add each new source to the calendar
+          sources.forEach(eventSource => {
+            calendar.addEventSource(eventSource);
+          });
+        
+              
+    })
+}
+
+//function qui refetch tous les events
+function getEventSources() {
+    var sources = []; 
+    FillTableau_AllGameSessions();
+    FillGameSessions_List();
+    sources.push({events:GameSessions_List});
+    return sources;
+}
+
+//function de tri de la Salle
+function RoomFilter(RoomId)
+{
+    if(RoomSelected.value=='Toutes')
+    return true;
+
+    else{
+        if(RoomSelected.value==RoomId)
+        return true;
+        else return false;
+    }
+}
+
+// -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------
+
+//permet au filtre de determiné si la mission de la durée est inférieure au prérequis d'affichage
 function CaclculMinDuration(DateX,DateY){
     var datumX = Date.parse(DateX);
     var datumY = Date.parse(DateY);
@@ -296,11 +272,13 @@ function CaclculMinDuration(DateX,DateY){
     else return false;
 }
 
+//on converti le timestamp de la bdd pour l'affichade de la durée de la mission dans le titre
 function calculMinute(secondes){
     var minutes = Math.floor(secondes / 60);
-    var seconds = secondes - (minutes*60);
-    timestring = minutes.toString().padStart(2, '0') + 'min' +
-    seconds.toString().padStart(2, '0');
-
+    timestring = minutes.toString().padStart(2, '0') + 'min'
     return timestring;
 }
+
+
+
+

@@ -2,6 +2,16 @@ var GameSessionId=location.hash.substring(1,10);
 
 var tableau_Mission=[];
 
+var DateGameSession;
+
+var StartGameSession;
+
+var EndGameSession;
+
+var DurationGameSession;
+
+var Succes;
+
 var template_event=`
                     <div class="d-flex justify-content-between my-2 GameSession">                                    
                         <div class="text-center col-2">%Category%</div>    
@@ -14,20 +24,27 @@ var template_event=`
 `
 
 function initMission(){
-    getMission();
-    
+    getGameSession();
 }
 
 function ShowInfos(){
-    document.getElementById('Site').innerHTML=tableau_Mission['SiteName'];
+    TruncDate();
+    Calcul();
+    ShowSucces(tableau_Mission['Succes']);
+
     document.getElementById('Room').innerHTML=tableau_Mission['Room'].Name;
-    document.getElementById('GameSessionId').innerHTML=tableau_Mission['Id'];
-    document.getElementById('Start').innerHTML=tableau_Mission['StartDate'];
-    document.getElementById('End').innerHTML=tableau_Mission['EndDate'];
+    document.getElementById('Date').innerHTML=DateGameSession;
+    document.getElementById('Start').innerHTML=StartGameSession;
+    document.getElementById('End').innerHTML=EndGameSession;
+    document.getElementById('Duration').innerHTML=DurationGameSession;
+    document.getElementById('Type').innerHTML=tableau_Mission['MissionName'];
+    document.getElementById('Succes').innerHTML=Succes;
+   
+   
 
 }
 
-function getMission(){
+function getGameSession(){
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getgamesession&GameSessionId="+GameSessionId;
     httpRequest.open("GET", hostserver);
@@ -35,7 +52,7 @@ function getMission(){
         tableau_Mission = JSON.parse(httpRequest.responseText);       
         console.log(tableau_Mission)
         ShowInfos();
-        ShowEvents();   
+        
     };
     httpRequest.send();
 }
@@ -58,3 +75,38 @@ function ShowEvents(){
     }
 }
 
+function TruncDate(){
+    DateGameSession = tableau_Mission['StartDate'].substring(0,10);
+    StartGameSession = tableau_Mission['StartDate'].substring(11,13)+"h"+tableau_Mission['StartDate'].substring(14,16);
+    EndGameSession = tableau_Mission['EndDate'].substring(11,13)+"h"+tableau_Mission['EndDate'].substring(14,16);
+}
+
+
+function Calcul(){
+    DurationGameSession = calculMinute(CalculDuration(tableau_Mission['StartDate'],tableau_Mission['EndDate']));    
+}
+
+function CalculDuration(DateX,DateY){
+    var datumX = Date.parse(DateX);
+    var datumY = Date.parse(DateY);
+    return (datumY-datumX)/1000;
+}
+
+function calculMinute(secondes){
+    var minutes = Math.floor(secondes / 60);
+    timestring = minutes.toString().padStart(2, '0') + ' min'
+    return timestring;
+}
+
+function ShowSucces(int){
+    switch(int){
+        case 1 : Succes = "Echec - Temps imparti écoulé.";
+        break;
+        case 2 : Succes = "Mission complétée avec moins de 4 caisses récoltées."
+        break;
+        case 3 : Succes = "Mission complétée plus de 4 caisses récoltées."
+        break;
+        case 4 : Succes = "Mission non terminée"
+        break;
+    }
+}

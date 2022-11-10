@@ -35,6 +35,12 @@ class GetGameSession {
 
         $mission[0]["events"] = $events;
 
+        $MissionName = $mission[0]['MissionId'];
+
+        $sql5="SELECT Name FROM mission WHERE mission.Id=$MissionName";
+
+        $mission[0]['MissionName'] = $db -> select_sql($sql5)[0]['Name'];
+
         echo json_encode($mission[0]);
         
     }

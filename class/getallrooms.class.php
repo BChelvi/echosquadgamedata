@@ -6,7 +6,7 @@ class GetAllRooms {
 
         $db = Db :: singleton();
 
-        $sql =" SELECT room.Id,room.Name FROM site INNER JOIN room ON (site.Id=room.SiteId) WHERE site.Id = $id";
+        $sql =" SELECT room.Id,room.Name,room.color FROM site INNER JOIN room ON (site.Id=room.SiteId) WHERE site.Id = $id";
 
         $Site = $db -> select_sql($sql);
 
@@ -27,6 +27,10 @@ class GetAllRooms {
                 $sql3 ="SELECT * FROM roomsession INNER JOIN gamesession ON (roomsession.Id = gamesession.RoomSessionId) WHERE roomsessionId = $RoomSessionId";
 
                 $GameSessions = $db -> select_sql($sql3);
+
+                for  ($k=0;$k<count($GameSessions);$k++){
+                    $GameSessions[$k]['RoomColor']=$Site[$i]['color'];
+                }
 
                 $Site[$i]['RoomSessions'][$j]['GameSessions']=$GameSessions;
             }
