@@ -46,21 +46,37 @@
             <button type="button" id="RoomSessionsButton"  class="btn btn-dark  " onclick="ShowRoomSessions()">Les RoomSessions</button> -->
 
         </div>
-        <div class="">
+        <div class="d-flex">
           <div>Nombre de Missions : <span  id="NbreGameSessions"></span></div>
           <div class="d-flex ">
-            <div class="" style="font-style:italic;font-weight:lighter">(Afficher toutes les missions
-              <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter"><span>)</span></div>
+            <div class="mx-1" style="font-style:italic;font-weight:lighter">(Afficher toutes les missions
+              <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter"><span>)</span>
             </div>
           </div>
         </div>
     </div>
 
-    <div class="container-fluid">
+    <div id="calendarDiv" class="container-fluid d-flex">
       <div class="grid bg-light p-3">
         <div class="sixteen column">
           <div id="calendar"></div>
         </div>
+      </div>
+    </div>
+
+    <div id="rapportDiv" class="container-fluid d-none">
+      <div class="text-white border rounded opac p-3">
+        <div style="font-style:italic;font-weight:lighter" class="mb-2">in progress...</div>
+        <div class="mb-2">PERIODE : <span id="periode"></span></div>
+        <div class="d-flex justify-content-around mb-2">
+          <div class="col-1">Type de Mission</div>
+          <div class="col-1">Nombre Total</div>
+          <div class="col-1">Réussite Totale</div>
+          <div class="col-1">Réussite Partielle</div>
+          <div class="col-1">Echec</div>
+          <div class="col-1">Abandon</div>
+        </div>
+        <div id="rapport"></div>
       </div>
     </div>
 

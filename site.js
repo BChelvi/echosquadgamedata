@@ -12,6 +12,13 @@ var GameSessions_List = [];
 
 var calendarEl = document.getElementById('calendar');
 
+var date;
+
+var CurrentDate = new Date();
+
+//variable checkant si la listeRoom à déja était injectée
+var IsListRoom = false;
+
 //variable indiquant si la case filtre durée mission est cochée ou non
 var isFiltered =false;
 
@@ -20,7 +27,16 @@ var SiteId=location.hash.substring(1,10);
 
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
-var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`
+var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`;
+
+var template_rapport=`<div class="d-flex justify-content-around">
+                            <div class="col-1">%Type%</div>
+                            <div class="col-1">%Nombre%</div>
+                            <div class="col-1">%SuperSucces%</div>
+                            <div class="col-1">%Succes%</div>
+                            <div class="col-1">%Fail%</div>
+                            <div class="col-1">%Quit%</div>
+                        </div>`
 
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
 
@@ -34,8 +50,10 @@ var Nofilter = document.getElementById('nofilter');
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
 
 function initSite(){
-    getMissions();
-    getAllRoom(SiteId);   
+    getAllRoom(SiteId,CurrentDate);
+    
+    ShowCalendar();
+    getMissions();  
 }
 
 // --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
@@ -46,24 +64,21 @@ function getMissions(){
     var hostserver = "api.php?action=getmissions";
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
-        tableau_Missions = JSON.parse(httpRequest.responseText);   
+        tableau_Missions = JSON.parse(httpRequest.responseText);  
+        ShowCalendar(); 
     };
     httpRequest.send();
 }
 
 //function ajax qui récupère toutes les Rooms d'un Site Unique avec les gamesessions y correspondant
-function getAllRoom(SiteId){
+function getAllRoom(SiteId,Date){
 
     var httpRequest = new XMLHttpRequest();
-    var hostserver = "api.php?action=getallrooms&SiteId="+SiteId;
+    var hostserver = "api.php?action=getallrooms&SiteId="+SiteId+"&Date="+Date;
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
         tableau_AllRooms = JSON.parse(httpRequest.responseText);
         liste_rooms();
-        FillTableau_AllGameSessions();
-        FillGameSessions_List();   
-        ShowCalendar();   
-        ShowNbreGameSessions();
     };
     httpRequest.send();
 
@@ -110,27 +125,37 @@ function ShowNbreGameSessions(){
 
 //function qui remplie le selecteur de Salles
 function liste_rooms(){
-    var SiteName = localStorage.getItem('SiteName');
-    document.getElementById("Site").innerHTML=SiteName;
+    if(!IsListRoom){
+        var SiteName = localStorage.getItem('SiteName');
+        document.getElementById("Site").innerHTML=SiteName;
 
-        for (var i=0;i<tableau_AllRooms.length;i++){
-            var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
-                                    .replaceAll("%RoomId%",tableau_AllRooms[i].Id)
-                                    .replaceAll("%RoomColor%",tableau_AllRooms[i].color)
-            const elt = document.createElement("option");
-            document.getElementById("RoomSelected").appendChild(elt);       
-            elt.outerHTML = html;        
-        }   
+            for (var i=0;i<tableau_AllRooms.length;i++){
+                var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
+                                        .replaceAll("%RoomId%",tableau_AllRooms[i].Id)
+                                        .replaceAll("%RoomColor%",tableau_AllRooms[i].color)
+                const elt = document.createElement("option");
+                document.getElementById("RoomSelected").appendChild(elt);       
+                elt.outerHTML = html;        
+            }  
+            
+        IsListRoom =true;
+    }
 }
 
 function VueCalendar(){
     document.getElementById("RapportButton").classList.replace("btn-light","btn-dark");
     document.getElementById("CalendarButton").classList.replace("btn-dark","btn-light");
+    document.getElementById("calendarDiv").classList.replace("d-none","d-flex");
+    document.getElementById("rapportDiv").classList.replace("d-block","d-none");
+    
 }
 
 function VueRapport(){
-    document.getElementById("RapportButton").classList.replace("btn-light","btn-dark");
-    document.getElementById("CalendarButton").classList.replace("btn-dark","btn-light");
+    document.getElementById("CalendarButton").classList.replace("btn-light","btn-dark");
+    document.getElementById("RapportButton").classList.replace("btn-dark","btn-light");
+    document.getElementById("rapportDiv").classList.replace("d-none","d-bloc");
+    document.getElementById("calendarDiv").classList.replace("d-flex","d-none");
+
 }
 
 // -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
@@ -186,7 +211,7 @@ function FillGameSessions_List(){
 
 //la fonction qui render le FullCalendar
 function ShowCalendar(){
-
+    
     var calendar = new FullCalendar.Calendar(calendarEl, {
         themeSystem: '',
         locale: 'fr' , 
@@ -194,7 +219,7 @@ function ShowCalendar(){
         firstDay:1,
         height:'auto',
         headerToolbar: {
-            left: 'prev,next',
+            left: 'PREV,NEXT',
             center: 'title',
             right: 'today,dayGridMonth,timeGridWeek,timeGridDay,listMonth'
         },     
@@ -205,25 +230,71 @@ function ShowCalendar(){
             day:"Jour",
             list:"liste",
         },
+        customButtons: {
+            PREV: {
+              text: '<',
+              click: function() {
+                calendar.prev();
+                 date = calendar.getDate();
+                 calendar.getEventSources(date).forEach(eventSource => {
+                    eventSource.remove();
+                  });
+                  //get currently selected sources
+                  var sources = getEventSources(date);
+                  
+                  //add each new source to the calendar
+                  sources.forEach(eventSource => {
+                    calendar.addEventSource(eventSource);
+                  }); 
+              }
+            },
+            NEXT: {
+                text: '>',
+                click: function() {
+                  calendar.next();
+                    date = calendar.getDate();
+                    calendar.getEventSources(date).forEach(eventSource => {
+                        eventSource.remove();
+                      });
+                      //get currently selected sources
+                      var sources = getEventSources(date);
+                      
+                      //add each new source to the calendar
+                      sources.forEach(eventSource => {
+                        calendar.addEventSource(eventSource);
+                      });    
+                }
+            }
+        },
 
         //fetch des events
-        eventSources:getEventSources(),
+        eventSources:getEventSources(date),
 
         // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
             document.location.href="./mission.html#"+info.event.id;
-        }      
+        } ,
+        
+        dateClick: function(info) {
+            calendar.changeView('timeGridDay',info.date);
+          },
+
+        
     });
+
+   
+    
+   
     calendar.render();  
 
     //fonction qui écoute le tri de la Salle
     RoomSelected.addEventListener('change', function(){        //remove event sources
         
-        calendar.getEventSources().forEach(eventSource => {
+        calendar.getEventSources(date).forEach(eventSource => {
           eventSource.remove();
         });
         //get currently selected sources
-        var sources = getEventSources();
+        var sources = getEventSources(date);
         
         //add each new source to the calendar
         sources.forEach(eventSource => {
@@ -236,27 +307,46 @@ function ShowCalendar(){
            if(Nofilter.checked==true) isFiltered=true;
            else isFiltered = false;
 
-           calendar.getEventSources().forEach(eventSource => {
+           calendar.getEventSources(date).forEach(eventSource => {
             eventSource.remove();
           });
           //get currently selected sources
-          var sources = getEventSources();
+          var sources = getEventSources(date);
           
           //add each new source to the calendar
           sources.forEach(eventSource => {
             calendar.addEventSource(eventSource);
           });          
     })
+
 }
 
+
 //function qui refetch tous les events
-function getEventSources() {
-    var sources = []; 
-    FillTableau_AllGameSessions();
-    FillGameSessions_List();
-    ShowNbreGameSessions();
-    sources.push({events:GameSessions_List});
-    return sources;
+function getEventSources(date) {
+    //avant la création du calendrier,on ne peut pas récupérer la date de sa vue initiale , on fixe donc la variable date à la date du jour
+    if(!date){ 
+        getAllRoom(SiteId,CurrentDate);
+        var sources = [];
+       
+        FillTableau_AllGameSessions();
+        FillGameSessions_List();
+        ShowNbreGameSessions();
+        Show_Rapport()
+        sources.push({events:GameSessions_List});
+        return sources;
+    }
+    else {
+        getAllRoom(SiteId,date);
+        var sources = [];
+    
+        FillTableau_AllGameSessions();
+        FillGameSessions_List();
+        ShowNbreGameSessions();
+        Show_Rapport();
+        sources.push({events:GameSessions_List});
+        return sources;
+    }
 }
 
 //function de tri de la Salle
@@ -270,6 +360,30 @@ function RoomFilter(RoomId)
         return true;
         else return false;
     }
+}
+// -------------------------------------------------------------VUE RAPPORT------------------------------------------------------
+
+function Show_Rapport(){
+   
+document.getElementById("rapport").innerHTML="";
+
+document.getElementById("periode").innerHTML=date;
+
+
+            for (var i=0;i<tableau_GameSessions.length;i++){
+
+
+                var html = template_rapport.replaceAll("%Type%",tableau_GameSessions[i].Name)
+                                        .replaceAll("%Nombre%",tableau_GameSessions[i].Id)
+                                        .replaceAll("%SuperSucces%",tableau_GameSessions[i].color)
+                                        .replaceAll("%Succes%",tableau_GameSessions[i].color)
+                                        .replaceAll("%Fail%",tableau_GameSessions[i].color)
+                                        .replaceAll("%Quit%",tableau_GameSessions[i].color)
+                const elt = document.createElement("div");
+                document.getElementById("rapport").appendChild(elt);       
+                elt.outerHTML = html;        
+            }  
+   
 }
 
 // -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------

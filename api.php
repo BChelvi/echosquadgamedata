@@ -35,7 +35,7 @@ switch($params["action"])
     break;
 
     case "getallrooms":
-        GetAllRooms ::Run($params['SiteId']);
+        GetAllRooms ::Run($params['SiteId'],$params['Date']);
           
     break;
 
@@ -49,5 +49,6 @@ switch($params["action"])
     
     break;
 
+   
 
 }

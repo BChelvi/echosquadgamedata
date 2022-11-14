@@ -2,7 +2,7 @@
 
 class GetAllRooms {
 
-    public static function run($id){
+    public static function run($id,$date){
 
         $db = Db :: singleton();
 
@@ -19,6 +19,8 @@ class GetAllRooms {
             $RoomSessions= $db -> select_sql($sql2);
 
             $Site[$i]['RoomSessions']=$RoomSessions;
+
+            $Site[$i]['date']=$date;
 
             for ($j=0;$j<count($Site[$i]['RoomSessions']);$j++){
 
