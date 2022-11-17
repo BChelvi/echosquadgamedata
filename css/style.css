@@ -1,9 +1,12 @@
 body{
+   background-color: black;
+    font-family: 'Roboto';
     background-image: url(./img/background_gearprod.png);
     background-repeat: no-repeat;
     background-size: cover;
-    font-family: 'Roboto';
 }
+
+
 
 .site:hover{
 
@@ -24,6 +27,8 @@ body{
 @font-face{
     font-family : "Roboto", sans-serif;
     src : url("./fonts/Roboto-Regular.ttf") format("opentype");
+    font-family: "HammerSmith",sans-serif;
+    src : url("./fonts/HammersmithOne-Regular.ttf") format("opentype");
 }
 
 .opac{
@@ -33,6 +38,8 @@ body{
 
 .acceuil{
     cursor: pointer;
+    font-size: 14px;
+    font-family: 'HammerSmith' !important;
 }
 
 .acceuil:hover{

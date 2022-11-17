@@ -29,13 +29,9 @@ var SiteId=location.hash.substring(1,10);
 
 var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`;
 
-var template_rapport=`<div class="d-flex justify-content-around">
-                            <div class="col-1">%Type%</div>
-                            <div class="col-1">%Nombre%</div>
-                            <div class="col-1">%SuperSucces%</div>
-                            <div class="col-1">%Succes%</div>
-                            <div class="col-1">%Fail%</div>
-                            <div class="col-1">%Quit%</div>
+var template_rapport=`<div class="">
+                        <div>%MissionName%</div>
+                        <div></div>
                         </div>`
 
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
@@ -143,17 +139,18 @@ function liste_rooms(){
 }
 
 function VueCalendar(){
-    document.getElementById("RapportButton").classList.replace("btn-light","btn-dark");
-    document.getElementById("CalendarButton").classList.replace("btn-dark","btn-light");
+    document.getElementById("RapportButton").classList.replace("btn-dark","btn-light");
+    document.getElementById("CalendarButton").classList.replace("btn-light","btn-dark");
     document.getElementById("calendarDiv").classList.replace("d-none","d-flex");
     document.getElementById("rapportDiv").classList.replace("d-block","d-none");
+    ShowCalendar();
     
 }
 
 function VueRapport(){
-    document.getElementById("CalendarButton").classList.replace("btn-light","btn-dark");
-    document.getElementById("RapportButton").classList.replace("btn-dark","btn-light");
-    document.getElementById("rapportDiv").classList.replace("d-none","d-bloc");
+    document.getElementById("CalendarButton").classList.replace("btn-dark","btn-light");
+    document.getElementById("RapportButton").classList.replace("btn-light","btn-dark");
+    document.getElementById("rapportDiv").classList.replace("d-none","d-block");
     document.getElementById("calendarDiv").classList.replace("d-flex","d-none");
 
 }
@@ -219,9 +216,9 @@ function ShowCalendar(){
         firstDay:1,
         height:'auto',
         headerToolbar: {
-            left: 'PREV,NEXT',
+            left: 'PREV,today,NEXT',
             center: 'title',
-            right: 'today,dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },     
         buttonText:{
             today:"Aujourd'hui",
@@ -230,6 +227,7 @@ function ShowCalendar(){
             day:"Jour",
             list:"liste",
         },
+     
         customButtons: {
             PREV: {
               text: '<',
@@ -264,6 +262,9 @@ function ShowCalendar(){
                         calendar.addEventSource(eventSource);
                       });    
                 }
+            },
+            Afficher:{
+                text:'Afficher toutes les missions',
             }
         },
 
@@ -331,7 +332,7 @@ function getEventSources(date) {
        
         FillTableau_AllGameSessions();
         FillGameSessions_List();
-        ShowNbreGameSessions();
+        // ShowNbreGameSessions();
         Show_Rapport()
         sources.push({events:GameSessions_List});
         return sources;
@@ -342,7 +343,7 @@ function getEventSources(date) {
     
         FillTableau_AllGameSessions();
         FillGameSessions_List();
-        ShowNbreGameSessions();
+        // ShowNbreGameSessions();
         Show_Rapport();
         sources.push({events:GameSessions_List});
         return sources;
@@ -370,10 +371,8 @@ document.getElementById("rapport").innerHTML="";
 document.getElementById("periode").innerHTML=date;
 
 
-            for (var i=0;i<tableau_GameSessions.length;i++){
-
-
-                var html = template_rapport.replaceAll("%Type%",tableau_GameSessions[i].Name)
+        for (var i=0;i<tableau_Missions.length;i++){
+            var html = template_rapport.replaceAll("%Type%",tableau_GameSessions[i].Name)
                                         .replaceAll("%Nombre%",tableau_GameSessions[i].Id)
                                         .replaceAll("%SuperSucces%",tableau_GameSessions[i].color)
                                         .replaceAll("%Succes%",tableau_GameSessions[i].color)
@@ -381,8 +380,22 @@ document.getElementById("periode").innerHTML=date;
                                         .replaceAll("%Quit%",tableau_GameSessions[i].color)
                 const elt = document.createElement("div");
                 document.getElementById("rapport").appendChild(elt);       
-                elt.outerHTML = html;        
-            }  
+                elt.outerHTML = html; 
+        }
+
+            // for (var i=0;i<tableau_GameSessions.length;i++){
+
+
+            //     var html = template_rapport.replaceAll("%Type%",tableau_GameSessions[i].Name)
+            //                             .replaceAll("%Nombre%",tableau_GameSessions[i].Id)
+            //                             .replaceAll("%SuperSucces%",tableau_GameSessions[i].color)
+            //                             .replaceAll("%Succes%",tableau_GameSessions[i].color)
+            //                             .replaceAll("%Fail%",tableau_GameSessions[i].color)
+            //                             .replaceAll("%Quit%",tableau_GameSessions[i].color)
+            //     const elt = document.createElement("div");
+            //     document.getElementById("rapport").appendChild(elt);       
+            //     elt.outerHTML = html;        
+            // }  
    
 }
 

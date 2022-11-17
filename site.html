@@ -18,45 +18,56 @@
 </head>
 <body onload="initSite()">
 
-  <container class="container">
+  <nav class="navbar navbar-dark px-3 py-2 justify-content-around" style="color:#A0A0A0; background-color: black;">
+      <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil" >ACCEUIL</div>
+      <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil" >COMMERCIAL</div>
+      <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil" >USER EXPERIENCE</div>
+      <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil" >ASSISTANCE TECHNIQUE</div>
+     
+  </nav>
 
-    <div class="mb-3 text-white border rounded opac py-1 px-3 container">
-        <div class="d-flex my-2 GameSession justify-content-around align-items-center">
+  <main class="p-3">
 
-            <div  onclick="window.location='./index.html'" class="d-flex col-1 acceuil">Acceuil</div>
-          
-            <div class="d-flex col-1">
-              <div class="acceuil" onclick="window.location='./index.html'">Site : <span id="Site"></span></div>
-            </div>
-            <div class="d-flex col-3 justify-content-center">
-                <div class="">Salle : 
-                  <select id="RoomSelected">
-                    <option class="text-center">Toutes</span>                    
-                  </select>
-                  
-                </div>
-            </div>
-            <button type="button" id="CalendarButton"  class=" col-2 btn btn-light  " onclick="VueCalendar()">Calendrier</button>
-            <button type="button" id="RapportButton"  class=" col-2 btn btn-dark  " onclick="VueRapport()">Rapport</button>
-            <a href="javascript:history.go(-1)" class="text-white acceuil col-1 text-end">Retour</a>
     
-           
+   
 
-            <!-- <button type="button" id="GameSessionsButton"  class="btn btn-light  " onclick="ShowGameSessions()">Les GameSessions</button>
-            <button type="button" id="RoomSessionsButton"  class="btn btn-dark  " onclick="ShowRoomSessions()">Les RoomSessions</button> -->
-
+      <div class="d-flex text-white justify-content-center p-3" style="font-size:20px">
+        <div class="d-flex col-4 justify-content-center">
+          <div class="" onclick="window.location='./index.html'">SITE : <span id="Site"></span></div>
         </div>
-        <div class="d-flex">
-          <div>Nombre de Missions : <span  id="NbreGameSessions"></span></div>
-          <div class="d-flex ">
-            <div class="mx-1" style="font-style:italic;font-weight:lighter">(Afficher toutes les missions
-              <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter"><span>)</span>
+        <div class="d-flex col-4 justify-content-center">
+            <div class="">SALLE : 
+              <select id="RoomSelected">
+                <option class="text-center">Toutes</span>                    
+              </select>                  
             </div>
+        </div>
+      </div>
+
+      <div class="bg-light pt-3">
+        
+        <div class="d-flex justify-content-center">
+          <div class="d-flex col-3 justify-content-center">
+            <button type="button" id="CalendarButton"  class="btn btn-dark border col-10" onclick="VueCalendar()">CALENDRIER</button>
+          </div>
+          <div class="d-flex col-3 justify-content-center">
+            <button type="button" id="RapportButton"  class="btn btn-light border col-10" onclick="VueRapport()">RAPPORT</button>
           </div>
         </div>
-    </div>
+    
+        <div class="d-flex justify-content-center mt-2">
+          <div class="mx-1" style=" color:#A0A0A0; font-style:italic;font-weight:lighter">Afficher toutes les missions
+            <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter">
+          </div>
+        </div>
 
-    <div id="calendarDiv" class="container-fluid d-flex">
+      </div>
+
+   
+
+
+
+    <div id="calendarDiv" class="d-flex">
       <div class="grid bg-light p-3">
         <div class="sixteen column">
           <div id="calendar"></div>
@@ -64,24 +75,31 @@
       </div>
     </div>
 
-    <div id="rapportDiv" class="container-fluid d-none">
-      <div class="text-white border rounded opac p-3">
-        <div style="font-style:italic;font-weight:lighter" class="mb-2">in progress...</div>
-        <div class="mb-2">PERIODE : <span id="periode"></span></div>
-        <div class="d-flex justify-content-around mb-2">
-          <div class="col-1">Type de Mission</div>
-          <div class="col-1">Nombre Total</div>
-          <div class="col-1">Réussite Totale</div>
-          <div class="col-1">Réussite Partielle</div>
-          <div class="col-1">Echec</div>
-          <div class="col-1">Abandon</div>
+    <div id="rapportDiv" class="d-none bg-light">
+      <div class="p-3">
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex col-4 justify-content-start">
+            <button>PREV</button>
+            <button>MOIS EN COURS</button>
+            <button>NEXT</button>
+          </div>
+
+
+          <div class="d-flex col-4 justify-content-center "  style="font-style:italic">PERIODE : <span id="periode"></span></div>
+
+          <div class="d-flex col-4 justify-content-end">
+            <button>ANNEE</button>
+            <button>MOIS</button>
+          </div>
+
         </div>
         <div id="rapport"></div>
       </div>
     </div>
 
 
-  </container>
+  </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   <script
     src="https://code.jquery.com/jquery-3.6.1.min.js"
