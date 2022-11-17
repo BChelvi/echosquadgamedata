@@ -10,11 +10,13 @@ var tableau_GameSessions=[];
 
 var GameSessions_List = [];
 
+var tableau_rapport =[];
+
 var calendarEl = document.getElementById('calendar');
 
 var date;
 
-var CurrentDate = new Date();
+var CurrentDate = ((new Date()).toISOString()).substring(0,7);
 
 //variable checkant si la listeRoom à déja était injectée
 var IsListRoom = false;
@@ -29,9 +31,13 @@ var SiteId=location.hash.substring(1,10);
 
 var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`;
 
-var template_rapport=`<div class="">
-                        <div>%MissionName%</div>
-                        <div></div>
+var template_rapport=`<div class="mb-2">
+                            <div>%MissionName%</div>
+                            <div>%NbreMission%</div>
+                            <div>%PourcentageSS%</div>
+                            <div>%PourcentageS%</div>
+                            <div>%PourcentageEchec%</div>
+                            <div>%PourcentageAbandon%</div>
                         </div>`
 
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
@@ -113,6 +119,7 @@ function FillTableau_AllGameSessions(){
         
     }
 }
+
 // --------------------------------------FONCTIONS GERANTS DIFFERENTS BLOCS D'AFFICHAGE----------------------------------------------------------------
 
 function ShowNbreGameSessions(){
@@ -233,7 +240,8 @@ function ShowCalendar(){
               text: '<',
               click: function() {
                 calendar.prev();
-                 date = calendar.getDate();
+                  date = (calendar.getDate()).toISOString();
+                 
                  calendar.getEventSources(date).forEach(eventSource => {
                     eventSource.remove();
                   });
@@ -250,7 +258,7 @@ function ShowCalendar(){
                 text: '>',
                 click: function() {
                   calendar.next();
-                    date = calendar.getDate();
+                     date = (calendar.getDate()).toISOString();
                     calendar.getEventSources(date).forEach(eventSource => {
                         eventSource.remove();
                       });
@@ -269,7 +277,7 @@ function ShowCalendar(){
         },
 
         //fetch des events
-        eventSources:getEventSources(date),
+        eventSources:getEventSources(CurrentDate),
 
         // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
@@ -325,19 +333,8 @@ function ShowCalendar(){
 
 //function qui refetch tous les events
 function getEventSources(date) {
-    //avant la création du calendrier,on ne peut pas récupérer la date de sa vue initiale , on fixe donc la variable date à la date du jour
-    if(!date){ 
-        getAllRoom(SiteId,CurrentDate);
-        var sources = [];
-       
-        FillTableau_AllGameSessions();
-        FillGameSessions_List();
-        // ShowNbreGameSessions();
-        Show_Rapport()
-        sources.push({events:GameSessions_List});
-        return sources;
-    }
-    else {
+    console.log(date);
+  
         getAllRoom(SiteId,date);
         var sources = [];
     
@@ -347,7 +344,7 @@ function getEventSources(date) {
         Show_Rapport();
         sources.push({events:GameSessions_List});
         return sources;
-    }
+    
 }
 
 //function de tri de la Salle
@@ -365,14 +362,20 @@ function RoomFilter(RoomId)
 // -------------------------------------------------------------VUE RAPPORT------------------------------------------------------
 
 function Show_Rapport(){
+
+
    
 document.getElementById("rapport").innerHTML="";
 
-document.getElementById("periode").innerHTML=date;
+// document.getElementById("periode").innerHTML=date;
 
 
-        for (var i=0;i<tableau_Missions.length;i++){
-            var html = template_rapport.replaceAll("%Type%",tableau_GameSessions[i].Name)
+    for (var i=0;i<tableau_Missions.length;i++){
+
+        //On n'afffiche ni PlayerBase ni Teaser
+        if(i!=0&&i!=3){
+
+            var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
                                         .replaceAll("%Nombre%",tableau_GameSessions[i].Id)
                                         .replaceAll("%SuperSucces%",tableau_GameSessions[i].color)
                                         .replaceAll("%Succes%",tableau_GameSessions[i].color)
@@ -382,20 +385,8 @@ document.getElementById("periode").innerHTML=date;
                 document.getElementById("rapport").appendChild(elt);       
                 elt.outerHTML = html; 
         }
-
-            // for (var i=0;i<tableau_GameSessions.length;i++){
-
-
-            //     var html = template_rapport.replaceAll("%Type%",tableau_GameSessions[i].Name)
-            //                             .replaceAll("%Nombre%",tableau_GameSessions[i].Id)
-            //                             .replaceAll("%SuperSucces%",tableau_GameSessions[i].color)
-            //                             .replaceAll("%Succes%",tableau_GameSessions[i].color)
-            //                             .replaceAll("%Fail%",tableau_GameSessions[i].color)
-            //                             .replaceAll("%Quit%",tableau_GameSessions[i].color)
-            //     const elt = document.createElement("div");
-            //     document.getElementById("rapport").appendChild(elt);       
-            //     elt.outerHTML = html;        
-            // }  
+    }
+            
    
 }
 
@@ -419,6 +410,9 @@ function calculMinute(secondes){
     return timestring;
 }
 
+function NmbrePourcentageGame (tableau){
+
+}
 
 
 
