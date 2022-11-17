@@ -14,9 +14,10 @@ var tableau_rapport =[];
 
 var calendarEl = document.getElementById('calendar');
 
-var date;
 
-var CurrentDate = ((new Date()).toISOString()).substring(0,7);
+var CurrentDate = (new Date()).toISOString();
+
+var date = CurrentDate;
 
 //variable checkant si la listeRoom à déja était injectée
 var IsListRoom = false;
@@ -33,11 +34,11 @@ var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color=
 
 var template_rapport=`<div class="mb-2">
                             <div>%MissionName%</div>
-                            <div>%NbreMission%</div>
-                            <div>%PourcentageSS%</div>
-                            <div>%PourcentageS%</div>
-                            <div>%PourcentageEchec%</div>
-                            <div>%PourcentageAbandon%</div>
+                            <div>Nombre effectuées : %NbreMission%</div>
+                            <div>Réussite totale : %PourcentageSS%</div>
+                            <div>Réussite partielle : %PourcentageS%</div>
+                            <div>Echec : %PourcentageEchec%</div>
+                            <div>Abandon : %PourcentageAbandon%</div>
                         </div>`
 
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
@@ -242,38 +243,37 @@ function ShowCalendar(){
                 calendar.prev();
                   date = (calendar.getDate()).toISOString();
                  
-                 calendar.getEventSources(date).forEach(eventSource => {
+                 calendar.getEventSources().forEach(eventSource => {
                     eventSource.remove();
                   });
                   //get currently selected sources
-                  var sources = getEventSources(date);
+                  var sources = getEventSources();
                   
                   //add each new source to the calendar
                   sources.forEach(eventSource => {
                     calendar.addEventSource(eventSource);
-                  }); 
+                  });
+                  
               }
             },
             NEXT: {
                 text: '>',
                 click: function() {
+                    date = (calendar.getDate()).toISOString();
                   calendar.next();
-                     date = (calendar.getDate()).toISOString();
-                    calendar.getEventSources(date).forEach(eventSource => {
+                    calendar.getEventSources().forEach(eventSource => {
                         eventSource.remove();
                       });
                       //get currently selected sources
-                      var sources = getEventSources(date);
+                      var sources = getEventSources();
                       
                       //add each new source to the calendar
                       sources.forEach(eventSource => {
                         calendar.addEventSource(eventSource);
-                      });    
+                      });
+                  
                 }
             },
-            Afficher:{
-                text:'Afficher toutes les missions',
-            }
         },
 
         //fetch des events
@@ -299,16 +299,18 @@ function ShowCalendar(){
     //fonction qui écoute le tri de la Salle
     RoomSelected.addEventListener('change', function(){        //remove event sources
         
-        calendar.getEventSources(date).forEach(eventSource => {
+        calendar.getEventSources().forEach(eventSource => {
           eventSource.remove();
         });
         //get currently selected sources
-        var sources = getEventSources(date);
+        var sources = getEventSources();
         
         //add each new source to the calendar
         sources.forEach(eventSource => {
           calendar.addEventSource(eventSource);
-        });  
+        });
+        
+        
     });
 
     //fonction qui écoute le filtre durée mission
@@ -316,11 +318,11 @@ function ShowCalendar(){
            if(Nofilter.checked==true) isFiltered=true;
            else isFiltered = false;
 
-           calendar.getEventSources(date).forEach(eventSource => {
+           calendar.getEventSources().forEach(eventSource => {
             eventSource.remove();
           });
           //get currently selected sources
-          var sources = getEventSources(date);
+          var sources = getEventSources();
           
           //add each new source to the calendar
           sources.forEach(eventSource => {
@@ -332,7 +334,7 @@ function ShowCalendar(){
 
 
 //function qui refetch tous les events
-function getEventSources(date) {
+function getEventSources() {
     console.log(date);
   
         getAllRoom(SiteId,date);
@@ -341,7 +343,7 @@ function getEventSources(date) {
         FillTableau_AllGameSessions();
         FillGameSessions_List();
         // ShowNbreGameSessions();
-        Show_Rapport();
+        Fill_Rapport();
         sources.push({events:GameSessions_List});
         return sources;
     
@@ -361,26 +363,23 @@ function RoomFilter(RoomId)
 }
 // -------------------------------------------------------------VUE RAPPORT------------------------------------------------------
 
-function Show_Rapport(){
+function Fill_Rapport(){
 
+    document.getElementById("rapport").innerHTML="";
 
-   
-document.getElementById("rapport").innerHTML="";
-
-// document.getElementById("periode").innerHTML=date;
+    document.getElementById("periode").innerHTML=date;
 
 
     for (var i=0;i<tableau_Missions.length;i++){
 
         //On n'afffiche ni PlayerBase ni Teaser
         if(i!=0&&i!=3){
-
+            var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id);
             var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
-                                        .replaceAll("%Nombre%",tableau_GameSessions[i].Id)
-                                        .replaceAll("%SuperSucces%",tableau_GameSessions[i].color)
-                                        .replaceAll("%Succes%",tableau_GameSessions[i].color)
-                                        .replaceAll("%Fail%",tableau_GameSessions[i].color)
-                                        .replaceAll("%Quit%",tableau_GameSessions[i].color)
+                                        .replaceAll("%NbreMission%",tableau_pourcentage.Nbremission)
+                                        
+
+
                 const elt = document.createElement("div");
                 document.getElementById("rapport").appendChild(elt);       
                 elt.outerHTML = html; 
@@ -410,8 +409,20 @@ function calculMinute(secondes){
     return timestring;
 }
 
-function NmbrePourcentageGame (tableau){
+function NmbrePourcentageGame (MissionId){
 
+    var tableau_pourcentage={Nbremission:0,PourcentageSuperSucces:0,};
+
+    for (var i=0;i<tableau_GameSessions.length;i++){
+
+        if(tableau_GameSessions[i].MissionId==MissionId){
+            tableau_pourcentage['Nbremission']+=1;
+        }
+
+    }
+
+    return tableau_pourcentage;
+    
 }
 
 
