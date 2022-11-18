@@ -14,10 +14,16 @@ var tableau_rapport =[];
 
 var calendarEl = document.getElementById('calendar');
 
+var IsRapport=false;
 
-var CurrentDate = (new Date()).toISOString();
+var calendar;
 
-var date = CurrentDate;
+var CurrentDate = new Date();
+
+
+var datemois;
+
+var date = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
 
 //variable checkant si la listeRoom à déja était injectée
 var IsListRoom = false;
@@ -50,10 +56,12 @@ var RoomSelected = document.getElementById('RoomSelected');
 //addEventListener permettant d'afficher ou non toutes les missions
 var Nofilter = document.getElementById('nofilter');
 
+var testtoday = document.getElementById('testtoday');
+
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
 
 function initSite(){
-    getAllRoom(SiteId,CurrentDate);
+    
     
     ShowCalendar();
     getMissions();  
@@ -75,13 +83,30 @@ function getMissions(){
 
 //function ajax qui récupère toutes les Rooms d'un Site Unique avec les gamesessions y correspondant
 function getAllRoom(SiteId,Date){
-
+    console.log(Date);
+    tableau_GameSessions=[];
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getallrooms&SiteId="+SiteId+"&Date="+Date;
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
         tableau_AllRooms = JSON.parse(httpRequest.responseText);
         liste_rooms();
+        FillTableau_AllGameSessions();
+        FillGameSessions_List();      
+        Fill_Rapport();
+        calendar.getEventSources().forEach(eventSource => {
+            eventSource.remove();
+          });
+          //get currently selected sources
+         
+          var sources = getEventSources();
+          
+          //add each new source to the calendar
+          sources.forEach(eventSource => {
+            calendar.addEventSource(eventSource);
+        getEventSources();})
+        
+     
     };
     httpRequest.send();
 
@@ -90,7 +115,7 @@ function getAllRoom(SiteId,Date){
 //function qui remplie un tableau avec les gamessesions à afficher celon les différents filtres
 function FillTableau_AllGameSessions(){
     tableau_GameSessions=[];
-    
+   
     for (var i=0;i<tableau_AllRooms.length;i++){
        
         //filtre sur le selecteur de Salle
@@ -167,10 +192,10 @@ function VueRapport(){
 
 //On remplie un tableau avec la syntaxe correspondant à 'events' de FullCalendar
 function FillGameSessions_List(){
-    
+    console.log(tableau_GameSessions);
     GameSessions_List=[];
 
-    console.log(tableau_GameSessions)
+   
     for (var i=0;i<tableau_GameSessions.length;i++){
         var tableau=[];
 
@@ -216,15 +241,21 @@ function FillGameSessions_List(){
 
 //la fonction qui render le FullCalendar
 function ShowCalendar(){
-    
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    getAllRoom(SiteId,date);
+     calendar = new FullCalendar.Calendar(calendarEl, {
         themeSystem: '',
         locale: 'fr' , 
         initialView: 'dayGridMonth',
         firstDay:1,
         height:'auto',
+        showNonCurrentDates:false,
+        fixedWeekCount:false,
+        datesSet: function (info) {
+            datemois= (info.view.activeStart)
+           
+        },
         headerToolbar: {
-            left: 'PREV,today,NEXT',
+            left: 'PREV,TODAY,NEXT',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },     
@@ -240,45 +271,54 @@ function ShowCalendar(){
             PREV: {
               text: '<',
               click: function() {
-                calendar.prev();
-                  date = (calendar.getDate()).toISOString();
-                 
-                 calendar.getEventSources().forEach(eventSource => {
-                    eventSource.remove();
-                  });
-                  //get currently selected sources
-                  var sources = getEventSources();
+           
                   
-                  //add each new source to the calendar
-                  sources.forEach(eventSource => {
-                    calendar.addEventSource(eventSource);
-                  });
+                var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
+        
+                getAllRoom(SiteId,DateCalendar);
+                    
+                    calendar.prev();
+                  
                   
               }
             },
             NEXT: {
                 text: '>',
                 click: function() {
-                    date = (calendar.getDate()).toISOString();
-                  calendar.next();
+                    
+                var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
+        
+                getAllRoom(SiteId,DateCalendar);
+                    
+                    calendar.next();
+                      }
+                  
+                
+            },
+            TODAY: {
+                text: "Aujourd'hui",
+                click: function() {
+                    calendar.today();
                     calendar.getEventSources().forEach(eventSource => {
                         eventSource.remove();
                       });
                       //get currently selected sources
+                     
                       var sources = getEventSources();
                       
                       //add each new source to the calendar
                       sources.forEach(eventSource => {
                         calendar.addEventSource(eventSource);
                       });
+                     
                   
                 }
             },
         },
 
         //fetch des events
-        eventSources:getEventSources(CurrentDate),
-
+        eventSources:getEventSources(),
+        // events : "api.php?action=getallrooms&SiteId="+SiteId+"&Date="+date,
         // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
             document.location.href="./mission.html#"+info.event.id;
@@ -291,18 +331,18 @@ function ShowCalendar(){
         
     });
 
-   
-    
-   
     calendar.render();  
 
     //fonction qui écoute le tri de la Salle
     RoomSelected.addEventListener('change', function(){        //remove event sources
-        
+        FillTableau_AllGameSessions();
+        FillGameSessions_List();
+        Fill_Rapport();
         calendar.getEventSources().forEach(eventSource => {
           eventSource.remove();
         });
         //get currently selected sources
+      
         var sources = getEventSources();
         
         //add each new source to the calendar
@@ -315,35 +355,48 @@ function ShowCalendar(){
 
     //fonction qui écoute le filtre durée mission
     Nofilter.addEventListener('change', function() {
-           if(Nofilter.checked==true) isFiltered=true;
+         
+        if(Nofilter.checked==true) isFiltered=true;
            else isFiltered = false;
-
+           FillTableau_AllGameSessions();
+           FillGameSessions_List();
+            Fill_Rapport();
            calendar.getEventSources().forEach(eventSource => {
             eventSource.remove();
           });
           //get currently selected sources
+          
           var sources = getEventSources();
           
           //add each new source to the calendar
           sources.forEach(eventSource => {
             calendar.addEventSource(eventSource);
           });          
-    })
+    });
+
+    testtoday.addEventListener('change', function() {
+       var  testdate = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
+       getAllRoom(SiteId,testdate);       
+        calendar.today();
+        
+    });
+  
+    testnext.addEventListener('change', function() {
+       
+        // var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
+        
+        // getAllRoom(SiteId,DateCalendar);
+        calendar.next();
+         
+     });
 
 }
 
 
-//function qui refetch tous les events
+// function qui refetch tous les events
 function getEventSources() {
-    console.log(date);
-  
-        getAllRoom(SiteId,date);
-        var sources = [];
+    var sources = [];
     
-        FillTableau_AllGameSessions();
-        FillGameSessions_List();
-        // ShowNbreGameSessions();
-        Fill_Rapport();
         sources.push({events:GameSessions_List});
         return sources;
     
@@ -425,5 +478,28 @@ function NmbrePourcentageGame (MissionId){
     
 }
 
+function TransformDateFirstoftheMonth(date){
+    var firstDayCurrentMonth = getFirstDayOfMonth(
+        date.getFullYear(),
+        date.getMonth(),
+    );
+  return firstDayCurrentMonth;
+}
 
+function getFirstDayOfMonth(year, month) {
+    return new Date(year, month, 1);
+}
 
+function getNextFirstDayOftheMOnth(date){
+    var year = date.getFullYear();
+    var month = date.getMonth();
+
+    return  new Date (year,month+1,1)
+}
+
+function getPreviousFirstDayOftheMOnth(date){
+    var year = date.getFullYear();
+    var month = date.getMonth();
+
+    return  new Date (year,month-1,1)
+}

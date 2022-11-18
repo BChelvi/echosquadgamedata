@@ -4,11 +4,16 @@ class GetAllRooms {
 
     public static function run($id,$date){
      
-        //on crée les variable pour l'intervale de temps du filtre,l'équivalent de 3 mois
+        //on crée les variable pour l'intervale de temps du filtre
+        $format = "Y-m-d";
+        $MyDate = date($format,($date/1000));
+        $DateDebut = date('Y-m-d',strtotime('-1 month',strtotime($MyDate)));
+        $DateFin = date('Y-m-d',strtotime('+1 month',strtotime($MyDate)));
 
-        $datePlusTrois= date('Y-m-d',strtotime('+3 month',strtotime($date)));
-        $dateMoinsDeux= date('Y-m-d',strtotime('-2 month',strtotime($date)));
-
+        // echo $MyDate;
+        // echo "   ";
+        // echo $DateFin;
+                
         $db = Db :: singleton();
 
         $sql =" SELECT room.Id,room.Name,room.color FROM site INNER JOIN room ON (site.Id=room.SiteId) WHERE site.Id = $id";
@@ -19,23 +24,12 @@ class GetAllRooms {
 
             $RoomId = $Site[$i]['Id'];
 
-            $sql2 = "SELECT roomsession.Id,roomsession.StartDate FROM room INNER JOIN roomsession ON (room.Id=roomsession.RoomId) WHERE room.Id = $RoomId AND roomsession.StartDate >='$dateMoinsDeux' AND roomsession.StartDate < '$datePlusTrois'";
+            $sql2 = "SELECT roomsession.Id,roomsession.StartDate FROM room INNER JOIN roomsession ON (room.Id=roomsession.RoomId) WHERE room.Id = $RoomId AND roomsession.StartDate >='$MyDate' AND roomsession.StartDate < '$DateFin'";
             
             //Toutes les roomsessions correspondant à toutes les Salles d'un seul Site
-            $AllRoomSessions= $db -> select_sql($sql2);
-
-            //On filtre les roomsession par date
-
-            // $RoomSessions=[];
-
-            // for ($l=0;$l<count($AllRoomSessions);$l++){
-               
-            //     if(substr($AllRoomSessions[$l]['StartDate'],0,7)==$date) 
-            //     { array_push($RoomSessions,$AllRoomSessions[$l]);}
-
-            // }
-          
-            $Site[$i]['RoomSessions']=$AllRoomSessions;
+            $RoomSessions= $db -> select_sql($sql2);
+   
+            $Site[$i]['RoomSessions']=$RoomSessions;
 
             $Site[$i]['date']=$date;
 
