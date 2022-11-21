@@ -39,12 +39,12 @@ var SiteId=location.hash.substring(1,10);
 var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`;
 
 var template_rapport=`<div class="mb-2">
-                            <div>%MissionName%</div>
-                            <div>Nombre effectuées : %NbreMission%</div>
-                            <div>Réussite totale : %PourcentageSS%</div>
-                            <div>Réussite partielle : %PourcentageS%</div>
-                            <div>Echec : %PourcentageEchec%</div>
-                            <div>Abandon : %PourcentageAbandon%</div>
+                            <div class="h4">%MissionName%</div>
+                            <div>Nombre effectuées : %NbrMission%</div>
+                            <div>Réussite totale : %PourcentageSS%%</div>
+                            <div>Réussite partielle : %PourcentageS%%</div>
+                            <div>Echec : %PourcentageFail%%</div>
+                            <div id="abandon-%MissionId%" class="d-none">Abandon : %PourcentageQuit%%</div>
                         </div>`
 
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
@@ -56,13 +56,10 @@ var RoomSelected = document.getElementById('RoomSelected');
 //addEventListener permettant d'afficher ou non toutes les missions
 var Nofilter = document.getElementById('nofilter');
 
-var testtoday = document.getElementById('testtoday');
 
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
 
 function initSite(){
-    
-    
     ShowCalendar();
     getMissions();  
 }
@@ -98,15 +95,12 @@ function getAllRoom(SiteId,Date){
             eventSource.remove();
           });
           //get currently selected sources
-         
           var sources = getEventSources();
           
           //add each new source to the calendar
           sources.forEach(eventSource => {
             calendar.addEventSource(eventSource);
         getEventSources();})
-        
-     
     };
     httpRequest.send();
 
@@ -171,21 +165,14 @@ function liste_rooms(){
     }
 }
 
-function VueCalendar(){
-    document.getElementById("RapportButton").classList.replace("btn-dark","btn-light");
-    document.getElementById("CalendarButton").classList.replace("btn-light","btn-dark");
-    document.getElementById("calendarDiv").classList.replace("d-none","d-flex");
-    document.getElementById("rapportDiv").classList.replace("d-block","d-none");
-    ShowCalendar();
-    
+function MonthRapport(){
+    document.getElementById("YearRapport").classList.replace("btn-dark","btn-light");
+    document.getElementById("MonthRapport").classList.replace("btn-light","btn-dark");
 }
 
-function VueRapport(){
-    document.getElementById("CalendarButton").classList.replace("btn-dark","btn-light");
-    document.getElementById("RapportButton").classList.replace("btn-light","btn-dark");
-    document.getElementById("rapportDiv").classList.replace("d-none","d-block");
-    document.getElementById("calendarDiv").classList.replace("d-flex","d-none");
-
+function YearRapport(){
+    document.getElementById("MonthRapport").classList.replace("btn-dark","btn-light");
+    document.getElementById("YearRapport").classList.replace("btn-light","btn-dark");
 }
 
 // -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
@@ -248,7 +235,7 @@ function ShowCalendar(){
         initialView: 'dayGridMonth',
         firstDay:1,
         height:'auto',
-        showNonCurrentDates:false,
+        showNonCurrentDates:false,//obligatoire pour éviter un bug d'affichage lors du défilement
         fixedWeekCount:false,
         datesSet: function (info) {
             datemois= (info.view.activeStart)
@@ -266,34 +253,22 @@ function ShowCalendar(){
             day:"Jour",
             list:"liste",
         },
-     
         customButtons: {
             PREV: {
               text: '<',
               click: function() {
-           
-                  
                 var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-        
                 getAllRoom(SiteId,DateCalendar);
-                    
-                    calendar.prev();
-                  
-                  
-              }
+                calendar.prev();
+                }
             },
             NEXT: {
                 text: '>',
                 click: function() {
-                    
                 var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-        
                 getAllRoom(SiteId,DateCalendar);
-                    
-                    calendar.next();
-                      }
-                  
-                
+                calendar.next();
+                }
             },
             TODAY: {
                 text: "Aujourd'hui",
@@ -303,22 +278,18 @@ function ShowCalendar(){
                         eventSource.remove();
                       });
                       //get currently selected sources
-                     
                       var sources = getEventSources();
-                      
                       //add each new source to the calendar
                       sources.forEach(eventSource => {
                         calendar.addEventSource(eventSource);
                       });
-                     
-                  
                 }
             },
         },
 
         //fetch des events
         eventSources:getEventSources(),
-        // events : "api.php?action=getallrooms&SiteId="+SiteId+"&Date="+date,
+
         // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
             document.location.href="./mission.html#"+info.event.id;
@@ -327,8 +298,6 @@ function ShowCalendar(){
         dateClick: function(info) {
             calendar.changeView('timeGridDay',info.date);
           },
-
-        
     });
 
     calendar.render();  
@@ -342,15 +311,12 @@ function ShowCalendar(){
           eventSource.remove();
         });
         //get currently selected sources
-      
         var sources = getEventSources();
         
         //add each new source to the calendar
         sources.forEach(eventSource => {
           calendar.addEventSource(eventSource);
         });
-        
-        
     });
 
     //fonction qui écoute le filtre durée mission
@@ -365,7 +331,6 @@ function ShowCalendar(){
             eventSource.remove();
           });
           //get currently selected sources
-          
           var sources = getEventSources();
           
           //add each new source to the calendar
@@ -373,33 +338,13 @@ function ShowCalendar(){
             calendar.addEventSource(eventSource);
           });          
     });
-
-    testtoday.addEventListener('change', function() {
-       var  testdate = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
-       getAllRoom(SiteId,testdate);       
-        calendar.today();
-        
-    });
-  
-    testnext.addEventListener('change', function() {
-       
-        // var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-        
-        // getAllRoom(SiteId,DateCalendar);
-        calendar.next();
-         
-     });
-
 }
-
 
 // function qui refetch tous les events
 function getEventSources() {
     var sources = [];
-    
-        sources.push({events:GameSessions_List});
-        return sources;
-    
+    sources.push({events:GameSessions_List});
+    return sources;
 }
 
 //function de tri de la Salle
@@ -420,36 +365,41 @@ function Fill_Rapport(){
 
     document.getElementById("rapport").innerHTML="";
 
-    document.getElementById("periode").innerHTML=date;
-
-
     for (var i=0;i<tableau_Missions.length;i++){
 
         //On n'afffiche ni PlayerBase ni Teaser
         if(i!=0&&i!=3){
             var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id);
             var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
-                                        .replaceAll("%NbreMission%",tableau_pourcentage.Nbremission)
+                                       .replaceAll("%NbrMission%",tableau_pourcentage.Nbremission)
+                                        .replaceAll("%PourcentageSS%",tableau_pourcentage.PourcentageSuperSucces)
+                                        .replaceAll("%PourcentageS%",tableau_pourcentage.PourcentageSucces)
+                                        .replaceAll("%PourcentageFail%",tableau_pourcentage.PourcentageFail)
+                                        .replaceAll("%PourcentageQuit%",tableau_pourcentage.PourcentageQuit)
+                                        .replaceAll("%MissionId%",tableau_Missions[i].Id)
                                         
 
 
                 const elt = document.createElement("div");
                 document.getElementById("rapport").appendChild(elt);       
-                elt.outerHTML = html; 
+                elt.outerHTML = html;
         }
     }
-            
-   
+}
+
+function next(){
+    calendar.next();
+    console.log('test');
 }
 
 // -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------
 
 //permet au filtre de determiné si la mission de la durée est inférieure au prérequis d'affichage
 function CaclculMinDuration(DateX,DateY){
-    var datumX = Date.parse(DateX);
-    var datumY = Date.parse(DateY);
-
-    if(datumX>datumY){
+    // var datumX = Date.parse(DateX);
+    // var datumY = Date.parse(DateY);
+ 
+    if(DateX>DateY){
         return true;
     }
     else return false;
@@ -464,20 +414,43 @@ function calculMinute(secondes){
 
 function NmbrePourcentageGame (MissionId){
 
-    var tableau_pourcentage={Nbremission:0,PourcentageSuperSucces:0,};
+    var tableau_pourcentage={Nbremission:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0};
+
+    var NbreMissionSuperSucces=0;
+    var NbreMissionSucces=0;
+    var NbreMissionFail=0;
+    var NbreMissionQuit=0;
 
     for (var i=0;i<tableau_GameSessions.length;i++){
 
         if(tableau_GameSessions[i].MissionId==MissionId){
             tableau_pourcentage['Nbremission']+=1;
-        }
-
+            switch (tableau_GameSessions[i].Succes) {
+                case 1 :
+                    NbreMissionSuperSucces+=1;
+                break;
+                case 2 :
+                    NbreMissionSucces+=1;;
+                break;
+                case 3 :
+                    NbreMissionFail+=1;;
+                break;
+                case 4 :
+                    NbreMissionQuit+=1;;
+                break;
+            }
+        }        
     }
-
-    return tableau_pourcentage;
-    
+    if(tableau_pourcentage['Nbremission']!=0){
+        tableau_pourcentage['PourcentageSuperSucces']=Math.trunc((NbreMissionSuperSucces/tableau_pourcentage['Nbremission'])*100);
+        tableau_pourcentage['PourcentageSucces']=Math.trunc((NbreMissionSucces/tableau_pourcentage['Nbremission'])*100);
+        tableau_pourcentage['PourcentageFail']=Math.trunc((NbreMissionFail/tableau_pourcentage['Nbremission'])*100);
+        tableau_pourcentage['PourcentageQuit']=Math.trunc((NbreMissionQuit/tableau_pourcentage['Nbremission'])*100);
+    }
+    return tableau_pourcentage;  
 }
 
+//function pour trouver le premier jour du mois en cours affiché YYYY-MM-DD
 function TransformDateFirstoftheMonth(date){
     var firstDayCurrentMonth = getFirstDayOfMonth(
         date.getFullYear(),
@@ -490,16 +463,22 @@ function getFirstDayOfMonth(year, month) {
     return new Date(year, month, 1);
 }
 
+//function pour trouver le premier jour du mois suivant
 function getNextFirstDayOftheMOnth(date){
     var year = date.getFullYear();
     var month = date.getMonth();
-
-    return  new Date (year,month+1,1)
+    if(month!=12)
+    return  new Date (year,month+1,1);
+    else return new Date (year+1,1,1);
 }
 
+//function pour trouver le premier jour du mois précédent
 function getPreviousFirstDayOftheMOnth(date){
+    
     var year = date.getFullYear();
     var month = date.getMonth();
-
-    return  new Date (year,month-1,1)
+    //On verifie Janvier pour changer ou non l'année
+    if(month!=1)
+    return  new Date (year,month-1,1);
+    else return new Date(year-1,12,1);
 }

@@ -18,42 +18,51 @@
 </head>
 <body onload="initMission()">
 
-  <container class="container">
+  
+  <nav class="navbar navbar-dark px-3 py-2 justify-content-around" style="color:#A0A0A0; background-color: black;">
+    <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >ACCEUIL</div>
+    <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >COMMERCIAL</div>
+    <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >USER EXPERIENCE</div>
+    <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >ASSISTANCE TECHNIQUE</div>    
+  </nav>
 
-    <div class="mb-3 text-white border rounded opac p-3 container">
-        <div class="d-flex my-2 GameSession justify-content-around">
-            <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil">Acceuil</div>       
-            <div class=" col-2" >Site : <span id="Site"></span></div>
-            <div class="col-4 " >Room : <span id="Room"></span></div>
-            <a href="javascript:history.go(-1)" class="text-white acceuil">Retour</a>
-        
-        </div>
-        <div class="mt-3">
-           
-            <div class="my-2">Type de mission : <span id="Type"></span></div>
-            <div class="my-2">Date : <spans id="Date"></spans></div>
-            <div class="my-2">Début : <span id="Start"></span></div>
-            <div class="my-2">Fin: <span id="End"></span></div>
-            <div class="my-2">Durée : <span id="Duration"></span></div>
-            <div class="my-2">Fin de Mission : <span id="Succes"></span></div>
-           
+  <main id="main" class="container">
+
+    <div class="mb-3 text-white border rounded opac p-5 container mt-5">
+        <div class="">
+          <div class="my-2" >Site : <span id="Site"></span></div>
+          <div class="my-2 " >Room : <span id="Room"></span></div>
+          <div class="my-2">Type de mission : <span id="Type"></span></div>
+          <div class="my-2">Date : <spans id="Date"></spans></div>
+          <div class="my-2">Début : <span id="Start"></span></div>
+          <div class="my-2">Fin: <span id="End"></span></div>
+          <div class="my-2">Durée : <span id="Duration"></span></div>
+          <div class="my-2">Fin de Mission : <span id="Succes"></span></div>
         </div>   
     </div>
 
-    <!-- <div class="mb-3 text-white border rounded opac p-3 container">
-        <div>Liste d'Events</div>
-        <div class="d-flex justify-content-between mt-4 mb-5 align-items-center h5">
-            <div class="col-2 text-center">Category</div>
-            <div class="col-2 text-center">DateTime</div>
-            <div class="col-2 text-center">WolrdPosition</div>
-            <div class="col-2 text-center">Value_1</div>
-            <div class="col-2 text-center">Value_2</div>
-            <div class="col-2 text-center">Value_3</div>
-        </div>
-        <div id="events"></div>
-    </div> -->
+    <div class="d-flex justify-content-center">
+      <button onclick="history.back()">RETOUR</button>
+    </div>
+    
+  </main>
 
-  </container>
+  <footer  id="footer" class="d-flex justify-content-center p-4 text-white align-items-center" style="background-color:black">
+
+    <div>GEARPROD. Tous droits reservés</div>
+    <span class="mx-1">|</span>
+    <div>Politique de confidentialité</div>
+    <span class="mx-1">|</span>
+    <div>Mentions légales</div>
+    <span class="mx-1">|</span>
+    <div>CGV</div>
+    <span class="mx-1"> | </span>
+    <div>Cookies</div>
+    
+
+  </footer>
+  
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   <script
     src="https://code.jquery.com/jquery-3.6.1.min.js"

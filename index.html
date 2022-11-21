@@ -11,39 +11,43 @@
 </head>
 <body onload="init()">
 
-    <container class="container">
-        <header class="d-flex p-3 text-white justify-content-end">
+    <nav class="navbar navbar-dark px-3 py-2 justify-content-around" style="color:#A0A0A0; background-color: black;">
+        <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >ACCEUIL</div>
+        <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >COMMERCIAL</div>
+        <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >USER EXPERIENCE</div>
+        <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >ASSISTANCE TECHNIQUE</div>    
+    </nav>
+
+    <main id="main"  class="container mt-5">
+
+        <div class="mt-2 text-white p-3 border rounded opac">
+            <div class="text-center mb-5 h4">SITES D'EXPLOITANTS</div>
+            <div id="AllSite"></div>
+        </div>
+
+        <div class="mt-2 text-white p-3 border rounded opac d-flex justify-content-center">
+            <div class="text-center h4 site col-4" onclick="window.location='./userexperience.html'">USER EXPERIENCE</div>
+            
+        </div>
+
+    </main>
+
+    <footer id="footer"class="d-flex justify-content-center p-4 text-white align-items-center" style="background-color:black">
+
+        <div>GEARPROD. Tous droits reservés</div>
+        <span class="mx-1">|</span>
+        <div>Politique de confidentialité</div>
+        <span class="mx-1">|</span>
+        <div>Mentions légales</div>
+        <span class="mx-1">|</span>
+        <div>CGV</div>
+        <span class="mx-1"> | </span>
+        <div>Cookies</div>
         
-            <div class="d-flex col-8 justify-content-between">
-            <div class="text-center col-6">ECHO SQUAD GAME DATA</div>
-            
-           
-            
-            <figure class="col-6 d-flex justify-content-center">
-                <img src="./css/img/Logo-Gearprod-1-1.png">
-            </figure>
-            </div>
-        </header>
-
-        <main  class="container">
-
-            <div class="mt-2 text-white p-3 border rounded opac">
-                <div class="text-center mb-5 h4">SITES D'EXPLOITANTS</div>
-                <div id="AllSite"></div>
-            </div>
-
-            <div class="mt-2 text-white p-3 border rounded opac d-flex justify-content-center">
-                <div class="text-center h4 site col-4" onclick="window.location='./userexperience.html'">USER EXPERIENCE</div>
-                
-            </div>
-        </main>
-
-        <footer>
-
-        </footer>
+    </footer>
 
 
-    </container>
+  
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="./index.js"></script>
