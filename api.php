@@ -49,6 +49,10 @@ switch($params["action"])
     
     break;
 
+    case 'getyearrapport';
+        GetYearRapport :: Run($params['SiteId'],$params['Year']);
+
+    break;
     
    
 

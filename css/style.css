@@ -2,7 +2,7 @@ body{
    background-color: black;
     font-family: 'Roboto';
     background-image: url(./img/background_gearprod.png);
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-size: cover;
     margin:0;
     padding:0;
@@ -10,9 +10,9 @@ body{
 }
 
 #main {
-    min-height:100%;
+   
     position:relative;
-    padding-bottom:100px;   /* Hauteur du pied de page */
+    padding-bottom:50px;   /* Hauteur du pied de page */
  }
  #footer {
     position:absolute;

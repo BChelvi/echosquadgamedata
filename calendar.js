@@ -12,6 +12,8 @@ var GameSessions_List = [];
 
 var tableau_rapport =[];
 
+var tableau_YearRapport=[];
+
 var calendarEl = document.getElementById('calendar');
 
 var IsRapport=false;
@@ -22,6 +24,9 @@ var CurrentDate = new Date();
 
 
 var datemois;
+
+
+var Year;
 
 var date = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
 
@@ -41,9 +46,10 @@ var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color=
 var template_rapport=`<div class="mb-2">
                             <div class="h4">%MissionName%</div>
                             <div>Nombre effectuées : %NbrMission%</div>
-                            <div>Réussite totale : %PourcentageSS%%</div>
-                            <div>Réussite partielle : %PourcentageS%%</div>
-                            <div>Echec : %PourcentageFail%%</div>
+                            <div>Durée Moyenne : %MoyDuration%</div>
+                            <div>Réussite totale : %PourcentageSS%</div>
+                            <div>Réussite partielle : %PourcentageS%</div>
+                            <div>Echec : %PourcentageFail%</div>
                             <div id="abandon-%MissionId%" class="d-none">Abandon : %PourcentageQuit%%</div>
                         </div>`
 
@@ -59,9 +65,10 @@ var Nofilter = document.getElementById('nofilter');
 
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
 
-function initSite(){
+function init(){
     ShowCalendar();
     getMissions();  
+    SetYear();
 }
 
 // --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
@@ -80,7 +87,7 @@ function getMissions(){
 
 //function ajax qui récupère toutes les Rooms d'un Site Unique avec les gamesessions y correspondant
 function getAllRoom(SiteId,Date){
-    console.log(Date);
+    console.log(Year);
     tableau_GameSessions=[];
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getallrooms&SiteId="+SiteId+"&Date="+Date;
@@ -168,11 +175,16 @@ function liste_rooms(){
 function MonthRapport(){
     document.getElementById("YearRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("MonthRapport").classList.replace("btn-light","btn-dark");
+    document.getElementById("rapport").classList.replace("d-none","d-flex");
+    document.getElementById("rapportYear").classList.replace("d-flex","d-none");
 }
 
 function YearRapport(){
     document.getElementById("MonthRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("YearRapport").classList.replace("btn-light","btn-dark");
+    document.getElementById("rapport").classList.replace("d-flex","d-none");
+    document.getElementById("rapportYear").classList.replace("d-none","d-flex");
+    getYearRapport();
 }
 
 // -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
@@ -238,8 +250,8 @@ function ShowCalendar(){
         showNonCurrentDates:false,//obligatoire pour éviter un bug d'affichage lors du défilement
         fixedWeekCount:false,
         datesSet: function (info) {
-            datemois= (info.view.activeStart)
-           
+            datemois= (info.view.activeStart);
+                    
         },
         headerToolbar: {
             left: 'PREV,TODAY,NEXT',
@@ -257,32 +269,36 @@ function ShowCalendar(){
             PREV: {
               text: '<',
               click: function() {
-                var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-                getAllRoom(SiteId,DateCalendar);
-                calendar.prev();
+                    var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
+                    getAllRoom(SiteId,DateCalendar);
+                    var Month=datemois;
+                    //get Month index les mois de l'année de 0-11
+                    if(Month.getMonth()==0){
+                        Year=Year-1;
+                        getYearRapport();
+                    }
+                    calendar.prev();
                 }
             },
             NEXT: {
                 text: '>',
                 click: function() {
-                var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-                getAllRoom(SiteId,DateCalendar);
-                calendar.next();
+                    var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
+                    getAllRoom(SiteId,DateCalendar);
+                    var Month=datemois;
+                    //get Month index les mois de l'année de 0-11
+                    if(Month.getMonth()==11){
+                        Year=Year+1;
+                        getYearRapport();}
+                    calendar.next();
                 }
             },
             TODAY: {
                 text: "Aujourd'hui",
                 click: function() {
+                    var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
+                    getAllRoom(SiteId,DateCalendar);
                     calendar.today();
-                    calendar.getEventSources().forEach(eventSource => {
-                        eventSource.remove();
-                      });
-                      //get currently selected sources
-                      var sources = getEventSources();
-                      //add each new source to the calendar
-                      sources.forEach(eventSource => {
-                        calendar.addEventSource(eventSource);
-                      });
                 }
             },
         },
@@ -376,6 +392,7 @@ function Fill_Rapport(){
                                         .replaceAll("%PourcentageS%",tableau_pourcentage.PourcentageSucces)
                                         .replaceAll("%PourcentageFail%",tableau_pourcentage.PourcentageFail)
                                         .replaceAll("%PourcentageQuit%",tableau_pourcentage.PourcentageQuit)
+                                        .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
                                         .replaceAll("%MissionId%",tableau_Missions[i].Id)
                                         
 
@@ -390,6 +407,46 @@ function Fill_Rapport(){
 function next(){
     calendar.next();
     console.log('test');
+}
+
+//requete ajax pour récupérer l'ensemble des scores de missions d'une année sans rentrer en conflict avec le reste du code
+function  getYearRapport(){
+    console.log(Year);
+    tableau_GameSessions=[];
+    var httpRequest = new XMLHttpRequest();
+    var hostserver = "api.php?action=getyearrapport&SiteId="+SiteId+"&Year="+Year;
+    httpRequest.open("GET", hostserver);
+    httpRequest.onload = () => {
+        tableau_YearRapport = JSON.parse(httpRequest.responseText);
+        console.log(tableau_YearRapport);
+        fill_YearRapport();
+    };
+    httpRequest.send();
+}
+
+function fill_YearRapport(){
+    document.getElementById("rapportYear").innerHTML="";
+
+    for (var i=0;i<tableau_Missions.length;i++){
+
+        //On n'afffiche ni PlayerBase ni Teaser
+        if(i!=0&&i!=3){
+            var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].Id);
+            console.log(tableau_pourcentageYear);
+            var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
+                                       .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
+                                        .replaceAll("%PourcentageSS%",tableau_pourcentageYear.PourcentageSuperSucces)
+                                        .replaceAll("%PourcentageS%",tableau_pourcentageYear.PourcentageSucces)
+                                        .replaceAll("%PourcentageFail%",tableau_pourcentageYear.PourcentageFail)
+                                        .replaceAll("%PourcentageQuit%",tableau_pourcentageYear.PourcentageQuit)
+                                        .replaceAll("%MoyDuration%",tableau_pourcentageYear.MoyDuration)
+                                        .replaceAll("%MissionId%",tableau_Missions[i].Id)
+                                        
+                const elt = document.createElement("div");
+                document.getElementById("rapportYear").appendChild(elt);       
+                elt.outerHTML = html;
+        }
+    }
 }
 
 // -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------
@@ -414,40 +471,102 @@ function calculMinute(secondes){
 
 function NmbrePourcentageGame (MissionId){
 
-    var tableau_pourcentage={Nbremission:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0};
+    var tableau_pourcentage={Nbremission:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
 
     var NbreMissionSuperSucces=0;
     var NbreMissionSucces=0;
     var NbreMissionFail=0;
     var NbreMissionQuit=0;
+    var DurationTotale=0;
 
     for (var i=0;i<tableau_GameSessions.length;i++){
 
         if(tableau_GameSessions[i].MissionId==MissionId){
             tableau_pourcentage['Nbremission']+=1;
+            DurationTotale+=tableau_GameSessions[i].Duration;
             switch (tableau_GameSessions[i].Succes) {
                 case 1 :
                     NbreMissionSuperSucces+=1;
                 break;
                 case 2 :
-                    NbreMissionSucces+=1;;
+                    NbreMissionSucces+=1;
                 break;
                 case 3 :
-                    NbreMissionFail+=1;;
+                    NbreMissionFail+=1;
                 break;
                 case 4 :
-                    NbreMissionQuit+=1;;
+                    NbreMissionQuit+=1;
                 break;
             }
         }        
     }
     if(tableau_pourcentage['Nbremission']!=0){
-        tableau_pourcentage['PourcentageSuperSucces']=Math.trunc((NbreMissionSuperSucces/tableau_pourcentage['Nbremission'])*100);
-        tableau_pourcentage['PourcentageSucces']=Math.trunc((NbreMissionSucces/tableau_pourcentage['Nbremission'])*100);
-        tableau_pourcentage['PourcentageFail']=Math.trunc((NbreMissionFail/tableau_pourcentage['Nbremission'])*100);
-        tableau_pourcentage['PourcentageQuit']=Math.trunc((NbreMissionQuit/tableau_pourcentage['Nbremission'])*100);
+        tableau_pourcentage['PourcentageSuperSucces']=Math.trunc((NbreMissionSuperSucces/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['PourcentageSucces']=Math.trunc((NbreMissionSucces/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['PourcentageFail']=Math.trunc((NbreMissionFail/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['PourcentageQuit']=Math.trunc((NbreMissionQuit/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentage['Nbremission']/60)+"min";
     }
+    else{
+        tableau_pourcentage['PourcentageSuperSucces']="-";
+        tableau_pourcentage['PourcentageSucces']="-";
+        tableau_pourcentage['PourcentageFail']="-";
+        tableau_pourcentage['PourcentageQuit']="-";
+        tableau_pourcentage['MoyDuration']="-";
+    }
+
     return tableau_pourcentage;  
+}
+
+function NmbrePourcentageGameYear (MissionId){
+
+    var tableau_pourcentageYear={Nbremission:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
+
+    var NbreMissionSuperSucces=0;
+    var NbreMissionSucces=0;
+    var NbreMissionFail=0;
+    var NbreMissionQuit=0;
+    var DurationTotale=0;
+
+    for (var i=0;i<tableau_YearRapport.length;i++){
+
+        if(tableau_YearRapport[i].Id==MissionId){
+            tableau_pourcentageYear['Nbremission']=tableau_YearRapport[i].score.length;
+
+            for (var j=0;j<tableau_YearRapport[i].score.length;j++){
+                switch(tableau_YearRapport[i].score[j]){
+                    case 1 :NbreMissionSuperSucces+=1;
+                    break;
+                    case 2 : NbreMissionSucces+=1;
+                    break;
+                    case 3 :NbreMissionFail+=1;
+                    break;
+                    case 4 :NbreMissionQuit+=1;
+                    break;
+                }
+            }
+            for (var k=0;k<tableau_YearRapport[i].duration.length;k++){
+                DurationTotale+=tableau_YearRapport[i].duration[k];
+            }
+        
+        }        
+    }
+    if(tableau_pourcentageYear['Nbremission']!=0){
+        tableau_pourcentageYear['PourcentageSuperSucces']=Math.trunc((NbreMissionSuperSucces/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['PourcentageSucces']=Math.trunc((NbreMissionSucces/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['PourcentageFail']=Math.trunc((NbreMissionFail/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['PourcentageQuit']=Math.trunc((NbreMissionQuit/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentageYear['Nbremission']/60)+"min";
+    }
+    else{
+        tableau_pourcentageYear['PourcentageSuperSucces']="-";
+        tableau_pourcentageYear['PourcentageSucces']="-";
+        tableau_pourcentageYear['PourcentageFail']="-";
+        tableau_pourcentageYear['PourcentageQuit']="-";
+        tableau_pourcentageYear['MoyDuration']="-";
+    }
+    
+    return tableau_pourcentageYear;  
 }
 
 //function pour trouver le premier jour du mois en cours affiché YYYY-MM-DD
@@ -467,18 +586,24 @@ function getFirstDayOfMonth(year, month) {
 function getNextFirstDayOftheMOnth(date){
     var year = date.getFullYear();
     var month = date.getMonth();
-    if(month!=12)
-    return  new Date (year,month+1,1);
-    else return new Date (year+1,1,1);
+
+   return  new Date (year,month+1,1);
+ 
+    
 }
 
 //function pour trouver le premier jour du mois précédent
 function getPreviousFirstDayOftheMOnth(date){
-    
+
     var year = date.getFullYear();
     var month = date.getMonth();
-    //On verifie Janvier pour changer ou non l'année
-    if(month!=1)
+
     return  new Date (year,month-1,1);
-    else return new Date(year-1,12,1);
+
+}
+
+//function pour determiner l'année affichée en cours
+function SetYear(){
+    Year = (CurrentDate.getFullYear());
+
 }
