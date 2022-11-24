@@ -34,35 +34,50 @@
         </div>
       </div>
 
-    <div id="calendarDiv" class="d-flex ">
-      <div class="grid bg-light p-3 rounded">
-        <div class="sixteen column">
-          <div id="calendar"></div>
+      <div class="bg-light p-3 rounded-top">
+        <div class="d-flex justify-content-center">
+          <button onclick="ToggleCalendar()" class="btn btn-dark border mx-2 col-2" id="ToggleCalendar">Calendrier</button>
+          <button onclick="ToggleRapport()" class="btn btn-light border mx-2 col-2" id="ToggleRapport">Rapport</button>
         </div>
-        <div class="d-flex justify-content-end">
-          <div class="mx-1" style=" color:#A0A0A0; font-style:italic;font-weight:lighter">Afficher toutes les missions
-            <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter">
+        <div class="d-flex justify-content-between align-items-end">
+          <div class="d-flex justify-content-start col-4">
+            <button onclick="prev()" class="btn btn-light  border">⟨</button>
+            <button onclick="todayvue()"class="btn btn-light border">Aujourd'hui</button>
+            <button onclick="next()"class="btn btn-light border">⟩</button>
           </div>
-        </div>
-      </div>
-    </div>
-    
-    <div id="rapportDiv" class="d-block bg-light mt-2 rounded">
-      <div class="d-flex justify-content-center">
-        <div class="" style="font-size:34px;font-weight:bolder">RAPPORT</div>
-      </div>
-      <div class="d-flex justify-content-center align-items-center">
-        <div class="d-flex justify-content-between">
           <div class="d-flex justify-content-center col-4">
-            <button type="button" id="MonthRapport"  class="btn btn-dark border" onclick="MonthRapport()">MOIS</button>
+            <div id="date" class="col-7 text-center">- DATE - </div>
           </div>
-          <div class="d-flex  justify-content-center">
-            <button type="button" id="YearRapport"  class="btn btn-light border" onclick="YearRapport()">ANNEE</button>
+          <div id="buttonCalendar" class="d-flex justify-content-end col-4">
+            <button onclick="monthvue()" class="btn btn-dark border" id="monthvue">Mois</button>
+            <button onclick="weekvue()" class="btn btn-light border mx-2" id="weekvue">Semaine</button>
+            <button onclick="dayvue()"class="btn btn-light border" id="dayvue">Jour</button>
+          </div>
+          <div id="buttonRapport" class="d-none justify-content-end col-4">
+            <button type="button" id="MonthRapport"  class="btn btn-dark border mx-2" onclick="MonthRapport()">Mois</button>
+            <button type="button" id="YearRapport"  class="btn btn-light border" onclick="YearRapport()">Annee</button>
           </div>
         </div>
+       
       </div>
-        <div id="rapport" class="p-3 d-flex justify-content-around"></div>
-        <div id="rapportYear" class="p-3 d-flex justify-content-around d-none">TEST</div>
+     
+        <div id="calendarDiv" class="d-flex vis">
+          <div id="test2" class="grid bg-light p-3 rounded-bottom">
+            <div id="test3" class="sixteen column">
+              <div id="calendar" class=""></div>
+            </div>
+            <div class="d-flex justify-content-end">
+              <div class="mx-1" style=" color:#A0A0A0; font-style:italic;font-weight:lighter">Afficher toutes les missions
+                <input class="form-check-input nofilter mx-1" type="checkbox" id="nofilter">
+              </div>
+            </div>
+          </div>
+        </div>
+      
+    
+    <div id="rapportDiv" class="d-block bg-light rounded invis">
+        <div id="rapport" class="p-5 d-flex justify-content-around"></div>
+        <div id="rapportYear" class="p-5 d-flex justify-content-around d-none">TEST</div>
       </div>
 
 

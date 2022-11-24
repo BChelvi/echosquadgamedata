@@ -76,3 +76,17 @@ a:hover{
 .fc-event{
     cursor: pointer;
 }
+
+.vis{
+    z-index: 1; opacity: 1; height: auto; overflow : visible;
+}
+
+.invis{
+    z-index: 0; opacity: 0; height: 0px; overflow : hidden;
+    background-color: white;
+    color: black;
+}
+
+.fc-daygrid-day-top{
+    flex-direction: row !important;
+}
