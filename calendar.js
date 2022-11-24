@@ -68,7 +68,7 @@ var Nofilter = document.getElementById('nofilter');
 function init(){
     ShowCalendar();
     getMissions();  
-    SetYear();
+    CurrentYear();
 }
 
 // --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
@@ -298,6 +298,8 @@ function ShowCalendar(){
                 click: function() {
                     var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
                     getAllRoom(SiteId,DateCalendar);
+                    CurrentYear();
+                    getYearRapport();
                     calendar.today();
                 }
             },
@@ -575,6 +577,7 @@ function TransformDateFirstoftheMonth(date){
         date.getFullYear(),
         date.getMonth(),
     );
+    
   return firstDayCurrentMonth;
 }
 
@@ -603,7 +606,7 @@ function getPreviousFirstDayOftheMOnth(date){
 }
 
 //function pour determiner l'année affichée en cours
-function SetYear(){
+function CurrentYear(){
     Year = (CurrentDate.getFullYear());
 
 }
