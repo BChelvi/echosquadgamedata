@@ -90,3 +90,8 @@ a:hover{
 .fc-daygrid-day-top{
     flex-direction: row !important;
 }
+
+.fc-event-main{
+    font-family: Arial, Helvetica, sans-serif;
+    
+}

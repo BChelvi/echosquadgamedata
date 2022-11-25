@@ -210,8 +210,9 @@ function FillGameSessions_List(){
         tableau['backgroundColor'] = tableau_GameSessions[i].RoomColor; 
         tableau['id']=tableau_GameSessions[i].Id;
         tableau['start']=tableau_GameSessions[i].StartDate;
-        tableau['end']=tableau_GameSessions[i].EndDate;
-        tableau['description']="test";
+        tableau['end']=tableau_GameSessions[i].EndDate;        
+        tableau['display']="block";//permet d'encadrer les events dans la vue Month
+        tableau['borderColor']=tableau_GameSessions[i].RoomColor; 
        
         //switch case pour les icones de Succes
         var success = tableau_GameSessions[i].Succes;
@@ -238,7 +239,7 @@ function FillGameSessions_List(){
         //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
         for (var j=0;j<tableau_Missions.length;j++){
             if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
-                tableau['title']=tableau_Missions[j].CodeName+" "+min+" "+icone;
+                tableau['title']="<div>"+tableau_GameSessions[i].StartDate.substring(11,16)+" - "+min+" - "+tableau_GameSessions[i].Succes+" - "+tableau_Missions[j].CodeName+"</div>";
             }
         }
 
@@ -318,6 +319,9 @@ function ShowCalendar(){
 
         //fetch des events
         eventSources:getEventSources(),
+        eventContent: function( info ) {
+            return {html: info.event.title};
+        },
 
         // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
@@ -326,6 +330,10 @@ function ShowCalendar(){
         
         dateClick: function(info) {
             calendar.changeView('timeGridDay',info.date);
+            document.getElementById("dayvue").classList.replace("btn-light","btn-dark");
+            document.getElementById("monthvue").classList.replace("btn-dark","btn-light");
+            document.getElementById("weekvue").classList.replace("btn-dark","btn-light");
+            checkDate();
           },
     });
 
@@ -470,7 +478,7 @@ function CaclculMinDuration(DateX,DateY){
 //on converti le timestamp de la bdd pour l'affichade de la durée de la mission dans le titre
 function calculMinute(secondes){
     var minutes = Math.floor(secondes / 60);
-    timestring = minutes.toString().padStart(2, '0') + 'm'
+    timestring = minutes.toString().padStart(2, '0');
     return timestring;
 }
 
