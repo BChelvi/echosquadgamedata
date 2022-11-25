@@ -5,10 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ECHO SQUAD GAME DATA</title>
+    <!-- Import de Bootstrap -->
     <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
     <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>    <link rel="stylesheet" href="./css/style.css">
+    <!-- Import local de fullcalendar -->
     <link href='./fullcalendar/main.css' rel='stylesheet' />
     <script src='./fullcalendar/main.js'></script>
+    <!-- icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body onload="init()">
 
@@ -35,7 +39,7 @@
       </div>
 
       <div class="bg-light p-3 rounded-top">
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center mb-3">
           <button onclick="ToggleCalendar()" class="btn btn-dark border mx-2 col-2" id="ToggleCalendar">Calendrier</button>
           <button onclick="ToggleRapport()" class="btn btn-light border mx-2 col-2" id="ToggleRapport">Rapport</button>
         </div>
@@ -45,7 +49,7 @@
             <button onclick="todayvue()"class="btn btn-light border">Aujourd'hui</button>
             <button onclick="next()"class="btn btn-light border">⟩</button>
           </div>
-          <div class="d-flex justify-content-center col-4">
+          <div class="d-flex justify-content-center col-4 align-items-end">
             <div id="date" class="col-7 text-center">- DATE - </div>
           </div>
           <div id="buttonCalendar" class="d-flex justify-content-end col-4">
@@ -97,8 +101,9 @@
     
 
   </footer>
-
+  <!-- Import du JS de Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <!-- Import de la library JQuery - Important pour fullcalendar -->
   <script
     src="https://code.jquery.com/jquery-3.6.1.min.js"
     integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="

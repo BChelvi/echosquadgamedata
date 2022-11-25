@@ -219,15 +219,23 @@ function FillGameSessions_List(){
         var icone;
 
         switch (success){
-            case 1 : icone = "SS";
+            case 1 : icone = `<span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>`;
                 
             break;
-            case 2 : icone ="S";
+            case 2 : icone =`<span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star text-dark"></span>`;
                 
-            case 3 : icone ="F";
+            case 3 : icone =`<span class="fa fa-star checked"></span>
+            <span class="fa fa-star text-dark"></span>
+            <span class="fa fa-star text-dark"></span>`;
                 
             break;
-            case 4 : icone="A";
+            case 4 : icone=`<span class="fa fa-star text-dark"></span>
+            <span class="fa fa-star text-dark"></span>
+            <span class="fa fa-star text-dark"></span>`;;
                 
             break;
         }
@@ -239,7 +247,7 @@ function FillGameSessions_List(){
         //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
         for (var j=0;j<tableau_Missions.length;j++){
             if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
-                tableau['title']="<div>"+tableau_GameSessions[i].StartDate.substring(11,16)+" - "+min+" - "+tableau_GameSessions[i].Succes+" - "+tableau_Missions[j].CodeName+"</div>";
+                tableau['title']="<div>"+tableau_GameSessions[i].StartDate.substring(11,16)+" - "+min+" - "+icone+" - "+tableau_Missions[j].CodeName+"</div>";
             }
         }
 
@@ -260,6 +268,7 @@ function ShowCalendar(){
         dayHeaderFormat:{
         weekday:"long",
         },
+        slotMinTime:"07:00:00",
         showNonCurrentDates:false,//obligatoire pour éviter un bug d'affichage lors du défilement
         fixedWeekCount:false,
         datesSet: function (info) {
@@ -267,55 +276,6 @@ function ShowCalendar(){
                     
         },
         headerToolbar:false,
-        // {
-        //     left: 'PREV,TODAY,NEXT',
-        //     center: 'title',
-        //     right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        // },     
-        buttonText:{
-            today:"Aujourd'hui",
-            month:"Mois",
-            week:"Semaine",
-            day:"Jour",
-            list:"liste",
-        },
-        customButtons: {
-            PREV: {
-              text: '<',
-              click: function() {
-                    var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-                    getAllRoom(SiteId,DateCalendar);
-                    var Month=datemois;
-                    //get Month index les mois de l'année de 0-11
-                    if(Month.getMonth()==0){
-                        Year=Year-1;
-                        getYearRapport();
-                    }
-                    calendar.prev();
-                }
-            },
-            NEXT: {
-                text: '>',
-                click: function() {
-                    var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-                    getAllRoom(SiteId,DateCalendar);
-                    var Month=datemois;
-                    //get Month index les mois de l'année de 0-11
-                    if(Month.getMonth()==11){
-                        Year=Year+1;
-                        getYearRapport();}
-                    calendar.next();
-                }
-            },
-            TODAY: {
-                text: "Aujourd'hui",
-                click: function() {
-                    var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
-                    getAllRoom(SiteId,DateCalendar);
-                    calendar.today();
-                }
-            },
-        },
 
         //fetch des events
         eventSources:getEventSources(),
@@ -641,14 +601,14 @@ function getPrevYear(date){
 
 function ToggleCalendar(){
     IsRapportYear=false;
+    
     document.getElementById("calendarDiv").classList.remove("invis");
     document.getElementById("rapportDiv").classList.add("invis");
     document.getElementById("ToggleCalendar").classList.replace("btn-light","btn-dark");
     document.getElementById("ToggleRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("buttonCalendar").classList.replace("d-none","d-flex");
     document.getElementById("buttonRapport").classList.replace("d-flex","d-none");
-    checkDate();
-    
+    monthvue();
 
 }
 
