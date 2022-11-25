@@ -68,7 +68,10 @@ var Nofilter = document.getElementById('nofilter');
 function init(){
     ShowCalendar();
     getMissions();  
-    CurrentYear();
+    SetYear();
+    checkDate();
+    getYearRapport();
+   
 }
 
 // --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
@@ -87,7 +90,6 @@ function getMissions(){
 
 //function ajax qui récupère toutes les Rooms d'un Site Unique avec les gamesessions y correspondant
 function getAllRoom(SiteId,Date){
-    console.log(Year);
     tableau_GameSessions=[];
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getallrooms&SiteId="+SiteId+"&Date="+Date;
@@ -173,25 +175,32 @@ function liste_rooms(){
 }
 
 function MonthRapport(){
+    IsRapportYear=false;
+    IsYearChecked=false;
     document.getElementById("YearRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("MonthRapport").classList.replace("btn-light","btn-dark");
     document.getElementById("rapport").classList.replace("d-none","d-flex");
     document.getElementById("rapportYear").classList.replace("d-flex","d-none");
+    checkDate();
 }
 
+var IsRapportYear=false;
+var IsYearChecked=false;
 function YearRapport(){
     document.getElementById("MonthRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("YearRapport").classList.replace("btn-light","btn-dark");
     document.getElementById("rapport").classList.replace("d-flex","d-none");
     document.getElementById("rapportYear").classList.replace("d-none","d-flex");
-    getYearRapport();
+    IsRapportYear=true;
+    IsYearChecked=true;
+    checkDate(1);
+   
 }
 
 // -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
 
 //On remplie un tableau avec la syntaxe correspondant à 'events' de FullCalendar
 function FillGameSessions_List(){
-    console.log(tableau_GameSessions);
     GameSessions_List=[];
 
    
@@ -201,23 +210,32 @@ function FillGameSessions_List(){
         tableau['backgroundColor'] = tableau_GameSessions[i].RoomColor; 
         tableau['id']=tableau_GameSessions[i].Id;
         tableau['start']=tableau_GameSessions[i].StartDate;
-        tableau['end']=tableau_GameSessions[i].EndDate;
-        tableau['description']="test";
+        tableau['end']=tableau_GameSessions[i].EndDate;        
+        tableau['display']="block";//permet d'encadrer les events dans la vue Month
+        tableau['borderColor']=tableau_GameSessions[i].RoomColor; 
        
         //switch case pour les icones de Succes
         var success = tableau_GameSessions[i].Succes;
         var icone;
 
         switch (success){
-            case 1 : icone = "SS";
+            case 1 : icone = `<span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>`;
                 
             break;
-            case 2 : icone ="S";
+            case 2 : icone =`<span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star text-dark"></span>`;
                 
-            case 3 : icone ="F";
+            case 3 : icone =`<span class="fa fa-star checked"></span>
+            <span class="fa fa-star text-dark"></span>
+            <span class="fa fa-star text-dark"></span>`;
                 
             break;
-            case 4 : icone="A";
+            case 4 : icone=`<span class="fa fa-star text-dark"></span>
+            <span class="fa fa-star text-dark"></span>
+            <span class="fa fa-star text-dark"></span>`;;
                 
             break;
         }
@@ -229,7 +247,7 @@ function FillGameSessions_List(){
         //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
         for (var j=0;j<tableau_Missions.length;j++){
             if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
-                tableau['title']=tableau_Missions[j].CodeName+" "+min+" "+icone;
+                tableau['title']="<div>"+tableau_GameSessions[i].StartDate.substring(11,16)+" - "+min+" - "+icone+" - "+tableau_Missions[j].CodeName+"</div>";
             }
         }
 
@@ -247,66 +265,23 @@ function ShowCalendar(){
         initialView: 'dayGridMonth',
         firstDay:1,
         height:'auto',
+        dayHeaderFormat:{
+        weekday:"long",
+        },
+        slotMinTime:"07:00:00",
         showNonCurrentDates:false,//obligatoire pour éviter un bug d'affichage lors du défilement
         fixedWeekCount:false,
         datesSet: function (info) {
             datemois= (info.view.activeStart);
                     
         },
-        headerToolbar: {
-            left: 'PREV,TODAY,NEXT',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },     
-        buttonText:{
-            today:"Aujourd'hui",
-            month:"Mois",
-            week:"Semaine",
-            day:"Jour",
-            list:"liste",
-        },
-        customButtons: {
-            PREV: {
-              text: '<',
-              click: function() {
-                    var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-                    getAllRoom(SiteId,DateCalendar);
-                    var Month=datemois;
-                    //get Month index les mois de l'année de 0-11
-                    if(Month.getMonth()==0){
-                        Year=Year-1;
-                        getYearRapport();
-                    }
-                    calendar.prev();
-                }
-            },
-            NEXT: {
-                text: '>',
-                click: function() {
-                    var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
-                    getAllRoom(SiteId,DateCalendar);
-                    var Month=datemois;
-                    //get Month index les mois de l'année de 0-11
-                    if(Month.getMonth()==11){
-                        Year=Year+1;
-                        getYearRapport();}
-                    calendar.next();
-                }
-            },
-            TODAY: {
-                text: "Aujourd'hui",
-                click: function() {
-                    var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
-                    getAllRoom(SiteId,DateCalendar);
-                    CurrentYear();
-                    getYearRapport();
-                    calendar.today();
-                }
-            },
-        },
+        headerToolbar:false,
 
         //fetch des events
         eventSources:getEventSources(),
+        eventContent: function( info ) {
+            return {html: info.event.title};
+        },
 
         // sur click event redirige vers l'url correspondant à l'id de la gamesession
         eventClick :  function(info) {
@@ -315,6 +290,10 @@ function ShowCalendar(){
         
         dateClick: function(info) {
             calendar.changeView('timeGridDay',info.date);
+            document.getElementById("dayvue").classList.replace("btn-light","btn-dark");
+            document.getElementById("monthvue").classList.replace("btn-dark","btn-light");
+            document.getElementById("weekvue").classList.replace("btn-dark","btn-light");
+            checkDate();
           },
     });
 
@@ -406,21 +385,14 @@ function Fill_Rapport(){
     }
 }
 
-function next(){
-    calendar.next();
-    console.log('test');
-}
-
 //requete ajax pour récupérer l'ensemble des scores de missions d'une année sans rentrer en conflict avec le reste du code
 function  getYearRapport(){
-    console.log(Year);
     tableau_GameSessions=[];
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getyearrapport&SiteId="+SiteId+"&Year="+Year;
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
         tableau_YearRapport = JSON.parse(httpRequest.responseText);
-        console.log(tableau_YearRapport);
         fill_YearRapport();
     };
     httpRequest.send();
@@ -434,7 +406,6 @@ function fill_YearRapport(){
         //On n'afffiche ni PlayerBase ni Teaser
         if(i!=0&&i!=3){
             var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].Id);
-            console.log(tableau_pourcentageYear);
             var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
                                        .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
                                         .replaceAll("%PourcentageSS%",tableau_pourcentageYear.PourcentageSuperSucces)
@@ -467,7 +438,7 @@ function CaclculMinDuration(DateX,DateY){
 //on converti le timestamp de la bdd pour l'affichade de la durée de la mission dans le titre
 function calculMinute(secondes){
     var minutes = Math.floor(secondes / 60);
-    timestring = minutes.toString().padStart(2, '0') + 'm'
+    timestring = minutes.toString().padStart(2, '0');
     return timestring;
 }
 
@@ -577,7 +548,6 @@ function TransformDateFirstoftheMonth(date){
         date.getFullYear(),
         date.getMonth(),
     );
-    
   return firstDayCurrentMonth;
 }
 
@@ -606,7 +576,140 @@ function getPreviousFirstDayOftheMOnth(date){
 }
 
 //function pour determiner l'année affichée en cours
-function CurrentYear(){
+function SetYear(){
     Year = (CurrentDate.getFullYear());
 
+}
+
+function getNextYear(date){
+    var year= date.getFullYear();
+    var month= date.getMonth();
+
+    return new Date(year+1,month,1);
+}
+
+
+function getPrevYear(date){
+    var year= date.getFullYear();
+    var month= date.getMonth();
+
+    return new Date(year-1,month,1);
+}
+
+// ------------------------function TEST--------------------------------------
+
+
+function ToggleCalendar(){
+    IsRapportYear=false;
+    
+    document.getElementById("calendarDiv").classList.remove("invis");
+    document.getElementById("rapportDiv").classList.add("invis");
+    document.getElementById("ToggleCalendar").classList.replace("btn-light","btn-dark");
+    document.getElementById("ToggleRapport").classList.replace("btn-dark","btn-light");
+    document.getElementById("buttonCalendar").classList.replace("d-none","d-flex");
+    document.getElementById("buttonRapport").classList.replace("d-flex","d-none");
+    monthvue();
+
+}
+
+
+function ToggleRapport(){
+    calendar.changeView('dayGridMonth');
+    checkDate(1);
+    document.getElementById("rapportDiv").classList.remove("invis");
+    document.getElementById("calendarDiv").classList.add("invis");
+    document.getElementById("ToggleRapport").classList.replace("btn-light","btn-dark");
+    document.getElementById("ToggleCalendar").classList.replace("btn-dark","btn-light");
+    document.getElementById("buttonCalendar").classList.replace("d-flex","d-none");
+    document.getElementById("buttonRapport").classList.replace("d-none","d-flex");
+}
+
+
+function next(){
+    if (IsRapportYear){
+        var DateCalendar = (getNextYear(TransformDateFirstoftheMonth(datemois))).getTime();
+        getAllRoom(SiteId,DateCalendar);
+        calendar.nextYear();
+        Year=Year+1;
+        getYearRapport();
+        checkDate();
+         
+    }
+
+    else{
+        var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
+                        getAllRoom(SiteId,DateCalendar);
+                        var Month=datemois;
+                        //get Month index les mois de l'année de 0-11
+                        if(Month.getMonth()==11){
+                            Year=Year+1;
+                            getYearRapport();}
+                        calendar.next();
+                        checkDate();
+    }
+                    
+}
+
+function prev(){
+    if (IsRapportYear){
+        var DateCalendar = (getPrevYear(TransformDateFirstoftheMonth(datemois))).getTime();
+        getAllRoom(SiteId,DateCalendar);
+        calendar.prevYear();
+        Year=Year-1;
+        getYearRapport();
+        checkDate();
+    }
+    else{
+        var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
+        getAllRoom(SiteId,DateCalendar);
+        var Month=datemois;
+        //get Month index les mois de l'année de 0-11
+        if(Month.getMonth()==0){
+            Year=Year-1;
+            getYearRapport();
+        }
+        calendar.prev();
+        checkDate();
+    }
+}
+
+function todayvue(){
+    var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
+    getAllRoom(SiteId,DateCalendar);
+    calendar.today();
+    checkDate();
+}
+
+function monthvue(){
+    document.getElementById("monthvue").classList.replace("btn-light","btn-dark");
+    document.getElementById("weekvue").classList.replace("btn-dark","btn-light");
+    document.getElementById("dayvue").classList.replace("btn-dark","btn-light");
+    calendar.changeView('dayGridMonth');
+    checkDate();
+}
+
+function dayvue(){
+    document.getElementById("dayvue").classList.replace("btn-light","btn-dark");
+    document.getElementById("monthvue").classList.replace("btn-dark","btn-light");
+    document.getElementById("weekvue").classList.replace("btn-dark","btn-light");
+    calendar.changeView('timeGridDay');
+    checkDate();
+}
+
+function weekvue(){
+    document.getElementById("weekvue").classList.replace("btn-light","btn-dark");
+    document.getElementById("monthvue").classList.replace("btn-dark","btn-light");
+    document.getElementById("dayvue").classList.replace("btn-dark","btn-light");
+    calendar.changeView('timeGridWeek');
+    checkDate();
+}
+
+function checkDate(format){
+    
+    var datecalendrier = calendar.view.title;
+    if (!format || !IsYearChecked)
+        document.getElementById('date').innerHTML=datecalendrier;
+    else   {
+        document.getElementById('date').innerHTML = datecalendrier.split(" ")[1];
+    }
 }
