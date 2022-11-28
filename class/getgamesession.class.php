@@ -12,7 +12,7 @@ class GetGameSession {
 
         $mission= $db -> select_sql($sql);
 
-        $sql2 ="SELECT room.Name,room.Id FROM gamesession INNER JOIN roomsession ON (gamesession.RoomSessionId = roomsession.Id) INNER JOIN room ON (roomsession.RoomId=Room.Id) WHERE gamesession.Id=$id ";
+        $sql2 ="SELECT room.Name,room.Id FROM gamesession INNER JOIN roomsession ON (gamesession.RoomSessionId = roomsession.Id) INNER JOIN room ON (roomsession.RoomId=Room.Id) INNER JOIN mission ON (gamesession.MissionId=mission.Id) WHERE gamesession.Id=$id AND mission.DisplayInCalendar = 1 ";
 
         $Room = $db -> select_sql($sql2)[0];
 

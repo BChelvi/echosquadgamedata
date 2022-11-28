@@ -41,11 +41,12 @@ var SiteId=location.hash.substring(1,10);
 
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
-var template_room =`<option value=%RoomId% style="color:%RoomColor%" data-color="%RoomColor%">%RoomName% - %RoomId%</option>`;
+var template_room =`<button onclick="RoomSelect(%RoomId%)" id="%RoomId%"  type="button" data-color="%RoomColor%"  style="background-color:%RoomColor%;" class="btn text-white border mx-1 col-3 h-100 togglesalle">%RoomName%</button>`;
 
 var template_rapport=`<div class="mb-2">
                             <div class="h4">%MissionName%</div>
                             <div>Nombre effectuées : %NbrMission%</div>
+                            <div>Nombre abandonnées : %NbrMissionAbandon%</div>
                             <div>Durée Moyenne : %MoyDuration%</div>
                             <div>Réussite totale : %PourcentageSS%</div>
                             <div>Réussite partielle : %PourcentageS%</div>
@@ -56,7 +57,7 @@ var template_rapport=`<div class="mb-2">
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
 
 //Changement du selecteur Room(Sous-Marin)
-var RoomSelected = document.getElementById('RoomSelected');
+var RoomSelected;
 
 
 //addEventListener permettant d'afficher ou non toutes les missions
@@ -70,7 +71,7 @@ function init(){
     getMissions();  
     SetYear();
     checkDate();
-    getYearRapport();
+   
    
 }
 
@@ -95,7 +96,7 @@ function getAllRoom(SiteId,Date){
     var hostserver = "api.php?action=getallrooms&SiteId="+SiteId+"&Date="+Date;
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
-        tableau_AllRooms = JSON.parse(httpRequest.responseText);
+        tableau_AllRooms= JSON.parse(httpRequest.responseText);
         liste_rooms();
         FillTableau_AllGameSessions();
         FillGameSessions_List();      
@@ -110,6 +111,7 @@ function getAllRoom(SiteId,Date){
           sources.forEach(eventSource => {
             calendar.addEventSource(eventSource);
         getEventSources();})
+        getYearRapport();
     };
     httpRequest.send();
 
@@ -118,34 +120,56 @@ function getAllRoom(SiteId,Date){
 //function qui remplie un tableau avec les gamessesions à afficher celon les différents filtres
 function FillTableau_AllGameSessions(){
     tableau_GameSessions=[];
-   
-    for (var i=0;i<tableau_AllRooms.length;i++){
-       
-        //filtre sur le selecteur de Salle
-        if(!RoomFilter(tableau_AllRooms[i].Id)) continue;
+    if(!RoomSelected){
+        for (var i=0;i<tableau_AllRooms.length;i++){
 
-        else{
-        
-            for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
-        
-                for (var k=0 ; k<tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'].length;k++){
-
-                var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
-
-                    //filtre sur la durée de la mission
-                    if (isFiltered==false){
-                        if(CaclculMinDuration(duration,600)){
+                for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
+            
+                    for (var k=0 ; k<tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'].length;k++){
+    
+                    var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
+    
+                        //filtre sur la durée de la mission
+                        if (isFiltered==false){
+                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId)){
+                                tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
+                            }
+                            else continue;
+                        }
+                        else {
                             tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                         }
-                        else continue;
-                    }
-                    else {
-                        tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
-                    }
-                }   
+                    }  
+                }
             }
         }
-        
+
+    else{
+        for (var i=0;i<tableau_AllRooms.length;i++){
+            // filtre sur le selecteur de Salle
+            if(RoomSelected != tableau_AllRooms[i].Id) continue;
+            else{
+
+                for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
+            
+                    for (var k=0 ; k<tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'].length;k++){
+
+                    var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
+
+                        //filtre sur la durée de la mission
+                        if (isFiltered==false){
+                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId)){
+                                tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
+                            }
+                            else continue;
+                        }
+                        else {
+                            tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
+                        }
+                    }  
+                }
+            }
+        }
     }
 }
 
@@ -219,23 +243,20 @@ function FillGameSessions_List(){
         var icone;
 
         switch (success){
-            case 1 : icone = `<span class="fa fa-star checked"></span>
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star checked"></span>`;
+            case 1 : icone = `<img src="./css/img/3stars.png" class="star">
+          `;
+            
                 
             break;
-            case 2 : icone =`<span class="fa fa-star checked"></span>
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star text-dark"></span>`;
+            case 2 : icone =`<img src="./css/img/2stars.png"class="twostar">
+          `;
                 
-            case 3 : icone =`<span class="fa fa-star checked"></span>
-            <span class="fa fa-star text-dark"></span>
-            <span class="fa fa-star text-dark"></span>`;
+            case 3 : icone =`<img src="./css/img/2stars.png"class="star">
+           `;
                 
             break;
-            case 4 : icone=`<span class="fa fa-star text-dark"></span>
-            <span class="fa fa-star text-dark"></span>
-            <span class="fa fa-star text-dark"></span>`;;
+            case 4 : icone=`<img src="./css/img/2stars.png"class="star">
+           `;
                 
             break;
         }
@@ -299,23 +320,6 @@ function ShowCalendar(){
 
     calendar.render();  
 
-    //fonction qui écoute le tri de la Salle
-    RoomSelected.addEventListener('change', function(){        //remove event sources
-        FillTableau_AllGameSessions();
-        FillGameSessions_List();
-        Fill_Rapport();
-        calendar.getEventSources().forEach(eventSource => {
-          eventSource.remove();
-        });
-        //get currently selected sources
-        var sources = getEventSources();
-        
-        //add each new source to the calendar
-        sources.forEach(eventSource => {
-          calendar.addEventSource(eventSource);
-        });
-    });
-
     //fonction qui écoute le filtre durée mission
     Nofilter.addEventListener('change', function() {
          
@@ -344,31 +348,54 @@ function getEventSources() {
     return sources;
 }
 
-//function de tri de la Salle
-function RoomFilter(RoomId)
-{
-    if(RoomSelected.value=='Toutes')
-    return true;
 
-    else{
-        if(RoomSelected.value==RoomId)
-        return true;
-        else return false;
-    }
-}
 // -------------------------------------------------------------VUE RAPPORT------------------------------------------------------
 
 function Fill_Rapport(){
 
     document.getElementById("rapport").innerHTML="";
+    tableau_rapport =[];
+
+    if(!RoomSelected){
+        for (var i=0;i<tableau_AllRooms.length;i++){
+
+                for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
+            
+                    for (var k=0 ; k<tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'].length;k++){
+
+                        tableau_rapport.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
+                        
+                    }  
+                }
+            }
+        }
+
+    else{
+        for (var i=0;i<tableau_AllRooms.length;i++){
+            // filtre sur le selecteur de Salle
+            if(RoomSelected != tableau_AllRooms[i].Id) continue;
+            else{
+
+                for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
+            
+                    for (var k=0 ; k<tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'].length;k++){
+
+                        tableau_rapport.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
+                        }
+                    }  
+                }
+            }
+        }
+    
 
     for (var i=0;i<tableau_Missions.length;i++){
 
         //On n'afffiche ni PlayerBase ni Teaser
-        if(i!=0&&i!=3){
-            var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id);
+        
+            var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
             var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
                                        .replaceAll("%NbrMission%",tableau_pourcentage.Nbremission)
+                                       .replaceAll("%NbrMissionAbandon%",tableau_pourcentage.NbremissionAbandon)
                                         .replaceAll("%PourcentageSS%",tableau_pourcentage.PourcentageSuperSucces)
                                         .replaceAll("%PourcentageS%",tableau_pourcentage.PourcentageSucces)
                                         .replaceAll("%PourcentageFail%",tableau_pourcentage.PourcentageFail)
@@ -381,7 +408,7 @@ function Fill_Rapport(){
                 const elt = document.createElement("div");
                 document.getElementById("rapport").appendChild(elt);       
                 elt.outerHTML = html;
-        }
+        
     }
 }
 
@@ -404,10 +431,11 @@ function fill_YearRapport(){
     for (var i=0;i<tableau_Missions.length;i++){
 
         //On n'afffiche ni PlayerBase ni Teaser
-        if(i!=0&&i!=3){
-            var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].Id);
+        
+            var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
             var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
-                                       .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
+                                    .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
+                                    .replaceAll("%NbrMissionAbandon%",tableau_pourcentageYear.NbremissionAbandon)
                                         .replaceAll("%PourcentageSS%",tableau_pourcentageYear.PourcentageSuperSucces)
                                         .replaceAll("%PourcentageS%",tableau_pourcentageYear.PourcentageSucces)
                                         .replaceAll("%PourcentageFail%",tableau_pourcentageYear.PourcentageFail)
@@ -418,17 +446,23 @@ function fill_YearRapport(){
                 const elt = document.createElement("div");
                 document.getElementById("rapportYear").appendChild(elt);       
                 elt.outerHTML = html;
-        }
-    }
+        
+    } 
 }
 
 // -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------
 
 //permet au filtre de determiné si la mission de la durée est inférieure au prérequis d'affichage
-function CaclculMinDuration(DateX,DateY){
+function CaclculMinDuration(DateX,MissionId){
     // var datumX = Date.parse(DateX);
     // var datumY = Date.parse(DateY);
- 
+    var DateY;
+
+    for (var i=0;i<tableau_Missions.length;i++){
+        if(tableau_Missions[i].Id != MissionId) continue;
+        else DateY=tableau_Missions[i].MinDuration;
+    }
+    console.log(DateY);
     if(DateX>DateY){
         return true;
     }
@@ -442,9 +476,9 @@ function calculMinute(secondes){
     return timestring;
 }
 
-function NmbrePourcentageGame (MissionId){
-
-    var tableau_pourcentage={Nbremission:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
+function NmbrePourcentageGame (MissionId,MinDuration){
+    
+    var tableau_pourcentage={Nbremission:0,NbremissionAbandon:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
 
     var NbreMissionSuperSucces=0;
     var NbreMissionSucces=0;
@@ -452,12 +486,12 @@ function NmbrePourcentageGame (MissionId){
     var NbreMissionQuit=0;
     var DurationTotale=0;
 
-    for (var i=0;i<tableau_GameSessions.length;i++){
-
-        if(tableau_GameSessions[i].MissionId==MissionId){
+    for (var i=0;i<tableau_rapport.length;i++){
+        if(tableau_rapport[i].MissionId==MissionId && tableau_rapport[i].Duration>=MinDuration){
+            
             tableau_pourcentage['Nbremission']+=1;
-            DurationTotale+=tableau_GameSessions[i].Duration;
-            switch (tableau_GameSessions[i].Succes) {
+            DurationTotale+=tableau_rapport[i].Duration;
+            switch (tableau_rapport[i].Succes) {
                 case 1 :
                     NbreMissionSuperSucces+=1;
                 break;
@@ -471,8 +505,12 @@ function NmbrePourcentageGame (MissionId){
                     NbreMissionQuit+=1;
                 break;
             }
-        }        
+        }
+        else if (tableau_rapport[i].MissionId==MissionId && tableau_rapport[i].Duration<MinDuration){
+            tableau_pourcentage['NbremissionAbandon']+=1;
+        }    
     }
+
     if(tableau_pourcentage['Nbremission']!=0){
         tableau_pourcentage['PourcentageSuperSucces']=Math.trunc((NbreMissionSuperSucces/tableau_pourcentage['Nbremission'])*100)+"%";
         tableau_pourcentage['PourcentageSucces']=Math.trunc((NbreMissionSucces/tableau_pourcentage['Nbremission'])*100)+"%";
@@ -481,6 +519,8 @@ function NmbrePourcentageGame (MissionId){
         tableau_pourcentage['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentage['Nbremission']/60)+"min";
     }
     else{
+        tableau_pourcentage['Nbremission']="-";
+        tableau_pourcentage['NbremissionAbandon']="-";
         tableau_pourcentage['PourcentageSuperSucces']="-";
         tableau_pourcentage['PourcentageSucces']="-";
         tableau_pourcentage['PourcentageFail']="-";
@@ -491,9 +531,9 @@ function NmbrePourcentageGame (MissionId){
     return tableau_pourcentage;  
 }
 
-function NmbrePourcentageGameYear (MissionId){
+function NmbrePourcentageGameYear (MissionId,MinDuration){
 
-    var tableau_pourcentageYear={Nbremission:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
+    var tableau_pourcentageYear={Nbremission:0,NbremissionAbandon:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
 
     var NbreMissionSuperSucces=0;
     var NbreMissionSucces=0;
@@ -502,26 +542,47 @@ function NmbrePourcentageGameYear (MissionId){
     var DurationTotale=0;
 
     for (var i=0;i<tableau_YearRapport.length;i++){
-
+        
         if(tableau_YearRapport[i].Id==MissionId){
-            tableau_pourcentageYear['Nbremission']=tableau_YearRapport[i].score.length;
 
-            for (var j=0;j<tableau_YearRapport[i].score.length;j++){
-                switch(tableau_YearRapport[i].score[j]){
-                    case 1 :NbreMissionSuperSucces+=1;
-                    break;
-                    case 2 : NbreMissionSucces+=1;
-                    break;
-                    case 3 :NbreMissionFail+=1;
-                    break;
-                    case 4 :NbreMissionQuit+=1;
-                    break;
+            for (var j=0;j<tableau_YearRapport[i].RoomId.length;j++){
+
+                if(RoomSelected){
+                    if(tableau_YearRapport[i].RoomId[j].RoomId!=RoomSelected)continue;
+                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
+                        tableau_pourcentageYear['Nbremission']+=1;
+                        switch(tableau_YearRapport[i].RoomId[j].Succes){
+                            case 1 :NbreMissionSuperSucces+=1;
+                            break;
+                            case 2 : NbreMissionSucces+=1;
+                            break;
+                            case 3 :NbreMissionFail+=1;
+                            break;
+                            case 4 :NbreMissionQuit+=1;
+                            break;
+                        }
+                        DurationTotale+=tableau_YearRapport[i].RoomId[j].Duration;
+                    }
+                    else tableau_pourcentageYear['NbremissionAbandon']+=1;
+                }
+                else {
+                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
+                        tableau_pourcentageYear['Nbremission']+=1;
+                        switch(tableau_YearRapport[i].RoomId[j].Succes){
+                            case 1 :NbreMissionSuperSucces+=1;
+                            break;
+                            case 2 : NbreMissionSucces+=1;
+                            break;
+                            case 3 :NbreMissionFail+=1;
+                            break;
+                            case 4 :NbreMissionQuit+=1;
+                            break;
+                        }
+                        DurationTotale+=tableau_YearRapport[i].RoomId[j].Duration;
+                    }
+                    else tableau_pourcentageYear['NbremissionAbandon']+=1;
                 }
             }
-            for (var k=0;k<tableau_YearRapport[i].duration.length;k++){
-                DurationTotale+=tableau_YearRapport[i].duration[k];
-            }
-        
         }        
     }
     if(tableau_pourcentageYear['Nbremission']!=0){
@@ -532,6 +593,8 @@ function NmbrePourcentageGameYear (MissionId){
         tableau_pourcentageYear['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentageYear['Nbremission']/60)+"min";
     }
     else{
+        tableau_pourcentageYear['Nbremission']="-";
+        tableau_pourcentageYear['NbremissionAbandon']="-";
         tableau_pourcentageYear['PourcentageSuperSucces']="-";
         tableau_pourcentageYear['PourcentageSucces']="-";
         tableau_pourcentageYear['PourcentageFail']="-";
@@ -596,18 +659,19 @@ function getPrevYear(date){
     return new Date(year-1,month,1);
 }
 
-// ------------------------function TEST--------------------------------------
+// ----------------------------------------------------------------------BUTTONS--------------------------------------------------------------
 
 
 function ToggleCalendar(){
-    IsRapportYear=false;
-    
+    IsYearChecked=false;
     document.getElementById("calendarDiv").classList.remove("invis");
     document.getElementById("rapportDiv").classList.add("invis");
     document.getElementById("ToggleCalendar").classList.replace("btn-light","btn-dark");
     document.getElementById("ToggleRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("buttonCalendar").classList.replace("d-none","d-flex");
     document.getElementById("buttonRapport").classList.replace("d-flex","d-none");
+    document.getElementById("todayvueRapport").classList.replace("d-flex","d-none");
+    document.getElementById("todayvue").classList.replace("d-none","d-flex");
     monthvue();
 
 }
@@ -622,17 +686,20 @@ function ToggleRapport(){
     document.getElementById("ToggleCalendar").classList.replace("btn-dark","btn-light");
     document.getElementById("buttonCalendar").classList.replace("d-flex","d-none");
     document.getElementById("buttonRapport").classList.replace("d-none","d-flex");
+    document.getElementById("todayvueRapport").classList.replace("d-none","d-flex");
+    document.getElementById("todayvue").classList.replace("d-flex","d-none");
+
 }
 
 
 function next(){
-    if (IsRapportYear){
+    if (IsRapportYear && IsYearChecked){
         var DateCalendar = (getNextYear(TransformDateFirstoftheMonth(datemois))).getTime();
         getAllRoom(SiteId,DateCalendar);
         calendar.nextYear();
         Year=Year+1;
         getYearRapport();
-        checkDate();
+        checkDate(1);
          
     }
 
@@ -651,13 +718,13 @@ function next(){
 }
 
 function prev(){
-    if (IsRapportYear){
+    if (IsRapportYear && IsYearChecked){
         var DateCalendar = (getPrevYear(TransformDateFirstoftheMonth(datemois))).getTime();
         getAllRoom(SiteId,DateCalendar);
         calendar.prevYear();
         Year=Year-1;
         getYearRapport();
-        checkDate();
+        checkDate(1);
     }
     else{
         var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
@@ -674,11 +741,35 @@ function prev(){
 }
 
 function todayvue(){
+   
     var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
     getAllRoom(SiteId,DateCalendar);
     calendar.today();
     checkDate();
 }
+
+function todayvueRapport(){
+
+     if (IsRapportYear){
+        var DateCalendar =  (TransformDateFirstoftheMonth(CurrentDate)).getTime();
+        getAllRoom(SiteId,DateCalendar);
+        calendar.today();
+        SetYear();
+        getYearRapport();
+        checkDate(1);
+       
+    }
+    else{
+    var DateCalendar =  (TransformDateFirstoftheMonth(CurrentDate)).getTime();
+        getAllRoom(SiteId,DateCalendar);
+        calendar.today();
+        SetYear();
+        getYearRapport();
+        checkDate();
+    }
+}
+
+
 
 function monthvue(){
     document.getElementById("monthvue").classList.replace("btn-light","btn-dark");
@@ -705,11 +796,70 @@ function weekvue(){
 }
 
 function checkDate(format){
-    
     var datecalendrier = calendar.view.title;
-    if (!format || !IsYearChecked)
+    if (!format || !IsRapportYear)
         document.getElementById('date').innerHTML=datecalendrier;
     else   {
         document.getElementById('date').innerHTML = datecalendrier.split(" ")[1];
     }
+}
+
+function RoomSelect(id){
+
+    if(id){
+
+    document.getElementById(id).classList.add("scaling");
+
+    var buttons = document.querySelectorAll(".togglesalle");
+
+    for (var i=0;i<buttons.length;i++){
+        if (buttons[i]!=document.getElementById(id))
+        buttons[i].classList.remove("scaling");
+    }
+
+    RoomSelected=id;
+    FillTableau_AllGameSessions();
+        FillGameSessions_List();
+        Fill_Rapport();
+        fill_YearRapport();
+        calendar.getEventSources().forEach(eventSource => {
+          eventSource.remove();
+        });
+        //get currently selected sources
+        var sources = getEventSources();
+        
+        //add each new source to the calendar
+        sources.forEach(eventSource => {
+          calendar.addEventSource(eventSource);
+        });
+    }
+
+    else {
+        document.getElementById("toutes").classList.add("scaling");
+
+        var buttons = document.querySelectorAll(".togglesalle");
+
+        for (var i=0;i<buttons.length;i++){
+            if (buttons[i]!=document.getElementById("toutes"))
+            buttons[i].classList.remove("scaling");
+        }
+
+
+        RoomSelected=id;
+        FillTableau_AllGameSessions();
+            FillGameSessions_List();
+            Fill_Rapport();
+            fill_YearRapport();
+            calendar.getEventSources().forEach(eventSource => {
+              eventSource.remove();
+            });
+            //get currently selected sources
+            var sources = getEventSources();
+            
+            //add each new source to the calendar
+            sources.forEach(eventSource => {
+              calendar.addEventSource(eventSource);
+            });
+    }
+       
 }

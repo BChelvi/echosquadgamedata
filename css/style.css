@@ -1,6 +1,6 @@
 body{
    background-color: black;
-    font-family: 'Roboto';
+    font-family: Arial, Helvetica, sans-serif;
     background-image: url(./img/background_gearprod.png);
     background-repeat: repeat;
     background-size: cover;
@@ -18,7 +18,7 @@ body{
     position:absolute;
     bottom:0;  /* on le colle en bas */
     width:100%;
-    height:100px;   /* Hauteur du pied de page */
+    height:50px;   /* Hauteur du pied de page */
  }
  
 
@@ -98,4 +98,22 @@ a:hover{
 
 #date{
     font-size: 30px;
+}
+
+.main2{
+    height: 90vh;
+}
+
+.scaling{
+    transform : scale(1.1);
+}
+
+.star{
+    height: 20%;
+    width: 20%;
+}
+
+.twostar{
+    height: 40%;
+    width: 40%;
 }

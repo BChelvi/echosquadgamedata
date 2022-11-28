@@ -23,17 +23,17 @@
     <div  onclick="window.location='./technicalassist.html'" class="d-flex col-2 acceuil pointer" >ASSISTANCE TECHNIQUE</div>    
   </nav>
 
-  <main  id="main" class="p-3">
+  <main  id="main" class="p-3 main2">
 
       <div class="d-flex text-white justify-content-center p-3" style="font-size:20px">
-        <div class="d-flex col-4 justify-content-center">
+        <div class="d-flex col-4 justify-content-center align-items-center">
           <div class="pointer" onclick="window.location='./commercial.html'">SITE : <span id="Site"></span></div>
         </div>
-        <div class="d-flex col-4 justify-content-center">
-            <div class="">SALLE : 
-              <select id="RoomSelected">
-                <option class="text-center">Toutes</span>                    
-              </select>                  
+        <div class="d-flex col-8 justify-content-center">
+            <div class="d-flex  align-items-center">
+              <div class="col-2">SALLE : </div>
+              <button onclick="RoomSelect()" class="col-2 h-100 btn btn-light border togglesalle mx-1 scaling" id="toutes">Toutes</button>
+              <div id="RoomSelected" class="h-100 d-flex align-items-start"></div>                   
             </div>
         </div>
       </div>
@@ -46,7 +46,10 @@
         <div class="d-flex justify-content-between align-items-end">
           <div class="d-flex justify-content-start col-4">
             <button onclick="prev()" class="btn btn-light  border">⟨</button>
-            <button onclick="todayvue()"class="btn btn-light border">Aujourd'hui</button>
+            <button onclick="todayvue()"class="btn btn-light border d-flex" id="todayvue">Aujourd'hui</button>
+            <button onclick="todayvueRapport()"class="btn btn-light border d-none" id="todayvueRapport">En cours</button>
+            
+
             <button onclick="next()"class="btn btn-light border">⟩</button>
           </div>
           <div class="d-flex justify-content-center col-4 align-items-end">
@@ -87,7 +90,7 @@
 
   </main>
 
-  <footer id="" class="d-flex justify-content-center p-4 text-white align-items-center flex-wrap" style="background-color:black">
+  <footer id="" class="d-flex justify-content-center p-4 text-white align-items-center flex-wrap mt-5" style="background-color:black">
 
     <div>GEARPROD. Tous droits reservés</div>
     <span class="mx-1">|</span>
