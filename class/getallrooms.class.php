@@ -41,7 +41,7 @@ class GetAllRooms {
 
                 $RoomSessionId = $Site[$i]['RoomSessions'][$j]['Id'];
 
-                $sql3 ="SELECT * FROM roomsession INNER JOIN gamesession ON (roomsession.Id = gamesession.RoomSessionId) WHERE roomsessionId = $RoomSessionId";
+                $sql3 ="SELECT * FROM roomsession INNER JOIN gamesession ON (roomsession.Id = gamesession.RoomSessionId) INNER JOIN mission ON (gamesession.MissionId=mission.Id) WHERE roomsessionId = $RoomSessionId AND mission.DisplayInCalendar=1";
 
                 $GameSessions = $db -> select_sql($sql3);
 
