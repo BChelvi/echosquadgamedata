@@ -41,7 +41,7 @@ var SiteId=location.hash.substring(1,10);
 
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
-var template_room =`<button onclick="RoomSelect(%RoomId%)" id="%RoomId%"  type="button" data-color="%RoomColor%"  style="background-color:%RoomColor%;" class="btn text-white border mx-1 col-3 h-100 togglesalle">%RoomName%</button>`;
+var template_room =`<button onclick="RoomSelect(%RoomId%)" id="%RoomId%"  type="button" data-color="%RoomColor%"  style="background-color:%RoomColor%; opacity:0.5;" class="btn text-white border mx-2 col-3 h-100 togglesalle">%RoomName%</button>`;
 
 var template_rapport=`<div class="mb-2">
                             <div class="h4">%MissionName%</div>
@@ -243,22 +243,16 @@ function FillGameSessions_List(){
         var icone;
 
         switch (success){
-            case 1 : icone = `<img src="./css/img/3stars.png" class="star">
-          `;
-            
-                
+            case 0 : icone = `<img src="./css/img/NOstar.png" class="star">`;
             break;
-            case 2 : icone =`<img src="./css/img/2stars.png"class="twostar">
-          `;
-                
-            case 3 : icone =`<img src="./css/img/2stars.png"class="star">
-           `;
-                
+            case 1 : icone =`<img src="./css/img/ZEROstar.png" class="star">`;
             break;
-            case 4 : icone=`<img src="./css/img/2stars.png"class="star">
-           `;
-                
+            case 2 : icone =`<img src="./css/img/ONEstar.png" class="star">`;
             break;
+            case 3 : icone=`<img src="./css/img/TWOstar.png" class="star">`;
+            break;
+            case 4 : icone=`<img src="./css/img/THREEstar.png" class="star">`;
+             break;
         }
 
         //on appelle une fonction qui transforme le timesptamp de la BDD
@@ -268,7 +262,7 @@ function FillGameSessions_List(){
         //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
         for (var j=0;j<tableau_Missions.length;j++){
             if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
-                tableau['title']="<div>"+tableau_GameSessions[i].StartDate.substring(11,16)+" - "+min+" - "+icone+" - "+tableau_Missions[j].CodeName+"</div>";
+                tableau['title']="<div class='d-flex justify-content-start flex-wrap'>"+"<div >"+tableau_GameSessions[i].StartDate.substring(11,16)+"</div>"+" - "+"<div>"+min+"</div>"+" - "+"<figure>"+icone+"</figure>"+" - "+"<div>"+tableau_Missions[j].CodeName+"</div>"+"</div>";
             }
         }
 
@@ -490,8 +484,8 @@ function NmbrePourcentageGame (MissionId,MinDuration){
         if(tableau_rapport[i].MissionId==MissionId && tableau_rapport[i].Duration>=MinDuration){
             
             tableau_pourcentage['Nbremission']+=1;
-            DurationTotale+=tableau_rapport[i].Duration;
-            switch (tableau_rapport[i].Succes) {
+            DurationTotale+=parseInt(tableau_rapport[i].Duration);
+            switch (parseInt(tableau_rapport[i].Succes)) {
                 case 1 :
                     NbreMissionSuperSucces+=1;
                 break;
@@ -551,7 +545,7 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
                     if(tableau_YearRapport[i].RoomId[j].RoomId!=RoomSelected)continue;
                     if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
                         tableau_pourcentageYear['Nbremission']+=1;
-                        switch(tableau_YearRapport[i].RoomId[j].Succes){
+                        switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
                             case 1 :NbreMissionSuperSucces+=1;
                             break;
                             case 2 : NbreMissionSucces+=1;
@@ -568,7 +562,7 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
                 else {
                     if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
                         tableau_pourcentageYear['Nbremission']+=1;
-                        switch(tableau_YearRapport[i].RoomId[j].Succes){
+                        switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
                             case 1 :NbreMissionSuperSucces+=1;
                             break;
                             case 2 : NbreMissionSucces+=1;
