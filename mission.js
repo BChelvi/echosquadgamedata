@@ -84,14 +84,9 @@ function TruncDate(){
 
 
 function Calcul(){
-    DurationGameSession = calculMinute(CalculDuration(tableau_Mission['StartDate'],tableau_Mission['EndDate']));    
+    DurationGameSession = calculMinute(tableau_Mission['Duration']);    
 }
 
-function CalculDuration(DateX,DateY){
-    var datumX = Date.parse(DateX);
-    var datumY = Date.parse(DateY);
-    return (datumY-datumX)/1000;
-}
 
 function calculMinute(secondes){
     var minutes = Math.floor(secondes / 60);
@@ -101,13 +96,15 @@ function calculMinute(secondes){
 
 function ShowSucces(int){
     switch(int){
-        case 1 : Succes = "Echec - Temps imparti écoulé.";
+        case 0 : Succes = "Mission Abandonnée";
         break;
-        case 2 : Succes = "Mission complétée avec moins de 4 caisses récoltées."
+        case 1 : Succes = "R1";
         break;
-        case 3 : Succes = "Mission complétée plus de 4 caisses récoltées."
+        case 2 : Succes = "R2"
         break;
-        case 4 : Succes = "Mission non terminée"
+        case 3 : Succes = "R3"
+        break;
+        case 4 : Succes = "R4"
         break;
     }
 }

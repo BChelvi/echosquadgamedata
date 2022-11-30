@@ -8,11 +8,11 @@ class GetGameSession {
 
         $db = Db :: singleton();
 
-        $sql ="SELECT * FROM gamesession WHERE gamesession.Id=$id";
+        $sql ="SELECT * FROM gamesession WHERE gamesession.gamesessionId=$id";
 
         $mission= $db -> select_sql($sql);
 
-        $sql2 ="SELECT room.Name,room.Id FROM gamesession INNER JOIN roomsession ON (gamesession.RoomSessionId = roomsession.Id) INNER JOIN room ON (roomsession.RoomId=Room.Id) INNER JOIN mission ON (gamesession.MissionId=mission.Id) WHERE gamesession.Id=$id AND mission.DisplayInCalendar = 1 ";
+        $sql2 ="SELECT room.Name,room.Id FROM gamesession INNER JOIN roomsession ON (gamesession.RoomSessionId = roomsession.Id) INNER JOIN room ON (roomsession.RoomId=Room.Id) INNER JOIN mission ON (gamesession.MissionId=mission.Id) WHERE gamesession.gamesessionId=$id ";
 
         $Room = $db -> select_sql($sql2)[0];
 
@@ -29,7 +29,7 @@ class GetGameSession {
         $mission[0]["SiteName"] = $SiteName;
         $mission[0]["SiteId"] = $SiteId;
 
-        $sql4="SELECT * from gameevent INNER JOIN gamesession ON (gamesession.Id=gameevent.GameSessionId) WHERE gamesession.Id=$id";
+        $sql4="SELECT * from gameevent INNER JOIN gamesession ON (gamesession.gamesessionId=gameevent.GameSessionId) WHERE gamesession.gamesessionId=$id";
 
         $events = $db -> select_sql($sql4);
 

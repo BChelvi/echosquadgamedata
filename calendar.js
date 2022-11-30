@@ -156,9 +156,9 @@ function FillTableau_AllGameSessions(){
 
                     var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
 
-                        //filtre sur la durée de la mission
+                        //filtre sur la durée de la mission et/ou le succes
                         if (isFiltered==false){
-                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId)){
+                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId || tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes==0)){
                                 tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                             }
                             else continue;
@@ -232,7 +232,7 @@ function FillGameSessions_List(){
         var tableau=[];
 
         tableau['backgroundColor'] = tableau_GameSessions[i].RoomColor; 
-        tableau['id']=tableau_GameSessions[i].Id;
+        tableau['id']=tableau_GameSessions[i].gamesessionId;
         tableau['start']=tableau_GameSessions[i].StartDate;
         tableau['end']=tableau_GameSessions[i].EndDate;        
         tableau['display']="block";//permet d'encadrer les events dans la vue Month
