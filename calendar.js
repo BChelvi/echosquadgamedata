@@ -134,7 +134,7 @@ function FillTableau_AllGameSessions(){
     
                         //filtre sur la durée de la mission
                         if (isFiltered==false){
-                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId)){
+                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId) && tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes!=0 ){
                                 tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                             }
                             else continue;
@@ -161,7 +161,7 @@ function FillTableau_AllGameSessions(){
 
                         //filtre sur la durée de la mission et/ou le succes
                         if (isFiltered==false){
-                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId || tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes==0)){
+                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId && tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes!=0)){
                                 tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                             }
                             else continue;
@@ -400,16 +400,13 @@ function Fill_Rapport(){
         .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
         .replaceAll("%MissionId%",tableau_Missions[i].Id)
         
-        console.log(tableau_pourcentage.Nbremission);
-
-
                 const elt = document.createElement("div");
                 document.getElementById("rapport").appendChild(elt);       
                 elt.outerHTML = html;
 
                 if(tableau_pourcentage.Nbremission=="-"){
                     var id="chart"+tableau_Missions[i].Id;                  
-                    document.getElementById(id).innerHTML="-";
+                    document.getElementById(id).outerHTML="<div class='text-center'>-</div>";
                 }
         
     }
@@ -466,7 +463,7 @@ function CaclculMinDuration(DateX,MissionId){
         if(tableau_Missions[i].Id != MissionId) continue;
         else DateY=tableau_Missions[i].MinDuration;
     }
-    console.log(DateY);
+
     if(DateX>DateY){
         return true;
     }
@@ -490,8 +487,10 @@ function NmbrePourcentageGame (MissionId,MinDuration){
     var NbreMissionR1=0;
     var DurationTotale=0;
 
+   
+
     for (var i=0;i<tableau_rapport.length;i++){
-        if(tableau_rapport[i].MissionId==MissionId && tableau_rapport[i].Duration>=MinDuration){
+        if(tableau_rapport[i].MissionId==MissionId && tableau_rapport[i].Duration>=MinDuration && tableau_rapport[i].Succes!=0){
             
             tableau_pourcentage['Nbremission']+=1;
             DurationTotale+=parseInt(tableau_rapport[i].Duration);
@@ -506,8 +505,9 @@ function NmbrePourcentageGame (MissionId,MinDuration){
                 break;
             }
         }
-        else if (tableau_rapport[i].MissionId==MissionId && tableau_rapport[i].Duration<MinDuration){
+        else if (tableau_rapport[i].MissionId==MissionId){
             tableau_pourcentage['NbremissionAbandon']+=1;
+            console.log("test");
         }    
     }
 
@@ -520,7 +520,6 @@ function NmbrePourcentageGame (MissionId,MinDuration){
     }
     else{
         tableau_pourcentage['Nbremission']="-";
-        tableau_pourcentage['NbremissionAbandon']="-";
         tableau_pourcentage['PourcentageR4']="-";
         tableau_pourcentage['PourcentageR3']="-";
         tableau_pourcentage['PourcentageR2']="-";
@@ -549,7 +548,7 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
 
                 if(RoomSelected){
                     if(tableau_YearRapport[i].RoomId[j].RoomId!=RoomSelected)continue;
-                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
+                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration || tableau_YearRapport[i].RoomId[j].Succes!=0){
                         tableau_pourcentageYear['Nbremission']+=1;
                         switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
                             case 1 :NbreMissionR1+=1;
@@ -566,7 +565,7 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
                     else tableau_pourcentageYear['NbremissionAbandon']+=1;
                 }
                 else {
-                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
+                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration || tableau_YearRapport[i].RoomId[j].Succes!=0){
                         tableau_pourcentageYear['Nbremission']+=1;
                         switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
                             case 1 :NbreMissionR1+=1;
