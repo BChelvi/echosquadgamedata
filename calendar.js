@@ -246,7 +246,7 @@ function FillGameSessions_List(){
         var icone;
 
         switch (success){
-            case 0 : icone = `<img src="./css/img/nostarblackempty.png" class="star">`;
+            case 0 : icone = `<img src="./css/img/nostaremptyblack.png" class="star">`;
             break;
             case 1 : icone =`<img src="./css/img/zerostaremptyblack.png" class="star">`;
             break;
