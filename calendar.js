@@ -490,7 +490,7 @@ function NmbrePourcentageGame (MissionId,MinDuration){
    
 
     for (var i=0;i<tableau_rapport.length;i++){
-        if(tableau_rapport[i].MissionId==MissionId && tableau_rapport[i].Duration>=MinDuration && tableau_rapport[i].Succes!=0){
+        if(tableau_rapport[i].MissionId==MissionId && parseInt(tableau_rapport[i].Duration)>=parseInt(MinDuration) && tableau_rapport[i].Succes!=0){
             
             tableau_pourcentage['Nbremission']+=1;
             DurationTotale+=parseInt(tableau_rapport[i].Duration);
@@ -548,7 +548,7 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
 
                 if(RoomSelected){
                     if(tableau_YearRapport[i].RoomId[j].RoomId!=RoomSelected)continue;
-                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration || tableau_YearRapport[i].RoomId[j].Succes!=0){
+                    if(parseInt(tableau_YearRapport[i].RoomId[j].Duration)>=parseInt(MinDuration) || tableau_YearRapport[i].RoomId[j].Succes!=0){
                         tableau_pourcentageYear['Nbremission']+=1;
                         switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
                             case 1 :NbreMissionR1+=1;
@@ -560,12 +560,12 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
                             case 4 :NbreMissionR4+=1;
                             break;
                         }
-                        DurationTotale+=tableau_YearRapport[i].RoomId[j].Duration;
+                        DurationTotale+=parseInt(tableau_YearRapport[i].RoomId[j].Duration);
                     }
                     else tableau_pourcentageYear['NbremissionAbandon']+=1;
                 }
                 else {
-                    if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration || tableau_YearRapport[i].RoomId[j].Succes!=0){
+                    if(parseInt(tableau_YearRapport[i].RoomId[j].Duration)>=parseInt(MinDuration) || tableau_YearRapport[i].RoomId[j].Succes!=0){
                         tableau_pourcentageYear['Nbremission']+=1;
                         switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
                             case 1 :NbreMissionR1+=1;
