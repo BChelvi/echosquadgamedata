@@ -41,17 +41,22 @@ var SiteId=location.hash.substring(1,10);
 
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
-var template_room =`<button onclick="RoomSelect(%RoomId%)" id="%RoomId%"  type="button" data-color="%RoomColor%"  style="background-color:%RoomColor%; opacity:0.5;" class="btn text-white border mx-2 col-3 h-100 togglesalle">%RoomName%</button>`;
+var template_room =`<button onclick="RoomSelect(%RoomId%)" id="%RoomId%"  type="button" data-color="%RoomColor%"  style="background-color:%RoomColor%; opacity:0.5;" class="btn border mx-2 col-3 h-100 togglesalle">%RoomName%</button>`;
 
-var template_rapport=`<div class="mb-2">
-                            <div class="h4">%MissionName%</div>
-                            <div>Nombre effectuées : %NbrMission%</div>
-                            <div>Nombre abandonnées : %NbrMissionAbandon%</div>
-                            <div>Durée Moyenne : %MoyDuration%</div>
-                            <div>Réussite totale : %PourcentageSS%</div>
-                            <div>Réussite partielle : %PourcentageS%</div>
-                            <div>Echec : %PourcentageFail%</div>
-                            <div id="abandon-%MissionId%" class="d-none">Abandon : %PourcentageQuit%%</div>
+var template_rapport=`<div class="mb-2 col-3 vignette p-3 rounded">
+                            <div class="h4 text-center">%MissionName%</div>
+                            <div class="mt-5" >Nombre effectuées : %NbrMission%</div>
+                            <div class="mt-2">Nombre abandonnées : %NbrMissionAbandon%</div>
+                            <div class="mt-2">Durée Moyenne : %MoyDuration%</div>
+                            <div class="d-flex flex-column justify-content-between align-items-center mt-2">
+                                <div>Succès</div>
+                                <div id="chart%MissionId%" class="d-flex" style='width:80%;height:20px'>
+                                    <div class="d-flex chartbarre green" style='width:%R4%;height:20px'></div>
+                                    <div class="d-flex chartbarre yellow" style='width:%R3%;height:20px'></div>
+                                    <div class="d-flex chartbarre orange" style='width:%R2%;height:20px'></div>
+                                    <div class="d-flex chartbarre red" style='width:%R1%;height:20px'></div>
+                                </div>
+                            </div>
                         </div>`
 
 // --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
@@ -71,8 +76,6 @@ function init(){
     getMissions();  
     SetYear();
     checkDate();
-   
-   
 }
 
 // --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
@@ -243,13 +246,13 @@ function FillGameSessions_List(){
         var icone;
 
         switch (success){
-            case 0 : icone = `<img src="./css/img/NOstar.png" class="star">`;
+            case 0 : icone = `<img src="./css/img/nostarblackempty.png" class="star">`;
             break;
-            case 1 : icone =`<img src="./css/img/ZEROstar.png" class="star">`;
+            case 1 : icone =`<img src="./css/img/zerostaremptyblack.png" class="star">`;
             break;
-            case 2 : icone =`<img src="./css/img/ONEstar.png" class="star">`;
+            case 2 : icone =`<img src="./css/img/onestaremptyblack.png" class="star">`;
             break;
-            case 3 : icone=`<img src="./css/img/TWOstar.png" class="star">`;
+            case 3 : icone=`<img src="./css/img/twostaremptyblack.png" class="star">`;
             break;
             case 4 : icone=`<img src="./css/img/THREEstar.png" class="star">`;
              break;
@@ -262,7 +265,7 @@ function FillGameSessions_List(){
         //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
         for (var j=0;j<tableau_Missions.length;j++){
             if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
-                tableau['title']="<div class='d-flex justify-content-start flex-wrap'>"+"<div >"+tableau_GameSessions[i].StartDate.substring(11,16)+"</div>"+" - "+"<div>"+min+"</div>"+" - "+"<figure>"+icone+"</figure>"+" - "+"<div>"+tableau_Missions[j].CodeName+"</div>"+"</div>";
+                tableau['title']="<div class='d-flex justify-content-start flex-wrap text-dark mission'>"+"<div class=''>"+tableau_GameSessions[i].StartDate.substring(11,16)+"</div>"+" &nbsp;"+"<div>"+min+"</div>"+"&nbsp;"+"<figure>"+icone+"</figure>"+" &nbsp;"+"<div>"+tableau_Missions[j].CodeName+"</div></div>";
             }
         }
 
@@ -385,23 +388,29 @@ function Fill_Rapport(){
     for (var i=0;i<tableau_Missions.length;i++){
 
         //On n'afffiche ni PlayerBase ni Teaser
+        var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
+        var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
+
+        .replaceAll("%NbrMission%",tableau_pourcentage.Nbremission)
+        .replaceAll("%NbrMissionAbandon%",tableau_pourcentage.NbremissionAbandon)
+        .replaceAll("%R4%",tableau_pourcentage.PourcentageR4)
+        .replaceAll("%R3%",tableau_pourcentage.PourcentageR3)
+        .replaceAll("%R2%",tableau_pourcentage.PourcentageR2)
+        .replaceAll("%R1%",tableau_pourcentage.PourcentageR1)
+        .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
+        .replaceAll("%MissionId%",tableau_Missions[i].Id)
         
-            var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
-            var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
-                                       .replaceAll("%NbrMission%",tableau_pourcentage.Nbremission)
-                                       .replaceAll("%NbrMissionAbandon%",tableau_pourcentage.NbremissionAbandon)
-                                        .replaceAll("%PourcentageSS%",tableau_pourcentage.PourcentageSuperSucces)
-                                        .replaceAll("%PourcentageS%",tableau_pourcentage.PourcentageSucces)
-                                        .replaceAll("%PourcentageFail%",tableau_pourcentage.PourcentageFail)
-                                        .replaceAll("%PourcentageQuit%",tableau_pourcentage.PourcentageQuit)
-                                        .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
-                                        .replaceAll("%MissionId%",tableau_Missions[i].Id)
-                                        
+        console.log(tableau_pourcentage.Nbremission);
 
 
                 const elt = document.createElement("div");
                 document.getElementById("rapport").appendChild(elt);       
                 elt.outerHTML = html;
+
+                if(tableau_pourcentage.Nbremission=="-"){
+                    var id="chart"+tableau_Missions[i].Id;                  
+                    document.getElementById(id).innerHTML="-";
+                }
         
     }
 }
@@ -430,10 +439,10 @@ function fill_YearRapport(){
             var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
                                     .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
                                     .replaceAll("%NbrMissionAbandon%",tableau_pourcentageYear.NbremissionAbandon)
-                                        .replaceAll("%PourcentageSS%",tableau_pourcentageYear.PourcentageSuperSucces)
-                                        .replaceAll("%PourcentageS%",tableau_pourcentageYear.PourcentageSucces)
-                                        .replaceAll("%PourcentageFail%",tableau_pourcentageYear.PourcentageFail)
-                                        .replaceAll("%PourcentageQuit%",tableau_pourcentageYear.PourcentageQuit)
+                                        .replaceAll("%R4%",tableau_pourcentageYear.PourcentageR4)
+                                        .replaceAll("%R3%",tableau_pourcentageYear.PourcentageR3)
+                                        .replaceAll("%R2%",tableau_pourcentageYear.PourcentageR2)
+                                        .replaceAll("%R1%",tableau_pourcentageYear.PourcentageR1)
                                         .replaceAll("%MoyDuration%",tableau_pourcentageYear.MoyDuration)
                                         .replaceAll("%MissionId%",tableau_Missions[i].Id)
                                         
@@ -443,6 +452,7 @@ function fill_YearRapport(){
         
     } 
 }
+
 
 // -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------
 
@@ -472,12 +482,12 @@ function calculMinute(secondes){
 
 function NmbrePourcentageGame (MissionId,MinDuration){
     
-    var tableau_pourcentage={Nbremission:0,NbremissionAbandon:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
+    var tableau_pourcentage={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0};
 
-    var NbreMissionSuperSucces=0;
-    var NbreMissionSucces=0;
-    var NbreMissionFail=0;
-    var NbreMissionQuit=0;
+    var NbreMissionR4=0;
+    var NbreMissionR3=0;
+    var NbreMissionR2=0;
+    var NbreMissionR1=0;
     var DurationTotale=0;
 
     for (var i=0;i<tableau_rapport.length;i++){
@@ -486,17 +496,13 @@ function NmbrePourcentageGame (MissionId,MinDuration){
             tableau_pourcentage['Nbremission']+=1;
             DurationTotale+=parseInt(tableau_rapport[i].Duration);
             switch (parseInt(tableau_rapport[i].Succes)) {
-                case 1 :
-                    NbreMissionSuperSucces+=1;
+                case 1 :NbreMissionR1+=1;
                 break;
-                case 2 :
-                    NbreMissionSucces+=1;
+                case 2 : NbreMissionR2+=1;
                 break;
-                case 3 :
-                    NbreMissionFail+=1;
+                case 3 :NbreMissionR3+=1;
                 break;
-                case 4 :
-                    NbreMissionQuit+=1;
+                case 4 :NbreMissionR4+=1;
                 break;
             }
         }
@@ -506,19 +512,19 @@ function NmbrePourcentageGame (MissionId,MinDuration){
     }
 
     if(tableau_pourcentage['Nbremission']!=0){
-        tableau_pourcentage['PourcentageSuperSucces']=Math.trunc((NbreMissionSuperSucces/tableau_pourcentage['Nbremission'])*100)+"%";
-        tableau_pourcentage['PourcentageSucces']=Math.trunc((NbreMissionSucces/tableau_pourcentage['Nbremission'])*100)+"%";
-        tableau_pourcentage['PourcentageFail']=Math.trunc((NbreMissionFail/tableau_pourcentage['Nbremission'])*100)+"%";
-        tableau_pourcentage['PourcentageQuit']=Math.trunc((NbreMissionQuit/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['PourcentageR4']=Math.trunc((NbreMissionR4/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['PourcentageR3']=Math.trunc((NbreMissionR3/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['PourcentageR2']=Math.trunc((NbreMissionR2/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['PourcentageR1']=Math.trunc((NbreMissionR1/tableau_pourcentage['Nbremission'])*100)+"%";
         tableau_pourcentage['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentage['Nbremission']/60)+"min";
     }
     else{
         tableau_pourcentage['Nbremission']="-";
         tableau_pourcentage['NbremissionAbandon']="-";
-        tableau_pourcentage['PourcentageSuperSucces']="-";
-        tableau_pourcentage['PourcentageSucces']="-";
-        tableau_pourcentage['PourcentageFail']="-";
-        tableau_pourcentage['PourcentageQuit']="-";
+        tableau_pourcentage['PourcentageR4']="-";
+        tableau_pourcentage['PourcentageR3']="-";
+        tableau_pourcentage['PourcentageR2']="-";
+        tableau_pourcentage['PourcentageR1']="-";
         tableau_pourcentage['MoyDuration']="-";
     }
 
@@ -527,12 +533,12 @@ function NmbrePourcentageGame (MissionId,MinDuration){
 
 function NmbrePourcentageGameYear (MissionId,MinDuration){
 
-    var tableau_pourcentageYear={Nbremission:0,NbremissionAbandon:0,PourcentageSuperSucces:0,PourcentageSucces:0,PourcentageFail:0,PourcentageQuit:0,MoyDuration:0};
+    var tableau_pourcentageYear={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0};
 
-    var NbreMissionSuperSucces=0;
-    var NbreMissionSucces=0;
-    var NbreMissionFail=0;
-    var NbreMissionQuit=0;
+    var NbreMissionR4=0;
+    var NbreMissionR3=0;
+    var NbreMissionR2=0;
+    var NbreMissionR1=0;
     var DurationTotale=0;
 
     for (var i=0;i<tableau_YearRapport.length;i++){
@@ -546,13 +552,13 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
                     if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
                         tableau_pourcentageYear['Nbremission']+=1;
                         switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
-                            case 1 :NbreMissionSuperSucces+=1;
+                            case 1 :NbreMissionR1+=1;
                             break;
-                            case 2 : NbreMissionSucces+=1;
+                            case 2 : NbreMissionR2+=1;
                             break;
-                            case 3 :NbreMissionFail+=1;
+                            case 3 :NbreMissionR3+=1;
                             break;
-                            case 4 :NbreMissionQuit+=1;
+                            case 4 :NbreMissionR4+=1;
                             break;
                         }
                         DurationTotale+=tableau_YearRapport[i].RoomId[j].Duration;
@@ -563,13 +569,13 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
                     if(tableau_YearRapport[i].RoomId[j].Duration>=MinDuration){
                         tableau_pourcentageYear['Nbremission']+=1;
                         switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
-                            case 1 :NbreMissionSuperSucces+=1;
+                            case 1 :NbreMissionR1+=1;
                             break;
-                            case 2 : NbreMissionSucces+=1;
+                            case 2 : NbreMissionR2+=1;
                             break;
-                            case 3 :NbreMissionFail+=1;
+                            case 3 :NbreMissionR3+=1;
                             break;
-                            case 4 :NbreMissionQuit+=1;
+                            case 4 :NbreMissionR4+=1;
                             break;
                         }
                         DurationTotale+=tableau_YearRapport[i].RoomId[j].Duration;
@@ -580,19 +586,19 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
         }        
     }
     if(tableau_pourcentageYear['Nbremission']!=0){
-        tableau_pourcentageYear['PourcentageSuperSucces']=Math.trunc((NbreMissionSuperSucces/tableau_pourcentageYear['Nbremission'])*100)+"%";
-        tableau_pourcentageYear['PourcentageSucces']=Math.trunc((NbreMissionSucces/tableau_pourcentageYear['Nbremission'])*100)+"%";
-        tableau_pourcentageYear['PourcentageFail']=Math.trunc((NbreMissionFail/tableau_pourcentageYear['Nbremission'])*100)+"%";
-        tableau_pourcentageYear['PourcentageQuit']=Math.trunc((NbreMissionQuit/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['PourcentageR4']=Math.trunc((NbreMissionR4/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['PourcentageR3']=Math.trunc((NbreMissionR3/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['PourcentageR2']=Math.trunc((NbreMissionR2/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['PourcentageR1']=Math.trunc((NbreMissionR1/tableau_pourcentageYear['Nbremission'])*100)+"%";
         tableau_pourcentageYear['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentageYear['Nbremission']/60)+"min";
     }
     else{
         tableau_pourcentageYear['Nbremission']="-";
         tableau_pourcentageYear['NbremissionAbandon']="-";
-        tableau_pourcentageYear['PourcentageSuperSucces']="-";
-        tableau_pourcentageYear['PourcentageSucces']="-";
-        tableau_pourcentageYear['PourcentageFail']="-";
-        tableau_pourcentageYear['PourcentageQuit']="-";
+        tableau_pourcentageYear['PourcentageR4']="-";
+        tableau_pourcentageYear['PourcentageR3']="-";
+        tableau_pourcentageYear['PourcentageR2']="-";
+        tableau_pourcentageYear['PourcentageR1']="-";
         tableau_pourcentageYear['MoyDuration']="-";
     }
     
@@ -838,7 +844,6 @@ function RoomSelect(id){
             buttons[i].classList.remove("scaling");
         }
 
-
         RoomSelected=id;
         FillTableau_AllGameSessions();
             FillGameSessions_List();
@@ -854,6 +859,5 @@ function RoomSelect(id){
             sources.forEach(eventSource => {
               calendar.addEventSource(eventSource);
             });
-    }
-       
+    }      
 }

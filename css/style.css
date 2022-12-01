@@ -53,7 +53,7 @@ body{
 .acceuil{
    
     font-size: 14px;
-    font-family: 'HammerSmith' !important;
+
 }
 
 .pointer{
@@ -122,4 +122,43 @@ figure{
     width: 40px;
     margin: 0;
     padding: 0;
+}
+
+.vignette{
+    background-color: rgb(230, 235, 255);
+    box-shadow: 5px 5px 5px #c0c3c1;
+}
+
+.chartbarre{
+    /* border-right: 2px solid rgb(230, 235, 255); */
+}
+
+.green{
+    background: rgb(18,255,0);
+
+}
+
+.yellow{
+    background: rgb(241,255,0);
+
+}
+
+.orange{
+    background: rgb(255,136,0);
+    
+}
+
+.red{
+    background: rgb(255,35,35);
+    background: linear-gradient(90deg, rgba(255,35,35,1) 0%, rgba(255,0,0,1) 100%);
+
+}
+
+.mission:hover{
+font-weight: bold;
+}
+
+.fc-daygrid-day-frame:hover{
+    background-color: beige;
+    cursor: pointer;
 }
