@@ -153,3 +153,12 @@ figure{
     background: linear-gradient(90deg, rgba(255,35,35,1) 0%, rgba(255,0,0,1) 100%);
 
 }
+
+.mission:hover{
+font-weight: bold;
+}
+
+.fc-daygrid-day-frame:hover{
+    background-color: beige;
+    cursor: pointer;
+}

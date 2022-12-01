@@ -246,13 +246,13 @@ function FillGameSessions_List(){
         var icone;
 
         switch (success){
-            case 0 : icone = `<img src="./css/img/NOstar.png" class="star">`;
+            case 0 : icone = `<img src="./css/img/nostarblackempty.png" class="star">`;
             break;
-            case 1 : icone =`<img src="./css/img/ZEROstar.png" class="star">`;
+            case 1 : icone =`<img src="./css/img/zerostaremptyblack.png" class="star">`;
             break;
-            case 2 : icone =`<img src="./css/img/ONEstar.png" class="star">`;
+            case 2 : icone =`<img src="./css/img/onestaremptyblack.png" class="star">`;
             break;
-            case 3 : icone=`<img src="./css/img/TWOstar.png" class="star">`;
+            case 3 : icone=`<img src="./css/img/twostaremptyblack.png" class="star">`;
             break;
             case 4 : icone=`<img src="./css/img/THREEstar.png" class="star">`;
              break;
@@ -265,7 +265,7 @@ function FillGameSessions_List(){
         //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
         for (var j=0;j<tableau_Missions.length;j++){
             if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
-                tableau['title']="<div class='d-flex justify-content-start flex-wrap text-dark'>"+"<div >"+tableau_GameSessions[i].StartDate.substring(11,16)+"</div>"+" - "+"<div>"+min+"</div>"+" - "+"<figure>"+icone+"</figure>"+" - "+"<div>"+tableau_Missions[j].CodeName+"</div>"+"</div>";
+                tableau['title']="<div class='d-flex justify-content-start flex-wrap text-dark mission'>"+"<div class=''>"+tableau_GameSessions[i].StartDate.substring(11,16)+"</div>"+" &nbsp;"+"<div>"+min+"</div>"+"&nbsp;"+"<figure>"+icone+"</figure>"+" &nbsp;"+"<div>"+tableau_Missions[j].CodeName+"</div></div>";
             }
         }
 
