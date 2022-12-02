@@ -8,19 +8,17 @@ var IsListRoom = false;
 
 //Variables tableaux à manipuler --------------------------------
 
-var tableau_Missions=[];
+var tableau_Missions=[];//tableau remplie par la table Mission de la BDD
 
-var tableau_AllRooms=[];
+var tableau_AllRooms=[];//tableau remplie par les gamessessions de la BDD et leurs roomsessions correspondantes 
 
-var tableau_RoomSessions=[];
+var tableau_GameSessions=[];//tableau remplie des gamesessions en fonction des différents filtre du site pour la vue Calendrier
 
-var tableau_GameSessions=[];
+var GameSessions_List = [];//tableau remplie pour correspondre à la syntaxe "events" de FullCalendar
 
-var GameSessions_List = [];
+var tableau_rapport =[];//tableau remplie des gamessessions pour la Vue Rapport mensuelle
 
-var tableau_rapport =[];
-
-var tableau_YearRapport=[];
+var tableau_YearRapport=[];//tableau remplie des gamessessions pour la Vue Rapport annuelle
 
 //Variables globales pour manipuler le calendrier ---------------
 
