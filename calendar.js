@@ -30,13 +30,13 @@ var calendar;
 
 //Variables pour les Dates --------------------------------------
 
-var CurrentDate = new Date();
+var CurrentDate = new Date();//constructeur de Date sur la date du jour
 
 var datemois;
 
 var Year;
 
-var date = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
+var date = (TransformDateFirstoftheMonth(CurrentDate)).getTime();//Timestamp sur le premier jour du mois de la date actuelle
 
 //Variables checkant les selecteurs -------------------------------
 
