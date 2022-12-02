@@ -73,9 +73,7 @@ var template_rapport=`<div class="mb-2 col-3 vignette p-3 rounded">
                                     <div class="d-flex chartbarre red" style='width:%R1%;height:20px'></div>
                                 </div>
                             </div>
-                        </div>`
-
-
+                        </div>`;
 
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
 
@@ -86,9 +84,9 @@ function init(){
     checkDate();
 }
 
-// --------------------------------------FONCTIONS AJAX REMPLISSANT LES VARIABLES----------------------------------------------------------------
+// --------------------------------------FONCTIONS AJAX REMPLISSANT LES TABLEAUX----------------------------------------------------------------
 
-//function ajax qui récupère la table Mission
+//requete ajax qui récupère la table Mission et repmplie tableau_Missions
 function getMissions(){
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getmissions";
@@ -100,7 +98,7 @@ function getMissions(){
     httpRequest.send();
 }
 
-//function ajax qui récupère toutes les Rooms d'un Site Unique avec les gamesessions y correspondant
+//requete ajax qui récupère toutes les Rooms d'un Site Unique avec les gamesessions y correspondant et remplie tableau_AllRooms
 function getAllRoom(SiteId,Date){
     tableau_GameSessions=[];
     var httpRequest = new XMLHttpRequest();
@@ -114,21 +112,63 @@ function getAllRoom(SiteId,Date){
         Fill_Rapport();
         calendar.getEventSources().forEach(eventSource => {
             eventSource.remove();
-          });
-          //get currently selected sources
-          var sources = getEventSources();
-          
-          //add each new source to the calendar
-          sources.forEach(eventSource => {
-            calendar.addEventSource(eventSource);
-        getEventSources();})
+        });
+        //get currently selected sources
+        var sources = getEventSources();
+        //add each new source to the calendar
+        sources.forEach(eventSource => {
+        calendar.addEventSource(eventSource);
+        getEventSources();
+        })
+        //on effectue la requete ajax sur le rapport annuel une fois les données pour le Calendrier reçues
         getYearRapport();
     };
     httpRequest.send();
 
 }
 
-//function qui remplie un tableau avec les gamessesions à afficher celon les différents filtres
+//requete ajax pour récupérer l'ensemble des scores de missions d'une année et remplie tableau_YearRapport
+function  getYearRapport(){
+    tableau_GameSessions=[];
+    var httpRequest = new XMLHttpRequest();
+    var hostserver = "api.php?action=getyearrapport&SiteId="+SiteId+"&Year="+Year;
+    httpRequest.open("GET", hostserver);
+    httpRequest.onload = () => {
+        tableau_YearRapport = JSON.parse(httpRequest.responseText);
+        fill_YearRapport();
+    };
+    httpRequest.send();
+}
+
+
+
+
+// --------------------------------------FONCTIONS GERANTS DIFFERENTS BLOCS D'AFFICHAGE----------------------------------------------------------------
+
+//fonction qui injecte les boutons de selection de salles(Rooms)
+function liste_rooms(){
+    //on verifie sur la première occurence de la fonction
+    if(!IsListRoom){
+        //on récupère le nom du site depuis le localstorage préalablement remplie par la page précédente
+        var SiteName = localStorage.getItem('SiteName');
+        document.getElementById("Site").innerHTML=SiteName;
+
+            for (var i=0;i<tableau_AllRooms.length;i++){
+                var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
+                                        .replaceAll("%RoomId%",tableau_AllRooms[i].Id)
+                                        .replaceAll("%RoomColor%",tableau_AllRooms[i].color)
+                const elt = document.createElement("option");
+                document.getElementById("RoomSelected").appendChild(elt);       
+                elt.outerHTML = html;        
+            }  
+            
+        IsListRoom =true;
+    }
+}
+
+// -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
+
+//fonction qui remplie un tableau avec les gamessesions à afficher celon les différents filtres du calendrier
 function FillTableau_AllGameSessions(){
     tableau_GameSessions=[];
     if(!RoomSelected){
@@ -184,59 +224,10 @@ function FillTableau_AllGameSessions(){
     }
 }
 
-// --------------------------------------FONCTIONS GERANTS DIFFERENTS BLOCS D'AFFICHAGE----------------------------------------------------------------
-
-function ShowNbreGameSessions(){
-    document.getElementById("NbreGameSessions").innerHTML=tableau_GameSessions.length;
-}
-
-//function qui remplie le selecteur de Salles
-function liste_rooms(){
-    if(!IsListRoom){
-        var SiteName = localStorage.getItem('SiteName');
-        document.getElementById("Site").innerHTML=SiteName;
-
-            for (var i=0;i<tableau_AllRooms.length;i++){
-                var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
-                                        .replaceAll("%RoomId%",tableau_AllRooms[i].Id)
-                                        .replaceAll("%RoomColor%",tableau_AllRooms[i].color)
-                const elt = document.createElement("option");
-                document.getElementById("RoomSelected").appendChild(elt);       
-                elt.outerHTML = html;        
-            }  
-            
-        IsListRoom =true;
-    }
-}
-
-function MonthRapport(){
-
-    IsYearChecked=false;
-    document.getElementById("YearRapport").classList.replace("btn-dark","btn-light");
-    document.getElementById("MonthRapport").classList.replace("btn-light","btn-dark");
-    document.getElementById("rapport").classList.replace("d-none","d-flex");
-    document.getElementById("rapportYear").classList.replace("d-flex","d-none");
-    checkDate();
-}
-
-
-function YearRapport(){
-    document.getElementById("MonthRapport").classList.replace("btn-dark","btn-light");
-    document.getElementById("YearRapport").classList.replace("btn-light","btn-dark");
-    document.getElementById("rapport").classList.replace("d-flex","d-none");
-    document.getElementById("rapportYear").classList.replace("d-none","d-flex");
-    IsYearChecked=true;
-    checkDate();
-   
-}
-
-// -------------------------------------------------------------VUE CALENDRIER-------------------------------------------
-
 //On remplie un tableau avec la syntaxe correspondant à 'events' de FullCalendar
 function FillGameSessions_List(){
     GameSessions_List=[];
 
-   
     for (var i=0;i<tableau_GameSessions.length;i++){
         var tableau=[];
 
@@ -279,8 +270,7 @@ function FillGameSessions_List(){
     }    
 }
 
-
-//la fonction qui render le FullCalendar
+//la fonction qui render FullCalendar - Le Calendrier
 function ShowCalendar(){
     getAllRoom(SiteId,date);
      calendar = new FullCalendar.Calendar(calendarEl, {
@@ -323,28 +313,28 @@ function ShowCalendar(){
 
     calendar.render();  
 
-    //fonction qui écoute le filtre durée mission
+    //écoute sur le filtre durée mission
     Nofilter.addEventListener('change', function() {
          
         if(Nofilter.checked==true) isFiltered=false;
-           else isFiltered = true;
-           FillTableau_AllGameSessions();
-           FillGameSessions_List();
-            Fill_Rapport();
-           calendar.getEventSources().forEach(eventSource => {
+        else isFiltered = true;
+        FillTableau_AllGameSessions();
+        FillGameSessions_List();
+        Fill_Rapport();
+        calendar.getEventSources().forEach(eventSource => {
             eventSource.remove();
-          });
-          //get currently selected sources
-          var sources = getEventSources();
-          
-          //add each new source to the calendar
-          sources.forEach(eventSource => {
+        });
+        //get currently selected sources
+        var sources = getEventSources();
+        
+        //add each new source to the calendar
+        sources.forEach(eventSource => {
             calendar.addEventSource(eventSource);
-          });          
+        });          
     });
 }
 
-// function qui refetch tous les events
+// Refetch de tous les events
 function getEventSources() {
     var sources = [];
     sources.push({events:GameSessions_List});
@@ -354,6 +344,7 @@ function getEventSources() {
 
 // -------------------------------------------------------------VUE RAPPORT------------------------------------------------------
 
+//fonction qui remplie tableau_rapport selon les filtres de la vue Rapport pour la vue Mois
 function Fill_Rapport(){
 
     document.getElementById("rapport").innerHTML="";
@@ -396,93 +387,27 @@ function Fill_Rapport(){
         //On n'afffiche ni PlayerBase ni Teaser
         var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
         var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
-
-        .replaceAll("%NbrMission%",tableau_pourcentage.Nbremission)
-        .replaceAll("%NbrMissionAbandon%",tableau_pourcentage.NbremissionAbandon)
-        .replaceAll("%R4%",tableau_pourcentage.PourcentageR4)
-        .replaceAll("%R3%",tableau_pourcentage.PourcentageR3)
-        .replaceAll("%R2%",tableau_pourcentage.PourcentageR2)
-        .replaceAll("%R1%",tableau_pourcentage.PourcentageR1)
-        .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
-        .replaceAll("%MissionId%",tableau_Missions[i].Id)
+                                    .replaceAll("%NbrMission%",tableau_pourcentage.Nbremission)
+                                    .replaceAll("%NbrMissionAbandon%",tableau_pourcentage.NbremissionAbandon)
+                                    .replaceAll("%R4%",tableau_pourcentage.PourcentageR4)
+                                    .replaceAll("%R3%",tableau_pourcentage.PourcentageR3)
+                                    .replaceAll("%R2%",tableau_pourcentage.PourcentageR2)
+                                    .replaceAll("%R1%",tableau_pourcentage.PourcentageR1)
+                                    .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
+                                    .replaceAll("%MissionId%",tableau_Missions[i].Id)
         
-                const elt = document.createElement("div");
-                document.getElementById("rapport").appendChild(elt);       
-                elt.outerHTML = html;
+        const elt = document.createElement("div");
+        document.getElementById("rapport").appendChild(elt);       
+        elt.outerHTML = html;
 
-                if(tableau_pourcentage.Nbremission=="-"){
-                    var id="chart"+tableau_Missions[i].Id;                  
-                    document.getElementById(id).outerHTML="<div class='text-center'>-</div>";
-                }
+        if(tableau_pourcentage.Nbremission=="-"){
+            var id="chart"+tableau_Missions[i].Id;                  
+            document.getElementById(id).outerHTML="<div class='text-center'>-</div>";
+        }
         
     }
 }
-
-//requete ajax pour récupérer l'ensemble des scores de missions d'une année sans rentrer en conflict avec le reste du code
-function  getYearRapport(){
-    tableau_GameSessions=[];
-    var httpRequest = new XMLHttpRequest();
-    var hostserver = "api.php?action=getyearrapport&SiteId="+SiteId+"&Year="+Year;
-    httpRequest.open("GET", hostserver);
-    httpRequest.onload = () => {
-        tableau_YearRapport = JSON.parse(httpRequest.responseText);
-        fill_YearRapport();
-    };
-    httpRequest.send();
-}
-
-function fill_YearRapport(){
-    console.log(tableau_YearRapport);
-    document.getElementById("rapportYear").innerHTML="";
-
-    for (var i=0;i<tableau_Missions.length;i++){
-
-        //On n'afffiche ni PlayerBase ni Teaser
-        
-            var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
-            var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
-                                    .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
-                                    .replaceAll("%NbrMissionAbandon%",tableau_pourcentageYear.NbremissionAbandon)
-                                        .replaceAll("%R4%",tableau_pourcentageYear.PourcentageR4)
-                                        .replaceAll("%R3%",tableau_pourcentageYear.PourcentageR3)
-                                        .replaceAll("%R2%",tableau_pourcentageYear.PourcentageR2)
-                                        .replaceAll("%R1%",tableau_pourcentageYear.PourcentageR1)
-                                        .replaceAll("%MoyDuration%",tableau_pourcentageYear.MoyDuration)
-                                        .replaceAll("%MissionId%",tableau_Missions[i].Id)
-                                        
-                const elt = document.createElement("div");
-                document.getElementById("rapportYear").appendChild(elt);       
-                elt.outerHTML = html;
-        
-    } 
-}
-
-
-// -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------
-
-//permet au filtre de determiné si la mission de la durée est inférieure au prérequis d'affichage
-function CaclculMinDuration(DateX,MissionId){
-
-    var DateY;
-
-    for (var i=0;i<tableau_Missions.length;i++){
-        if(tableau_Missions[i].Id != MissionId) continue;
-        else DateY=tableau_Missions[i].MinDuration;
-    }
-
-    if(DateX>DateY){
-        return true;
-    }
-    else return false;
-}
-
-//on converti le timestamp de la bdd pour l'affichade de la durée de la mission dans le titre
-function calculMinute(secondes){
-    var minutes = Math.floor(secondes / 60);
-    timestring = minutes.toString().padStart(2, '0');
-    return timestring;
-}
-
+//fonction qui calcul les pourcentage pour la Vue Mois de la vue Rapport
 function NmbrePourcentageGame (MissionId,MinDuration){
     
     var tableau_pourcentage={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0};
@@ -492,8 +417,6 @@ function NmbrePourcentageGame (MissionId,MinDuration){
     var NbreMissionR2=0;
     var NbreMissionR1=0;
     var DurationTotale=0;
-
-   
 
     for (var i=0;i<tableau_rapport.length;i++){
         if(tableau_rapport[i].MissionId==MissionId && parseInt(tableau_rapport[i].Duration)>=parseInt(MinDuration) && tableau_rapport[i].Succes!=0){
@@ -537,6 +460,31 @@ function NmbrePourcentageGame (MissionId,MinDuration){
     return tableau_pourcentage;  
 }
 
+//fonction qui remplie tableau_rapport selon les filtres de la vue Rapport pour la vue Année
+function fill_YearRapport(){
+    console.log(tableau_YearRapport);
+    document.getElementById("rapportYear").innerHTML="";
+
+    for (var i=0;i<tableau_Missions.length;i++){
+
+        var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
+        var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
+                                    .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
+                                    .replaceAll("%NbrMissionAbandon%",tableau_pourcentageYear.NbremissionAbandon)
+                                    .replaceAll("%R4%",tableau_pourcentageYear.PourcentageR4)
+                                    .replaceAll("%R3%",tableau_pourcentageYear.PourcentageR3)
+                                    .replaceAll("%R2%",tableau_pourcentageYear.PourcentageR2)
+                                    .replaceAll("%R1%",tableau_pourcentageYear.PourcentageR1)
+                                    .replaceAll("%MoyDuration%",tableau_pourcentageYear.MoyDuration)
+                                    .replaceAll("%MissionId%",tableau_Missions[i].Id)
+                                    
+        const elt = document.createElement("div");
+        document.getElementById("rapportYear").appendChild(elt);       
+        elt.outerHTML = html;
+    } 
+}
+
+//fonction qui calcul les pourcentage pour la Vue Annee de la vue Rapport
 function NmbrePourcentageGameYear (MissionId,MinDuration){
 
     var tableau_pourcentageYear={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0};
@@ -592,11 +540,36 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
          //Affichage du nombre de  missions abandonnées indépendamenent de l'existence de missions effectuées
         if(tableau_pourcentageYear['NbremissionAbandon']==0) tableau_pourcentageYear['NbremissionAbandon']="-"; 
     }
-
     return tableau_pourcentageYear;  
 }
 
-//function pour trouver le premier jour du mois en cours affiché YYYY-MM-DD
+
+// -------------------------------------------------------------FONCTIONS DE CALCUL-------------------------------------------
+
+//permet au filtre de determiné si la mission de la durée est inférieure au prérequis d'affichage
+function CaclculMinDuration(DateX,MissionId){
+
+    var DateY;
+
+    for (var i=0;i<tableau_Missions.length;i++){
+        if(tableau_Missions[i].Id != MissionId) continue;
+        else DateY=tableau_Missions[i].MinDuration;
+    }
+
+    if(DateX>DateY){
+        return true;
+    }
+    else return false;
+}
+
+//on converti le timestamp de la bdd pour l'affichade de la durée de la mission dans le titre
+function calculMinute(secondes){
+    var minutes = Math.floor(secondes / 60);
+    timestring = minutes.toString().padStart(2, '0');
+    return timestring;
+}
+
+//fonction pour trouver le premier jour du mois en cours affiché YYYY-MM-DD
 function TransformDateFirstoftheMonth(date){
     var firstDayCurrentMonth = getFirstDayOfMonth(
         date.getFullYear(),
@@ -605,36 +578,33 @@ function TransformDateFirstoftheMonth(date){
   return firstDayCurrentMonth;
 }
 
+//fonction pour trouve le premier jour du mois en cours
 function getFirstDayOfMonth(year, month) {
     return new Date(year, month, 1);
 }
 
-//function pour trouver le premier jour du mois suivant
+//fonction pour trouver le premier jour du mois suivant
 function getNextFirstDayOftheMOnth(date){
     var year = date.getFullYear();
     var month = date.getMonth();
 
-   return  new Date (year,month+1,1);
- 
-    
+    return  new Date (year,month+1,1);
 }
 
-//function pour trouver le premier jour du mois précédent
+//fonction pour trouver le premier jour du mois précédent
 function getPreviousFirstDayOftheMOnth(date){
-
     var year = date.getFullYear();
     var month = date.getMonth();
 
     return  new Date (year,month-1,1);
-
 }
 
-//function pour determiner l'année affichée en cours
+//fonction pour determiner l'année affichée en cours
 function SetYear(){
     Year = (CurrentDate.getFullYear());
-
 }
 
+//fonction qui retourne l'année suivante
 function getNextYear(date){
     var year= date.getFullYear();
     var month= date.getMonth();
@@ -642,7 +612,7 @@ function getNextYear(date){
     return new Date(year+1,month,1);
 }
 
-
+//fonction qui retourne l'année précédente
 function getPrevYear(date){
     var year= date.getFullYear();
     var month= date.getMonth();
@@ -652,8 +622,7 @@ function getPrevYear(date){
 
 // ----------------------------------------------------------------------BUTTONS--------------------------------------------------------------
 
-
-
+//fonction sur le bouton "Calendrier" modifiant les affichages
 function ToggleCalendar(){
     IsCalendarView=true;
     document.getElementById("calendarDiv").classList.remove("invis");
@@ -665,10 +634,9 @@ function ToggleCalendar(){
     document.getElementById("todayvueRapport").classList.replace("d-flex","d-none");
     document.getElementById("todayvue").classList.replace("d-none","d-flex");
     monthvue();
-
 }
 
-
+//fonction sur le bouton "Rapport" modifiant les affichages
 function ToggleRapport(){
     IsCalendarView=false;
     calendar.changeView('dayGridMonth');
@@ -684,7 +652,7 @@ function ToggleRapport(){
 
 }
 
-
+//fonction sur le bouton ">" gérant le défilement celon la Vue affichée
 function next(){
     if (!IsCalendarView && IsYearChecked){
         var DateCalendar = (getNextYear(TransformDateFirstoftheMonth(datemois))).getTime();
@@ -693,9 +661,7 @@ function next(){
         Year=Year+1;
         getYearRapport();
         checkDate();
-         
     }
-
     else{
         var DateCalendar = (getNextFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
                         getAllRoom(SiteId,DateCalendar);
@@ -706,10 +672,10 @@ function next(){
                             getYearRapport();}
                         calendar.next();
                         checkDate();
-    }
-                    
+    }                   
 }
 
+//fonction sur le bouton "<" gérant le défilement celon la Vue affichée
 function prev(){
     if (!IsCalendarView && IsYearChecked){
         var DateCalendar = (getPrevYear(TransformDateFirstoftheMonth(datemois))).getTime();
@@ -733,6 +699,7 @@ function prev(){
     }
 }
 
+//fonction sur le bouton "Aujourd'hui" gérant le retour à la date actuelle en vue Calendrier
 function todayvue(){
    
     var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
@@ -743,29 +710,18 @@ function todayvue(){
     checkDate();
 }
 
+//fonction sur le bouton "En Cours" gérant le retour à la date actuelle en vue Rapport
 function todayvueRapport(){
 
-     if (IsYearChecked){
-        var DateCalendar =  (TransformDateFirstoftheMonth(CurrentDate)).getTime();
-        getAllRoom(SiteId,DateCalendar);
-        calendar.today();
-        SetYear();
-        getYearRapport();
-        checkDate();
-       
-    }
-    else{
     var DateCalendar =  (TransformDateFirstoftheMonth(CurrentDate)).getTime();
-        getAllRoom(SiteId,DateCalendar);
-        calendar.today();
-        SetYear();
-        getYearRapport();
-        checkDate();
-    }
+    getAllRoom(SiteId,DateCalendar);
+    calendar.today();
+    SetYear();
+    getYearRapport();
+    checkDate();
 }
 
-
-
+//function sur le bouton "Mois" modifiant l'affichage du Calendrier
 function monthvue(){
     document.getElementById("monthvue").classList.replace("btn-light","btn-dark");
     document.getElementById("weekvue").classList.replace("btn-dark","btn-light");
@@ -774,6 +730,7 @@ function monthvue(){
     checkDate();
 }
 
+//function sur le bouton "Jour" modifiant l'affichage du Calendrier
 function dayvue(){
     document.getElementById("dayvue").classList.replace("btn-light","btn-dark");
     document.getElementById("monthvue").classList.replace("btn-dark","btn-light");
@@ -782,6 +739,7 @@ function dayvue(){
     checkDate();
 }
 
+//function sur le bouton "Semaine" modifiant l'affichage du Calendrier
 function weekvue(){
     document.getElementById("weekvue").classList.replace("btn-light","btn-dark");
     document.getElementById("monthvue").classList.replace("btn-dark","btn-light");
@@ -790,6 +748,29 @@ function weekvue(){
     checkDate();
 }
 
+//fonction sur le bouton "Mois" de la Vue Rapport gérant l'affichage
+function MonthRapport(){
+    IsYearChecked=false;
+    document.getElementById("YearRapport").classList.replace("btn-dark","btn-light");
+    document.getElementById("MonthRapport").classList.replace("btn-light","btn-dark");
+    document.getElementById("rapport").classList.replace("d-none","d-flex");
+    document.getElementById("rapportYear").classList.replace("d-flex","d-none");
+    checkDate();
+}
+
+//fonction sur le bouton "Année" de la Vue Rapport gérant l'affichage
+function YearRapport(){
+    document.getElementById("MonthRapport").classList.replace("btn-dark","btn-light");
+    document.getElementById("YearRapport").classList.replace("btn-light","btn-dark");
+    document.getElementById("rapport").classList.replace("d-flex","d-none");
+    document.getElementById("rapportYear").classList.replace("d-none","d-flex");
+    IsYearChecked=true;
+    checkDate();
+}
+
+
+
+//function qui réécrie la date à chaque changement sur le Calendrier
 function checkDate(){
     var datecalendrier = calendar.view.title;
     //Si On n'est pas dans la vue calendrier et que Année est cochée on tronque la date
@@ -800,60 +781,47 @@ function checkDate(){
     }
 }
 
+//function qui gère l'affichage des boutons de selection des Rooms ainsi que leurs filtres
 function RoomSelect(id){
-
+    //Si une Room est selectionnée autre que "Toutes"
     if(id){
+        document.getElementById(id).classList.add("scaling");
+        var buttons = document.querySelectorAll(".togglesalle");
 
-    document.getElementById(id).classList.add("scaling");
-
-    var buttons = document.querySelectorAll(".togglesalle");
-
-    for (var i=0;i<buttons.length;i++){
-        if (buttons[i]!=document.getElementById(id))
-        buttons[i].classList.remove("scaling");
+        for (var i=0;i<buttons.length;i++){
+            if (buttons[i]!=document.getElementById(id))
+            buttons[i].classList.remove("scaling");
     }
-
-    RoomSelected=id;
-    FillTableau_AllGameSessions();
-        FillGameSessions_List();
-        Fill_Rapport();
-        fill_YearRapport();
-        calendar.getEventSources().forEach(eventSource => {
-          eventSource.remove();
-        });
-        //get currently selected sources
-        var sources = getEventSources();
-        
-        //add each new source to the calendar
-        sources.forEach(eventSource => {
-          calendar.addEventSource(eventSource);
-        });
     }
-
+    //Par défaut ou lorsque "Toutes" est selectionnée
     else {
         document.getElementById("toutes").classList.add("scaling");
-
         var buttons = document.querySelectorAll(".togglesalle");
 
         for (var i=0;i<buttons.length;i++){
             if (buttons[i]!=document.getElementById("toutes"))
             buttons[i].classList.remove("scaling");
         }
+    }
 
-        RoomSelected=id;
-        FillTableau_AllGameSessions();
-            FillGameSessions_List();
-            Fill_Rapport();
-            fill_YearRapport();
-            calendar.getEventSources().forEach(eventSource => {
-              eventSource.remove();
-            });
-            //get currently selected sources
-            var sources = getEventSources();
-            
-            //add each new source to the calendar
-            sources.forEach(eventSource => {
-              calendar.addEventSource(eventSource);
-            });
-    }      
+    //sans argument RoomSelected=null, correspondant à toutes les Rooms
+    RoomSelected=id;
+
+    //On actualise l'affichage du calendrier et du rapport
+    FillTableau_AllGameSessions();
+    FillGameSessions_List();
+    Fill_Rapport();
+    fill_YearRapport();
+    calendar.getEventSources().forEach(eventSource => {
+        eventSource.remove();
+    });
+    //get currently selected sources
+    var sources = getEventSources();
+    
+    //add each new source to the calendar
+    sources.forEach(eventSource => {
+        calendar.addEventSource(eventSource);
+    });
 }
+
+   
