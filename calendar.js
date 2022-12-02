@@ -55,8 +55,11 @@ var IsCalendarView=true;
 
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
+//template pour les boutons des Salles
 var template_room =`<button onclick="RoomSelect(%RoomId%)" id="%RoomId%"  type="button" data-color="%RoomColor%"  style="background-color:%RoomColor%; opacity:0.5;" class="btn border mx-2 col-3 h-100 togglesalle">%RoomName%</button>`;
 
+
+//template pour les Missions de la Vue Rapport (mensuelle et annuelle)
 var template_rapport=`<div class="mb-2 col-3 vignette p-3 rounded">
                             <div class="h4 text-center">%MissionName%</div>
                             <div class="mt-5" >Nombre effectuées : %NbrMission%</div>
