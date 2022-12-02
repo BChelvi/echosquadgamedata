@@ -1,5 +1,13 @@
 // --------------------------------------DECLARATIONS DE VARIABLES----------------------------------------------------------------
 
+//On récupère l'ID de la Room(Sous-Marin) dans l'url
+var SiteId=location.hash.substring(1,10);
+
+//variable checkant si la listeRoom à déja était injectée
+var IsListRoom = false;
+
+//Variables tableaux à manipuler --------------------------------
+
 var tableau_Missions=[];
 
 var tableau_AllRooms=[];
@@ -14,30 +22,38 @@ var tableau_rapport =[];
 
 var tableau_YearRapport=[];
 
-var calendarEl = document.getElementById('calendar');
+//Variables globales pour manipuler le calendrier ---------------
 
-var IsRapport=false;
+var calendarEl = document.getElementById('calendar');
 
 var calendar;
 
+//Variables pour les Dates --------------------------------------
+
 var CurrentDate = new Date();
 
-
 var datemois;
-
 
 var Year;
 
 var date = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
 
-//variable checkant si la listeRoom à déja était injectée
-var IsListRoom = false;
+//Variables checkant les selecteurs -------------------------------
 
-//variable indiquant si la case filtre durée mission est cochée ou non
-var isFiltered =false;
+//Changement du selecteur Room(Sous-Marin)
+var RoomSelected;
 
-//On récupère l'ID de la Room(Sous-Marin) dans l'url
-var SiteId=location.hash.substring(1,10);
+//variable pour l'addEventListener permettant d'afficher ou non toutes les missions
+var Nofilter = document.getElementById('nofilter');
+
+//variable indiquant si le filtre des missions abandonnées est actif ou non
+var isFiltered =true;
+
+// variable globale checkant si Année est actif ou non
+var IsYearChecked=false;
+
+//variable globale pour checker sur quelle vue on navigue
+var IsCalendarView=true;
 
 // --------------------------------------TEMPLATES----------------------------------------------------------------
 
@@ -59,14 +75,6 @@ var template_rapport=`<div class="mb-2 col-3 vignette p-3 rounded">
                             </div>
                         </div>`
 
-// --------------------------------------VARIABLES SURVEILLANT LES SELECTEURS----------------------------------------------------------------
-
-//Changement du selecteur Room(Sous-Marin)
-var RoomSelected;
-
-
-//addEventListener permettant d'afficher ou non toutes les missions
-var Nofilter = document.getElementById('nofilter');
 
 
 // --------------------------------------FONCTION INITIE AU CHARGEMENT DE LA PAGE----------------------------------------------------------------
@@ -133,7 +141,7 @@ function FillTableau_AllGameSessions(){
                     var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
     
                         //filtre sur la durée de la mission
-                        if (isFiltered==false){
+                        if (isFiltered){
                             if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId) && tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes!=0 ){
                                 tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                             }
@@ -160,7 +168,7 @@ function FillTableau_AllGameSessions(){
                     var duration = tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Duration;
 
                         //filtre sur la durée de la mission et/ou le succes
-                        if (isFiltered==false){
+                        if (isFiltered){
                             if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId && tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes!=0)){
                                 tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                             }
@@ -211,8 +219,7 @@ function MonthRapport(){
     checkDate();
 }
 
-// variable globale checkant si Année est actif ou non
-var IsYearChecked=false;
+
 function YearRapport(){
     document.getElementById("MonthRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("YearRapport").classList.replace("btn-light","btn-dark");
@@ -319,8 +326,8 @@ function ShowCalendar(){
     //fonction qui écoute le filtre durée mission
     Nofilter.addEventListener('change', function() {
          
-        if(Nofilter.checked==true) isFiltered=true;
-           else isFiltered = false;
+        if(Nofilter.checked==true) isFiltered=false;
+           else isFiltered = true;
            FillTableau_AllGameSessions();
            FillGameSessions_List();
             Fill_Rapport();
@@ -455,8 +462,7 @@ function fill_YearRapport(){
 
 //permet au filtre de determiné si la mission de la durée est inférieure au prérequis d'affichage
 function CaclculMinDuration(DateX,MissionId){
-    // var datumX = Date.parse(DateX);
-    // var datumY = Date.parse(DateY);
+
     var DateY;
 
     for (var i=0;i<tableau_Missions.length;i++){
@@ -646,8 +652,7 @@ function getPrevYear(date){
 
 // ----------------------------------------------------------------------BUTTONS--------------------------------------------------------------
 
-//variable globale pour checker sur quelle vue on navigue
-var IsCalendarView=true;
+
 
 function ToggleCalendar(){
     IsCalendarView=true;
