@@ -12,7 +12,7 @@ class GetGameSession {
 
         $mission= $db -> select_sql($sql);
 
-        $sql2 ="SELECT room.Name,room.Id FROM gamesession INNER JOIN roomsession ON (gamesession.RoomSessionId = roomsession.Id) INNER JOIN room ON (roomsession.RoomId=Room.Id) INNER JOIN mission ON (gamesession.MissionId=mission.Id) WHERE gamesession.gamesessionId=$id ";
+        $sql2 ="SELECT room.Name,room.roomId FROM gamesession INNER JOIN roomsession ON (gamesession.RoomSessionId = roomsession.roomsessionId) INNER JOIN room ON (roomsession.RoomId=room.roomId) INNER JOIN mission ON (gamesession.MissionId=mission.missionId) WHERE gamesession.gamesessionId=$id ";
 
         $Room = $db -> select_sql($sql2)[0];
 
@@ -20,11 +20,11 @@ class GetGameSession {
 
         $RoomName=$Room['Name'];
 
-        $sql3 ="SELECT site.Name,site.Id FROM room INNER JOIN site ON (room.SiteId=site.Id) WHERE room.Name='$RoomName'";
+        $sql3 ="SELECT site.Name,site.siteId FROM room INNER JOIN site ON (room.SiteId=site.siteId) WHERE room.Name='$RoomName'";
 
         $SiteName = $db -> select_sql($sql3)[0]['Name'];
 
-        $SiteId = $db -> select_sql($sql3)[0]['Id'];
+        $SiteId = $db -> select_sql($sql3)[0]['siteId'];
 
         $mission[0]["SiteName"] = $SiteName;
         $mission[0]["SiteId"] = $SiteId;
@@ -37,7 +37,7 @@ class GetGameSession {
 
         $MissionName = $mission[0]['MissionId'];
 
-        $sql5="SELECT Name FROM mission WHERE mission.Id=$MissionName";
+        $sql5="SELECT Name FROM mission WHERE mission.missionId=$MissionName";
 
         $mission[0]['MissionName'] = $db -> select_sql($sql5)[0]['Name'];
 

@@ -156,7 +156,7 @@ function liste_rooms(){
 
             for (var i=0;i<tableau_AllRooms.length;i++){
                 var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
-                                        .replaceAll("%RoomId%",tableau_AllRooms[i].Id)
+                                        .replaceAll("%RoomId%",tableau_AllRooms[i].roomId)
                                         .replaceAll("%RoomColor%",tableau_AllRooms[i].color)
                 const elt = document.createElement("option");
                 document.getElementById("RoomSelected").appendChild(elt);       
@@ -199,7 +199,7 @@ function FillTableau_AllGameSessions(){
     else{
         for (var i=0;i<tableau_AllRooms.length;i++){
             // filtre sur le selecteur de Salle
-            if(RoomSelected != tableau_AllRooms[i].Id) continue;
+            if(RoomSelected != tableau_AllRooms[i].roomId) continue;
             else{
 
                 for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
@@ -262,7 +262,7 @@ function FillGameSessions_List(){
 
         //on boucle sur le tableau des Missionions avec l'Id afin de récupère les codenames
         for (var j=0;j<tableau_Missions.length;j++){
-            if(tableau_GameSessions[i].MissionId == tableau_Missions[j].Id){
+            if(tableau_GameSessions[i].MissionId == tableau_Missions[j].missionId){
                 tableau['title']="<div class='d-flex justify-content-start flex-wrap text-dark mission'>"+"<div class=''>"+tableau_GameSessions[i].StartDate.substring(11,16)+"</div>"+" &nbsp;"+"<div>"+min+"</div>"+"&nbsp;"+"<figure>"+icone+"</figure>"+" &nbsp;"+"<div>"+tableau_Missions[j].CodeName+"</div></div>";
             }
         }
@@ -281,14 +281,13 @@ function ShowCalendar(){
         firstDay:1,
         height:'auto',
         dayHeaderFormat:{
-        weekday:"long",
+            weekday:"long",
         },
         slotMinTime:"07:00:00",
         showNonCurrentDates:false,//obligatoire pour éviter un bug d'affichage lors du défilement
         fixedWeekCount:false,
         datesSet: function (info) {
             datemois= (info.view.activeStart);
-                    
         },
         headerToolbar:false,
 
@@ -386,7 +385,7 @@ function Fill_Rapport(){
     for (var i=0;i<tableau_Missions.length;i++){
 
         //On n'afffiche ni PlayerBase ni Teaser
-        var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
+        var tableau_pourcentage = NmbrePourcentageGame(tableau_Missions[i].missionId,tableau_Missions[i].MinDuration);
         var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
                                     .replaceAll("%NbrMission%",tableau_pourcentage.Nbremission)
                                     .replaceAll("%NbrMissionAbandon%",tableau_pourcentage.NbremissionAbandon)
@@ -395,14 +394,14 @@ function Fill_Rapport(){
                                     .replaceAll("%R2%",tableau_pourcentage.PourcentageR2)
                                     .replaceAll("%R1%",tableau_pourcentage.PourcentageR1)
                                     .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
-                                    .replaceAll("%MissionId%",tableau_Missions[i].Id)
+                                    .replaceAll("%MissionId%",tableau_Missions[i].missionId)
         
         const elt = document.createElement("div");
         document.getElementById("rapport").appendChild(elt);       
         elt.outerHTML = html;
 
         if(tableau_pourcentage.Nbremission=="-"){
-            var id="chart"+tableau_Missions[i].Id;                  
+            var id="chart"+tableau_Missions[i].missionId;                  
             document.getElementById(id).outerHTML="<div class='text-center'>-</div>";
         }
         
@@ -463,12 +462,11 @@ function NmbrePourcentageGame (MissionId,MinDuration){
 
 //fonction qui remplie tableau_rapport selon les filtres de la vue Rapport pour la vue Année
 function fill_YearRapport(){
-    console.log(tableau_YearRapport);
     document.getElementById("rapportYear").innerHTML="";
 
     for (var i=0;i<tableau_Missions.length;i++){
 
-        var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].Id,tableau_Missions[i].MinDuration);
+        var tableau_pourcentageYear=NmbrePourcentageGameYear(tableau_Missions[i].missionId,tableau_Missions[i].MinDuration);
         var html = template_rapport.replaceAll("%MissionName%",tableau_Missions[i].Name)
                                     .replaceAll("%NbrMission%",tableau_pourcentageYear.Nbremission)
                                     .replaceAll("%NbrMissionAbandon%",tableau_pourcentageYear.NbremissionAbandon)
@@ -477,7 +475,7 @@ function fill_YearRapport(){
                                     .replaceAll("%R2%",tableau_pourcentageYear.PourcentageR2)
                                     .replaceAll("%R1%",tableau_pourcentageYear.PourcentageR1)
                                     .replaceAll("%MoyDuration%",tableau_pourcentageYear.MoyDuration)
-                                    .replaceAll("%MissionId%",tableau_Missions[i].Id)
+                                    .replaceAll("%MissionId%",tableau_Missions[i].missionId)
                                     
         const elt = document.createElement("div");
         document.getElementById("rapportYear").appendChild(elt);       
@@ -498,7 +496,7 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
 
     for (var i=0;i<tableau_YearRapport.length;i++){
         
-        if(tableau_YearRapport[i].Id==MissionId){
+        if(tableau_YearRapport[i].missionId==MissionId){
 
             for (var j=0;j<tableau_YearRapport[i].RoomId.length;j++){
 
@@ -553,7 +551,7 @@ function CaclculMinDuration(DateX,MissionId){
     var DateY;
 
     for (var i=0;i<tableau_Missions.length;i++){
-        if(tableau_Missions[i].Id != MissionId) continue;
+        if(tableau_Missions[i].missionId != MissionId) continue;
         else DateY=tableau_Missions[i].MinDuration;
     }
 

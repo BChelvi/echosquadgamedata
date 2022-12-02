@@ -31,7 +31,7 @@ function ShowAllSite(){
     
     for (let i = 0; i < tableau_AllSites.length; i++) {
             var html = template_AllSites
-                .replaceAll("%SiteId%", tableau_AllSites[i].Id)
+                .replaceAll("%SiteId%", tableau_AllSites[i].siteId)
                 .replaceAll("%name%", tableau_AllSites[i].Name)
                 
             

@@ -16,15 +16,15 @@ class GetAllRooms {
                 
         $db = Db :: singleton();
 
-        $sql =" SELECT room.Id,room.Name,room.color FROM site INNER JOIN room ON (site.Id=room.SiteId) WHERE site.Id = $id";
+        $sql =" SELECT room.roomId,room.Name,room.color FROM site INNER JOIN room ON (site.siteId=room.SiteId) WHERE site.siteId = $id";
 
         $Site = $db -> select_sql($sql);
 
         for ($i=0;$i<count($Site);$i++){
 
-            $RoomId = $Site[$i]['Id'];
+            $RoomId = $Site[$i]['roomId'];
 
-            $sql2 = "SELECT roomsession.Id,roomsession.StartDate FROM room INNER JOIN roomsession ON (room.Id=roomsession.RoomId) WHERE room.Id = $RoomId AND roomsession.StartDate >='$MyDate' AND roomsession.StartDate < '$DateFin'";
+            $sql2 = "SELECT roomsession.roomsessionId,roomsession.StartDate FROM room INNER JOIN roomsession ON (room.roomId=roomsession.RoomId) WHERE room.roomId = $RoomId AND roomsession.StartDate >='$MyDate' AND roomsession.StartDate < '$DateFin'";
             
             //Toutes les roomsessions correspondant à toutes les Salles d'un seul Site
             $RoomSessions= $db -> select_sql($sql2);
@@ -39,9 +39,9 @@ class GetAllRooms {
 
             for ($j=0;$j<count($Site[$i]['RoomSessions']);$j++){
 
-                $RoomSessionId = $Site[$i]['RoomSessions'][$j]['Id'];
+                $RoomSessionId = $Site[$i]['RoomSessions'][$j]['roomsessionId'];
 
-                $sql3 ="SELECT * FROM roomsession INNER JOIN gamesession ON (roomsession.Id = gamesession.RoomSessionId) INNER JOIN mission ON (gamesession.MissionId=mission.Id) WHERE roomsessionId = $RoomSessionId AND mission.DisplayInCalendar=1";
+                $sql3 ="SELECT * FROM roomsession INNER JOIN gamesession ON (roomsession.roomsessionId = gamesession.RoomSessionId) INNER JOIN mission ON (gamesession.MissionId=mission.missionId) WHERE roomsession.roomsessionId = $RoomSessionId AND mission.DisplayInCalendar=1";
 
                 $GameSessions = $db -> select_sql($sql3);
 
