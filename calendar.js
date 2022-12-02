@@ -202,7 +202,7 @@ function liste_rooms(){
 }
 
 function MonthRapport(){
-    IsRapportYear=false;
+
     IsYearChecked=false;
     document.getElementById("YearRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("MonthRapport").classList.replace("btn-light","btn-dark");
@@ -211,16 +211,15 @@ function MonthRapport(){
     checkDate();
 }
 
-var IsRapportYear=false;
+// variable globale checkant si Année est actif ou non
 var IsYearChecked=false;
 function YearRapport(){
     document.getElementById("MonthRapport").classList.replace("btn-dark","btn-light");
     document.getElementById("YearRapport").classList.replace("btn-light","btn-dark");
     document.getElementById("rapport").classList.replace("d-flex","d-none");
     document.getElementById("rapportYear").classList.replace("d-none","d-flex");
-    IsRapportYear=true;
     IsYearChecked=true;
-    checkDate(1);
+    checkDate();
    
 }
 
@@ -426,6 +425,7 @@ function  getYearRapport(){
 }
 
 function fill_YearRapport(){
+    console.log(tableau_YearRapport);
     document.getElementById("rapportYear").innerHTML="";
 
     for (var i=0;i<tableau_Missions.length;i++){
@@ -507,7 +507,6 @@ function NmbrePourcentageGame (MissionId,MinDuration){
         }
         else if (tableau_rapport[i].MissionId==MissionId){
             tableau_pourcentage['NbremissionAbandon']+=1;
-            console.log("test");
         }    
     }
 
@@ -525,6 +524,8 @@ function NmbrePourcentageGame (MissionId,MinDuration){
         tableau_pourcentage['PourcentageR2']="-";
         tableau_pourcentage['PourcentageR1']="-";
         tableau_pourcentage['MoyDuration']="-";
+        //Affichage du nombre de  missions abandonnées indépendamenent de l'existence de missions effectuées
+        if(tableau_pourcentage['NbremissionAbandon']==0) tableau_pourcentage['NbremissionAbandon']="-"; 
     }
 
     return tableau_pourcentage;  
@@ -546,41 +547,25 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
 
             for (var j=0;j<tableau_YearRapport[i].RoomId.length;j++){
 
-                if(RoomSelected){
-                    if(tableau_YearRapport[i].RoomId[j].RoomId!=RoomSelected)continue;
-                    if(parseInt(tableau_YearRapport[i].RoomId[j].Duration)>=parseInt(MinDuration) || tableau_YearRapport[i].RoomId[j].Succes!=0){
-                        tableau_pourcentageYear['Nbremission']+=1;
-                        switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
-                            case 1 :NbreMissionR1+=1;
-                            break;
-                            case 2 : NbreMissionR2+=1;
-                            break;
-                            case 3 :NbreMissionR3+=1;
-                            break;
-                            case 4 :NbreMissionR4+=1;
-                            break;
-                        }
-                        DurationTotale+=parseInt(tableau_YearRapport[i].RoomId[j].Duration);
+                //filtre sur la Room selectionnée
+                if( RoomSelected && tableau_YearRapport[i].RoomId[j].RoomId!=RoomSelected)continue;
+
+                if(parseInt(tableau_YearRapport[i].RoomId[j].Duration)>=parseInt(MinDuration) && tableau_YearRapport[i].RoomId[j].Succes!=0){
+
+                    tableau_pourcentageYear['Nbremission']+=1;
+                    switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
+                        case 1 :NbreMissionR1+=1;
+                        break;
+                        case 2 : NbreMissionR2+=1;
+                        break;
+                        case 3 :NbreMissionR3+=1;
+                        break;
+                        case 4 :NbreMissionR4+=1;
+                        break;
                     }
-                    else tableau_pourcentageYear['NbremissionAbandon']+=1;
+                    DurationTotale+=parseInt(tableau_YearRapport[i].RoomId[j].Duration);
                 }
-                else {
-                    if(parseInt(tableau_YearRapport[i].RoomId[j].Duration)>=parseInt(MinDuration) || tableau_YearRapport[i].RoomId[j].Succes!=0){
-                        tableau_pourcentageYear['Nbremission']+=1;
-                        switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
-                            case 1 :NbreMissionR1+=1;
-                            break;
-                            case 2 : NbreMissionR2+=1;
-                            break;
-                            case 3 :NbreMissionR3+=1;
-                            break;
-                            case 4 :NbreMissionR4+=1;
-                            break;
-                        }
-                        DurationTotale+=tableau_YearRapport[i].RoomId[j].Duration;
-                    }
-                    else tableau_pourcentageYear['NbremissionAbandon']+=1;
-                }
+                else tableau_pourcentageYear['NbremissionAbandon']+=1;
             }
         }        
     }
@@ -593,14 +578,15 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
     }
     else{
         tableau_pourcentageYear['Nbremission']="-";
-        tableau_pourcentageYear['NbremissionAbandon']="-";
         tableau_pourcentageYear['PourcentageR4']="-";
         tableau_pourcentageYear['PourcentageR3']="-";
         tableau_pourcentageYear['PourcentageR2']="-";
         tableau_pourcentageYear['PourcentageR1']="-";
         tableau_pourcentageYear['MoyDuration']="-";
+         //Affichage du nombre de  missions abandonnées indépendamenent de l'existence de missions effectuées
+        if(tableau_pourcentageYear['NbremissionAbandon']==0) tableau_pourcentageYear['NbremissionAbandon']="-"; 
     }
-    
+
     return tableau_pourcentageYear;  
 }
 
@@ -660,9 +646,11 @@ function getPrevYear(date){
 
 // ----------------------------------------------------------------------BUTTONS--------------------------------------------------------------
 
+//variable globale pour checker sur quelle vue on navigue
+var IsCalendarView=true;
 
 function ToggleCalendar(){
-    IsYearChecked=false;
+    IsCalendarView=true;
     document.getElementById("calendarDiv").classList.remove("invis");
     document.getElementById("rapportDiv").classList.add("invis");
     document.getElementById("ToggleCalendar").classList.replace("btn-light","btn-dark");
@@ -677,8 +665,9 @@ function ToggleCalendar(){
 
 
 function ToggleRapport(){
+    IsCalendarView=false;
     calendar.changeView('dayGridMonth');
-    checkDate(1);
+    checkDate();
     document.getElementById("rapportDiv").classList.remove("invis");
     document.getElementById("calendarDiv").classList.add("invis");
     document.getElementById("ToggleRapport").classList.replace("btn-light","btn-dark");
@@ -692,13 +681,13 @@ function ToggleRapport(){
 
 
 function next(){
-    if (IsRapportYear && IsYearChecked){
+    if (!IsCalendarView && IsYearChecked){
         var DateCalendar = (getNextYear(TransformDateFirstoftheMonth(datemois))).getTime();
         getAllRoom(SiteId,DateCalendar);
         calendar.nextYear();
         Year=Year+1;
         getYearRapport();
-        checkDate(1);
+        checkDate();
          
     }
 
@@ -717,13 +706,13 @@ function next(){
 }
 
 function prev(){
-    if (IsRapportYear && IsYearChecked){
+    if (!IsCalendarView && IsYearChecked){
         var DateCalendar = (getPrevYear(TransformDateFirstoftheMonth(datemois))).getTime();
         getAllRoom(SiteId,DateCalendar);
         calendar.prevYear();
         Year=Year-1;
         getYearRapport();
-        checkDate(1);
+        checkDate();
     }
     else{
         var DateCalendar = (getPreviousFirstDayOftheMOnth(TransformDateFirstoftheMonth(datemois))).getTime();
@@ -743,19 +732,21 @@ function todayvue(){
    
     var DateCalendar = (TransformDateFirstoftheMonth(CurrentDate)).getTime();
     getAllRoom(SiteId,DateCalendar);
+    SetYear();
+    getYearRapport();
     calendar.today();
     checkDate();
 }
 
 function todayvueRapport(){
 
-     if (IsRapportYear){
+     if (IsYearChecked){
         var DateCalendar =  (TransformDateFirstoftheMonth(CurrentDate)).getTime();
         getAllRoom(SiteId,DateCalendar);
         calendar.today();
         SetYear();
         getYearRapport();
-        checkDate(1);
+        checkDate();
        
     }
     else{
@@ -794,12 +785,13 @@ function weekvue(){
     checkDate();
 }
 
-function checkDate(format){
+function checkDate(){
     var datecalendrier = calendar.view.title;
-    if (!format || !IsRapportYear)
-        document.getElementById('date').innerHTML=datecalendrier;
+    //Si On n'est pas dans la vue calendrier et que Année est cochée on tronque la date
+    if (!IsCalendarView && IsYearChecked)
+    document.getElementById('date').innerHTML = datecalendrier.split(" ")[1];
     else   {
-        document.getElementById('date').innerHTML = datecalendrier.split(" ")[1];
+        document.getElementById('date').innerHTML=datecalendrier;
     }
 }
 
