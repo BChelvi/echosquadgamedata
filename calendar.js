@@ -346,7 +346,7 @@ function getEventSources() {
 
 //fonction qui remplie tableau_rapport selon les filtres de la vue Rapport pour la vue Mois
 function Fill_Rapport(){
-    console.log("test");
+
     document.getElementById("rapport").innerHTML="";
     tableau_rapport =[];
 
@@ -783,7 +783,6 @@ function checkDate(){
 //function qui gère l'affichage des boutons de selection des Rooms ainsi que leurs filtres
 function RoomSelect(id){
     //Si une Room est selectionnée autre que "Toutes"
-    console.log(id);
     if(id){
         document.getElementById(id).classList.add("scaling");
         var buttons = document.querySelectorAll(".togglesalle");
