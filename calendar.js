@@ -210,7 +210,7 @@ function FillTableau_AllGameSessions(){
 
                         //filtre sur la durée de la mission et/ou le succes
                         if (isFiltered){
-                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId && tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes!=0)){
+                            if(CaclculMinDuration(duration,tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].MissionId) && tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k].Succes!=0){
                                 tableau_GameSessions.push(tableau_AllRooms[i]['RoomSessions'][j]['GameSessions'][k]);
                             }
                             else continue;
@@ -240,7 +240,7 @@ function FillGameSessions_List(){
         tableau['borderColor']=tableau_GameSessions[i].RoomColor; 
        
         //switch case pour les icones de Succes
-        var success = tableau_GameSessions[i].Succes;
+        var success = parseInt(tableau_GameSessions[i].Succes);
         var icone;
 
         switch (success){
@@ -346,7 +346,7 @@ function getEventSources() {
 
 //fonction qui remplie tableau_rapport selon les filtres de la vue Rapport pour la vue Mois
 function Fill_Rapport(){
-
+    console.log("test");
     document.getElementById("rapport").innerHTML="";
     tableau_rapport =[];
 
@@ -367,7 +367,7 @@ function Fill_Rapport(){
     else{
         for (var i=0;i<tableau_AllRooms.length;i++){
             // filtre sur le selecteur de Salle
-            if(RoomSelected != tableau_AllRooms[i].Id) continue;
+            if(RoomSelected != tableau_AllRooms[i].roomId) continue;
             else{
 
                 for (var j=0;j<tableau_AllRooms[i]['RoomSessions'].length;j++){
@@ -501,7 +501,7 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
             for (var j=0;j<tableau_YearRapport[i].RoomId.length;j++){
 
                 //filtre sur la Room selectionnée
-                if( RoomSelected && tableau_YearRapport[i].RoomId[j].RoomId!=RoomSelected)continue;
+                if( RoomSelected && tableau_YearRapport[i].RoomId[j].roomId!=RoomSelected)continue;
 
                 if(parseInt(tableau_YearRapport[i].RoomId[j].Duration)>=parseInt(MinDuration) && tableau_YearRapport[i].RoomId[j].Succes!=0){
 
@@ -555,7 +555,7 @@ function CaclculMinDuration(DateX,MissionId){
         else DateY=tableau_Missions[i].MinDuration;
     }
 
-    if(DateX>DateY){
+    if(parseInt(DateX)>parseInt(DateY)){
         return true;
     }
     else return false;
@@ -783,6 +783,7 @@ function checkDate(){
 //function qui gère l'affichage des boutons de selection des Rooms ainsi que leurs filtres
 function RoomSelect(id){
     //Si une Room est selectionnée autre que "Toutes"
+    console.log(id);
     if(id){
         document.getElementById(id).classList.add("scaling");
         var buttons = document.querySelectorAll(".togglesalle");

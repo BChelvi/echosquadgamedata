@@ -95,7 +95,7 @@ function calculMinute(secondes){
 }
 
 function ShowSucces(int){
-    switch(int){
+    switch(parseInt(int)){
         case 0 : Succes = "Mission Abandonnée";
         break;
         case 1 : Succes = "R1";

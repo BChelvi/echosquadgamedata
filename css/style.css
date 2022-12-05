@@ -162,3 +162,7 @@ font-weight: bold;
     background-color: beige;
     cursor: pointer;
 }
+
+.date::first-letter{
+    text-transform: capitalize;
+}
