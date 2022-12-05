@@ -6,7 +6,7 @@ class GetMissions {
 
         $db = Db :: singleton();
 
-        $sql =" SELECT * FROM mission";
+        $sql =" SELECT * FROM mission WHERE mission.DisplayInCalendar = 1";
 
         $Missions = $db -> select_sql($sql);
 
