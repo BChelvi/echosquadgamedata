@@ -40,9 +40,6 @@ function ShowInfos(){
     document.getElementById('Duration').innerHTML=DurationGameSession;
     document.getElementById('Type').innerHTML=tableau_Mission['MissionName'];
     document.getElementById('Succes').innerHTML=Succes;
-   
-   
-
 }
 
 function getGameSession(){
@@ -53,14 +50,12 @@ function getGameSession(){
         tableau_Mission = JSON.parse(httpRequest.responseText);       
         console.log(tableau_Mission)
         ShowInfos();
-        
     };
     httpRequest.send();
 }
 
 function ShowEvents(){
    
-  
     for (var i=0;i<tableau_Mission['events'].length;i++){
         var html = template_event.replaceAll("%Category%",tableau_Mission['events'][i].Category)
                                 .replaceAll("%DateTime%",tableau_Mission['events'][i].DateTime)
@@ -70,9 +65,7 @@ function ShowEvents(){
                                 .replaceAll("%Value_3%",tableau_Mission['events'][i].Value_3)
         const elt = document.createElement("div");
         document.getElementById("events").appendChild(elt);
-       
         elt.outerHTML = html;
-        
     }
 }
 

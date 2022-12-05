@@ -1,7 +1,4 @@
-
-
 var tableau_AllSites=[];
-
 
 var template_AllSites = `
                             <div onclick="ToSite(%SiteId%,'%name%')" class="d-flex my-4 justify-content-center">                                
@@ -36,11 +33,9 @@ function ShowAllSite(){
     document.getElementById("AllSite").innerHTML="";
     
     for (let i = 0; i < tableau_AllSites.length; i++) {
-            var html = template_AllSites
-                .replaceAll("%SiteId%", tableau_AllSites[i].Id)
-                .replaceAll("%name%", tableau_AllSites[i].Name)
+            var html = template_AllSites.replaceAll("%SiteId%", tableau_AllSites[i].Id)
+                                        .replaceAll("%name%", tableau_AllSites[i].Name)
                 
-            
                 var elt = document.createElement("div");
                 document.getElementById("AllSite").appendChild(elt);
                 elt.outerHTML = html;         
@@ -50,5 +45,4 @@ function ShowAllSite(){
 function ToSite(id,name){
     localStorage.setItem('SiteName',name);
     document.location.href="./site.html#"+id;
-
 }
