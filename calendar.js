@@ -64,7 +64,9 @@ var template_rapport=`<div class="mb-2 col-3 vignette p-3 rounded">
                             <div class="h4 text-center">%MissionName%</div>
                             <div class="mt-5" >Nombre effectuées : %NbrMission%</div>
                             <div class="mt-2">Nombre abandonnées : %NbrMissionAbandon%</div>
-                            <div class="mt-2">Durée Moyenne : %MoyDuration%</div>
+                            <div class="mt-2">Durée moyenne : %MoyDuration%</div>
+                            <div class="mt-2">Moyenne du nombre de morts : %MoyDeaths% par partie</div>
+                            <div class="mt-2">Moyenne de l'activation du bouton rouge : %MoyRedButton% par partie</div>
                             <div class="d-flex flex-column justify-content-between align-items-center mt-2">
                                 <div>Succès</div>
                                 <div id="chart%MissionId%" class="d-flex" style='width:80%;height:20px'>

@@ -13,7 +13,7 @@ var DurationGameSession;
 var Succes;
 
 var template_event=`
-                    <div class="d-flex justify-content-between my-2 GameSession">                                    
+                    <div class="d-flex justify-content-between my-2 vignette">                                    
                         <div class="text-center col-2">%Category%</div>    
                         <div class="text-center col-2">%DateTime%</div>
                         <div class="text-center col-2 text-wrap">%WorldPosition%</div>
