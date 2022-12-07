@@ -65,8 +65,8 @@ var template_rapport=`<div class="mb-2 col-3 vignette p-3 rounded">
                             <div class="mt-5" >Nombre effectuées : %NbrMission%</div>
                             <div class="mt-2">Nombre abandonnées : %NbrMissionAbandon%</div>
                             <div class="mt-2">Durée moyenne : %MoyDuration%</div>
-                            <div class="mt-2">Moyenne du nombre de morts : %MoyDeaths% par partie</div>
-                            <div class="mt-2">Moyenne de l'activation du bouton rouge : %MoyRedButton% par partie</div>
+                            <div class="mt-2">Moyenne du nombre de morts : %MoyDeaths%</div>
+                            <div class="mt-2">Moyenne d'activation du bouton rouge : %MoyRedbuttons%</div>
                             <div class="d-flex flex-column justify-content-between align-items-center mt-2">
                                 <div>Succès</div>
                                 <div id="chart%MissionId%" class="d-flex" style='width:80%;height:20px'>
@@ -397,6 +397,8 @@ function Fill_Rapport(){
                                     .replaceAll("%R1%",tableau_pourcentage.PourcentageR1)
                                     .replaceAll("%MoyDuration%",tableau_pourcentage.MoyDuration)
                                     .replaceAll("%MissionId%",tableau_Missions[i].missionId)
+                                    .replaceAll("%MoyDeaths%",tableau_pourcentage.MoyDeaths)
+                                    .replaceAll("%MoyRedbuttons%",tableau_pourcentage.MoyRedbuttons)
         
         const elt = document.createElement("div");
         document.getElementById("rapport").appendChild(elt);       
@@ -412,18 +414,27 @@ function Fill_Rapport(){
 //fonction qui calcul les pourcentage pour la Vue Mois de la vue Rapport
 function NmbrePourcentageGame (MissionId,MinDuration){
     
-    var tableau_pourcentage={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0};
+    var tableau_pourcentage={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0,MoyDeaths:0,MoyRedbuttons:0};
 
     var NbreMissionR4=0;
     var NbreMissionR3=0;
     var NbreMissionR2=0;
     var NbreMissionR1=0;
     var DurationTotale=0;
+    var NbreDeaths=0;
+    var NbreRedbuttons=0;
 
     for (var i=0;i<tableau_rapport.length;i++){
         if(tableau_rapport[i].MissionId==MissionId && parseInt(tableau_rapport[i].Duration)>=parseInt(MinDuration) && tableau_rapport[i].Succes!=0){
             
             tableau_pourcentage['Nbremission']+=1;
+           
+            if(tableau_rapport[i].Deaths!=null){
+                NbreDeaths +=parseInt(tableau_rapport[i].Deaths);
+            }
+            if(tableau_rapport[i].Redbuttons!=null){
+                NbreRedbuttons +=parseInt(tableau_rapport[i].Redbuttons);
+            }
             DurationTotale+=parseInt(tableau_rapport[i].Duration);
             switch (parseInt(tableau_rapport[i].Succes)) {
                 case 1 :NbreMissionR1+=1;
@@ -446,10 +457,15 @@ function NmbrePourcentageGame (MissionId,MinDuration){
         tableau_pourcentage['PourcentageR3']=Math.trunc((NbreMissionR3/tableau_pourcentage['Nbremission'])*100)+"%";
         tableau_pourcentage['PourcentageR2']=Math.trunc((NbreMissionR2/tableau_pourcentage['Nbremission'])*100)+"%";
         tableau_pourcentage['PourcentageR1']=Math.trunc((NbreMissionR1/tableau_pourcentage['Nbremission'])*100)+"%";
+        tableau_pourcentage['MoyDeaths']=Math.trunc(NbreDeaths/tableau_pourcentage['Nbremission']);
+        tableau_pourcentage['MoyRedbuttons']=Math.trunc(NbreRedbuttons/tableau_pourcentage['Nbremission']);
         tableau_pourcentage['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentage['Nbremission']/60)+"min";
+        console.log(NbreDeaths/tableau_pourcentage['Nbremission']);
     }
     else{
         tableau_pourcentage['Nbremission']="-";
+        tableau_pourcentage['MoyRedbuttons']="-";
+        tableau_pourcentage['MoyDeaths']="-";
         tableau_pourcentage['PourcentageR4']="-";
         tableau_pourcentage['PourcentageR3']="-";
         tableau_pourcentage['PourcentageR2']="-";
@@ -477,6 +493,8 @@ function fill_YearRapport(){
                                     .replaceAll("%R2%",tableau_pourcentageYear.PourcentageR2)
                                     .replaceAll("%R1%",tableau_pourcentageYear.PourcentageR1)
                                     .replaceAll("%MoyDuration%",tableau_pourcentageYear.MoyDuration)
+                                    .replaceAll("%MoyDeaths%",tableau_pourcentageYear.MoyDeaths)
+                                    .replaceAll("%MoyRedbuttons%",tableau_pourcentageYear.MoyRedbuttons)
                                     .replaceAll("%MissionId%",tableau_Missions[i].missionId)
                                     
         const elt = document.createElement("div");
@@ -488,13 +506,15 @@ function fill_YearRapport(){
 //fonction qui calcul les pourcentage pour la Vue Annee de la vue Rapport
 function NmbrePourcentageGameYear (MissionId,MinDuration){
 
-    var tableau_pourcentageYear={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0};
+    var tableau_pourcentageYear={Nbremission:0,NbremissionAbandon:0,PourcentageR1:0,PourcentageR2:0,PourcentageR3:0,PourcentageR4:0,MoyDuration:0,MoyDeaths:0,MoyRedbuttons:0};
 
     var NbreMissionR4=0;
     var NbreMissionR3=0;
     var NbreMissionR2=0;
     var NbreMissionR1=0;
     var DurationTotale=0;
+    var NbreDeaths=0;
+    var NbreRedbuttons=0;
 
     for (var i=0;i<tableau_YearRapport.length;i++){
         
@@ -508,6 +528,14 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
                 if(parseInt(tableau_YearRapport[i].RoomId[j].Duration)>=parseInt(MinDuration) && tableau_YearRapport[i].RoomId[j].Succes!=0){
 
                     tableau_pourcentageYear['Nbremission']+=1;
+
+                    if(tableau_YearRapport[i].RoomId[j].Deaths!=null){
+                        NbreDeaths +=parseInt(tableau_YearRapport[i].RoomId[j].Deaths);
+                    }
+                    if(tableau_YearRapport[i].RoomId[j].Redbuttons!=null){
+                        NbreRedbuttons +=parseInt(tableau_YearRapport[i].RoomId[j].Redbuttons);
+                    }
+
                     switch(parseInt(tableau_YearRapport[i].RoomId[j].Succes)){
                         case 1 :NbreMissionR1+=1;
                         break;
@@ -529,6 +557,8 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
         tableau_pourcentageYear['PourcentageR3']=Math.trunc((NbreMissionR3/tableau_pourcentageYear['Nbremission'])*100)+"%";
         tableau_pourcentageYear['PourcentageR2']=Math.trunc((NbreMissionR2/tableau_pourcentageYear['Nbremission'])*100)+"%";
         tableau_pourcentageYear['PourcentageR1']=Math.trunc((NbreMissionR1/tableau_pourcentageYear['Nbremission'])*100)+"%";
+        tableau_pourcentageYear['MoyDeaths']=Math.trunc(NbreDeaths/tableau_pourcentageYear['Nbremission']);
+        tableau_pourcentageYear['MoyRedbuttons']=Math.trunc(NbreRedbuttons/tableau_pourcentageYear['Nbremission']);
         tableau_pourcentageYear['MoyDuration']=Math.trunc(DurationTotale/tableau_pourcentageYear['Nbremission']/60)+"min";
     }
     else{
@@ -538,6 +568,8 @@ function NmbrePourcentageGameYear (MissionId,MinDuration){
         tableau_pourcentageYear['PourcentageR2']="-";
         tableau_pourcentageYear['PourcentageR1']="-";
         tableau_pourcentageYear['MoyDuration']="-";
+        tableau_pourcentageYear['MoyDeaths']="-";
+        tableau_pourcentageYear['MoyRedbuttons']="-";
          //Affichage du nombre de  missions abandonnées indépendamenent de l'existence de missions effectuées
         if(tableau_pourcentageYear['NbremissionAbandon']==0) tableau_pourcentageYear['NbremissionAbandon']="-"; 
     }

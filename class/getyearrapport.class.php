@@ -18,7 +18,7 @@ class GetYearRapport {
     
       for ($i=0;$i<count($Missions);$i++){
             $MissionId=$Missions[$i]['missionId'];
-            $sql2 = "SELECT room.roomId,gamesession.Duration,gamesession.Succes from gamesession INNER JOIN roomsession ON (gamesession.roomsessionId = roomsession.roomsessionId) INNER JOIN room on (roomsession.RoomId=room.roomId) INNER JOIN site on (room.SiteId=site.siteId) WHERE site.siteId = $SiteId AND roomsession.StartDate >='$MyDate' AND roomsession.StartDate < '$DateFin' AND gamesession.MissionId=$MissionId";
+            $sql2 = "SELECT room.roomId,gamesession.Duration,gamesession.Succes,gamesession.Deaths,gamesession.Redbuttons from gamesession INNER JOIN roomsession ON (gamesession.roomsessionId = roomsession.roomsessionId) INNER JOIN room on (roomsession.RoomId=room.roomId) INNER JOIN site on (room.SiteId=site.siteId) WHERE site.siteId = $SiteId AND roomsession.StartDate >='$MyDate' AND roomsession.StartDate < '$DateFin' AND gamesession.MissionId=$MissionId";
 
             $Missions[$i]['RoomId']= $db -> select_sql($sql2);
       

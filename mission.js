@@ -12,16 +12,6 @@ var DurationGameSession;
 
 var Succes;
 
-var template_event=`
-                    <div class="d-flex justify-content-between my-2 vignette">                                    
-                        <div class="text-center col-2">%Category%</div>    
-                        <div class="text-center col-2">%DateTime%</div>
-                        <div class="text-center col-2 text-wrap">%WorldPosition%</div>
-                        <div class="text-center col-2">%Value_1%</div>
-                        <div class="text-center col-2">%Value_2%</div>
-                        <div class="text-center col-2 ">%Value_3%</div>
-                    </div>
-`
 
 function initMission(){
     getGameSession();
@@ -40,6 +30,12 @@ function ShowInfos(){
     document.getElementById('Duration').innerHTML=DurationGameSession;
     document.getElementById('Type').innerHTML=tableau_Mission['MissionName'];
     document.getElementById('Succes').innerHTML=Succes;
+    if(tableau_Mission['Deaths']!=null)
+        document.getElementById('Deaths').innerHTML=tableau_Mission['Deaths'];
+    else  document.getElementById('Deaths').innerHTML= "0";
+    if (tableau_Mission['Redbuttons'])
+    document.getElementById('Redbuttons').innerHTML=tableau_Mission['Redbuttons'];
+    else document.getElementById('Redbuttons').innerHTML="0";
 }
 
 function getGameSession(){
@@ -54,20 +50,6 @@ function getGameSession(){
     httpRequest.send();
 }
 
-function ShowEvents(){
-   
-    for (var i=0;i<tableau_Mission['events'].length;i++){
-        var html = template_event.replaceAll("%Category%",tableau_Mission['events'][i].Category)
-                                .replaceAll("%DateTime%",tableau_Mission['events'][i].DateTime)
-                                .replaceAll("%WorldPosition%",tableau_Mission['events'][i].WorldPosition)
-                                .replaceAll("%Value_1%",tableau_Mission['events'][i].Value_1)
-                                .replaceAll("%Value_2%",tableau_Mission['events'][i].Value_2)
-                                .replaceAll("%Value_3%",tableau_Mission['events'][i].Value_3)
-        const elt = document.createElement("div");
-        document.getElementById("events").appendChild(elt);
-        elt.outerHTML = html;
-    }
-}
 
 function TruncDate(){
     DateGameSession = tableau_Mission['StartDate'].substring(0,10);
@@ -93,11 +75,11 @@ function ShowSucces(int){
         break;
         case 1 : Succes = "R1";
         break;
-        case 2 : Succes = "R2"
+        case 2 : Succes = "R2";
         break;
-        case 3 : Succes = "R3"
+        case 3 : Succes = "R3";
         break;
-        case 4 : Succes = "R4"
+        case 4 : Succes = "R4";
         break;
     }
 }
