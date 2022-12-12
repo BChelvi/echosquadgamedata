@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECHO SQUAD GAME DATA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="./css/style.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-dark px-3 py-2 justify-content-around" style="color:#A0A0A0; background-color: black;">
+        <div  onclick="window.location='./index.html'" class="d-flex col-2 acceuil pointer" >ACCEUIL</div>
+        <div  onclick="window.location='./commercial.html'" class="d-flex col-2 acceuil pointer" >CALENDRIER - RAPPORT</div>
+        <div  onclick="window.location='./formulaire.html'" class="d-flex col-2 acceuil pointer" >FORMULAIRE</div>   
+    </nav>
+
+    <main class="container p-3 vignette my-3 border">
+
+        <div class="d-flex justify-content-center">
+            <div class="mx-1">Current DateTime (YYYY-MM-DD) : </div>
+            <div id="currentdatetime"></div>
+        </div>
+        <div class="d-flex justify-content-around">
+            <!-- form RoomLogin -->
+            <form class="m-2" action="action.php" method="post">
+                <input  name="MessageType" value="RoomLogin" type="hidden">
+                <div class="">
+                <strong> RoomLogin</strong>
+                </div>
+                <div>
+                    <label for="RoomId">RoomId
+                    </label>
+                    <input type="" name="RoomId" id="" required>
+                </div>
+                <div>(348300-348301-348307-3483012)</div>
+                <div>
+                    <label for="StartDate">StartDate
+                    </label>
+                    <input type="" name="StartDate" id="" required>
+                </div>
+                <div>
+                    <input type="submit" value="Envoyer">
+                </div>
+            </form>
+            <!-- form RoomLogout -->
+            <form class="m-2" action="action.php" method="post">
+                <input  name="MessageType" value="RoomLogout" type="hidden">
+                <div>
+                    <strong>  RoomLogout</strong>
+                </div>
+                <div>
+                    <label for="EndDate">EndDate
+                    </label>
+                    <input type="" name="EndDate" id="" required>
+                </div>
+                <div>
+                    <label for="Id">Id
+                    </label>
+                    <input type="" name="Id" id="" required>
+                </div>
+                <div>
+                    <input type="submit" value="Envoyer">
+                </div>
+            </form>
+        </div>
+
+        <div class="d-flex justify-content-around">
+         <!-- form GameLogin -->
+            <form class="m-2" action="action.php" method="post">
+                <input  name="MessageType" value="GameLogin" type="hidden">
+                <div class=""><strong>
+                     GameLogin</strong>
+                </div>
+                <div>
+                    <label for="RoomSessionId">RoomSessionId
+                    </label>
+                    <input type="" name="RoomSessionId" id="" required>
+                </div>
+                <div>
+                    <label for="StartDate">StartDate
+                    </label>
+                    <input type="" name="StartDate" id="" required>
+                </div>
+                <div>
+                    <label for="MissionId">MissionId
+                    </label>
+                    <input type="" name="MissionId" id="" required>
+                </div>
+                <div>
+                    <label for="Language">Language
+                    </label>
+                    <input type="" name="Language" id="" required>
+                </div>
+                <div>
+                    <input type="submit" value="Envoyer">
+                </div>
+            </form>
+            <!-- form GameLogout -->
+            <form class="m-2" action="action.php" method="post">
+                <input  name="MessageType" value="GameLogout" type="hidden">
+                <div>
+                    <strong>  GameLogout</strong>
+                </div>
+                <div>
+                    <label for="EndDate">EndDate
+                    </label>
+                    <input type="" name="EndDate" id="" required>
+                </div>
+                <div>
+                    <label for="Id">Id
+                    </label>
+                    <input type="" name="Id" id="" required>
+                </div>
+                <div>
+                    <label for="Succes">Succes
+                    </label>
+                    <input type="" name="Succes" id="" required>
+                </div>
+                <div>
+                <input type="submit" value="Envoyer">
+                </div>
+            </form>
+            <!-- form EraseEndDate -->
+            <form class="m-2" action="action.php" method="post">
+                <input  name="MessageType" value="EraseEndDate" type="hidden">
+                <div>
+                    <strong>   EraseEndDate</strong> <br> (Effectuer avant de Refresh un GameLogout)
+                </div>
+
+                <div>
+                    <label for="Id">Id
+                    </label>
+                    <input type="" name="Id" id="" required>
+                </div>
+                <div>
+                <input type="submit" value="Envoyer">
+                </div>
+            </form>
+         </div>
+         <!-- form GameEvent -->
+        <div class="d-flex justify-content-around">
+            <form class="m-2" action="action.php" method="post">
+                <input  name="MessageType" value="GameEvent" type="hidden">
+                <div>
+                    <strong> GameEvent</strong>
+                </div>
+                <div>
+                    <label for="GameSessionId">GameSessionId
+                    </label>
+                    <input type="" name="GameSessionId" id="" required>
+                </div>
+                <div>
+                    <label for="DateTime">DateTime
+                    </label>
+                    <input type="" name="DateTime" id="" required>
+                </div>
+                <div>
+                    <label for="WorldPosition">WorldPosition
+                    </label>
+                    <input type="" name="WorldPosition" id="" required>
+                </div>
+                <div>
+                    <label for="Category">Category
+                    </label>
+                <select name="Category" id="">
+                    <option value="0">DEATH</option>
+                    <option value="1">RED_BUTTON</option>
+                    <option value="5">LOOT</option>
+                    <option value="2">POS_MIN</option>
+
+
+                </select>
+                </div>
+                <div>
+                    <label for="Values">Values
+                    </label>
+                    <input type="" name="Values" id="" required>
+                <div>
+                <input type="submit" value="Envoyer" >
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer id=""class="d-flex justify-content-center p-4 text-white align-items-center flex-wrap" style="background-color:black">
+
+        <div>GEARPROD. Tous droits reservés</div>
+        <span class="mx-1">|</span>
+        <div>Politique de confidentialité</div>
+        <span class="mx-1">|</span>
+        <div>Mentions légales</div>
+        <span class="mx-1">|</span>
+        <div>CGV</div>
+        <span class="mx-1"> | </span>
+        <div>Cookies</div>
+        
+    </footer>
+
+    <script>
+        function currentdatetime(){
+            var date = new Date();
+            var currentdatetime = date.toISOString().slice(0, 19).replace('T', ' ');
+            document.getElementById("currentdatetime").innerHTML=currentdatetime;
+        }
+        currentdatetime();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

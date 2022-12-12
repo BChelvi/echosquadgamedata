@@ -160,7 +160,7 @@ function liste_rooms(){
                 var html = template_room.replaceAll("%RoomName%",tableau_AllRooms[i].Name)
                                         .replaceAll("%RoomId%",tableau_AllRooms[i].roomId)
                                         .replaceAll("%RoomColor%",tableau_AllRooms[i].color)
-                const elt = document.createElement("option");
+                const elt = document.createElement("div");
                 document.getElementById("RoomSelected").appendChild(elt);       
                 elt.outerHTML = html;        
             }  

@@ -166,3 +166,8 @@ font-weight: bold;
 .date::first-letter{
     text-transform: capitalize;
 }
+
+img{
+    object-fit: contain;
+    width: 100%;
+}

@@ -12,6 +12,19 @@ var DurationGameSession;
 
 var Succes;
 
+var tableau_trajet=[];
+
+const canvas = document.querySelector('.trajet');
+
+const ctx = canvas.getContext('2d');
+
+// const width = canvas.width;
+
+var template_position = `<div>
+                            <div>World Position</div>
+                            <div>%coord%</div>
+                            <div>%direction%</div>
+                        </div>`
 
 function initMission(){
     getGameSession();
@@ -44,8 +57,8 @@ function getGameSession(){
     httpRequest.open("GET", hostserver);
     httpRequest.onload = () => {
         tableau_Mission = JSON.parse(httpRequest.responseText);       
-        console.log(tableau_Mission)
         ShowInfos();
+        SetCoord();
     };
     httpRequest.send();
 }
@@ -83,3 +96,40 @@ function ShowSucces(int){
         break;
     }
 }
+
+function SetCoord(){
+
+    //On fixe les dimensions de la zone de dessin (canvas) sur les dimensions de l'image
+    var map = document.querySelector('.map');
+    canvas.width = map.width;
+    canvas.height = map.height;
+
+    //on remplie le tableau_trajet des coordonnées x et z du world position de la BDD pour chaque events POS_M
+    
+    for (var i=0;i<tableau_Mission['trajet'].length;i++){
+        var coord = tableau_Mission['trajet'][i].WorldPosition.split(",");
+        tableau_trajet.push(coord);
+    }
+    DrawTrajet();
+}
+
+function DrawTrajet(){
+
+    //determiner le point de départ du trajet ainsi que le changement de repaire
+    var x0=canvas.width/4;
+    var y0=canvas.height/6;
+
+    ctx.fillStyle = 'red';
+    //point de départ du sous-marrin
+    ctx.moveTo(x0,y0);
+
+    //traçage de ligne à chaque points de coordonnées
+    for (var i=0;i<tableau_trajet.length-1;i++){
+        ctx.lineTo(parseInt(tableau_trajet[i+1][0])+x0, parseInt(tableau_trajet[i+1][2])+y0);
+    }
+
+    ctx.strokeStyle = 'red';
+    ctx.stroke();
+
+}
+
