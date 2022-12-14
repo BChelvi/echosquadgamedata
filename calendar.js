@@ -803,7 +803,7 @@ function YearRapport(){
 
 
 
-//function qui réécrie la date à chaque changement sur le Calendrier
+//fonction qui réécrie la date à chaque changement sur le Calendrier
 function checkDate(){
     var datecalendrier = calendar.view.title;
     //Si On n'est pas dans la vue calendrier et que Année est cochée on tronque la date
@@ -814,7 +814,7 @@ function checkDate(){
     }
 }
 
-//function qui gère l'affichage des boutons de selection des Rooms ainsi que leurs filtres
+//fonction qui gère l'affichage des boutons de selection des Rooms ainsi que leurs filtres
 function RoomSelect(id){
     //Si une Room est selectionnée autre que "Toutes"
     if(id){

@@ -6,10 +6,12 @@ var template_AllSites = `
                             </div>
                             `;
 
+// fonction appelée au chargement de la page commercial.html
 function init(){
     getAllSites();
 }
 
+// fonction qui récupère les exploitants de la BDD (sites)
 function getAllSites(){
     var httpRequest = new XMLHttpRequest();
     var hostserver = "api.php?action=getallsites";
@@ -22,6 +24,7 @@ function getAllSites(){
     httpRequest.send();
 }
 
+//fonction qui affiche les sites
 function ShowAllSite(){
     
     document.getElementById("AllSite").innerHTML="";
@@ -36,7 +39,11 @@ function ShowAllSite(){
     }  
 }
 
+
+//fonction qui redirige vers calendar.html avec l'id du site selectionné
 function ToSite(id,name){
+    //on enregistre localemenent le nom du site selectionné
     localStorage.setItem('SiteName',name);
+
     document.location.href="./calendar.html#"+id;
 }

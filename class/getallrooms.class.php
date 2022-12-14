@@ -9,13 +9,10 @@ class GetAllRooms {
         $MyDate = date($format,($date/1000));
         $DateDebut = date('Y-m-d',strtotime('-1 month',strtotime($MyDate)));
         $DateFin = date('Y-m-d',strtotime('+1 month',strtotime($MyDate)));
-
-        // echo $MyDate;
-        // echo "   ";
-        // echo $DateFin;
                 
         $db = Db :: singleton();
 
+        //on récupère l'id, le nom et la couleur de toutes les rooms d'un site
         $sql =" SELECT room.roomId,room.Name,room.color FROM site INNER JOIN room ON (site.siteId=room.SiteId) WHERE site.siteId = $id";
 
         $Site = $db -> select_sql($sql);
@@ -24,6 +21,7 @@ class GetAllRooms {
 
             $RoomId = $Site[$i]['roomId'];
 
+            //on récupère l'id et la date de début de chaque roomsessions
             $sql2 = "SELECT roomsession.roomsessionId,roomsession.StartDate FROM room INNER JOIN roomsession ON (room.roomId=roomsession.RoomId) WHERE room.roomId = $RoomId AND roomsession.StartDate >='$MyDate' AND roomsession.StartDate < '$DateFin'";
             
             //Toutes les roomsessions correspondant à toutes les Salles d'un seul Site
@@ -53,6 +51,7 @@ class GetAllRooms {
             }
         }
 
+        //on renvoie les datas d'un Site d'exploitant (rooms, roomsessions, gamesessions)
         echo json_encode($Site);
         
     }

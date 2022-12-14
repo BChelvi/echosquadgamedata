@@ -11,7 +11,7 @@ class GetYearRapport {
       //on instencie notre objet de connexion
       $db = Db :: singleton();
      
-      //on récupère tous les Id de missions
+      //on récupère tous les Id de missions dont DisplayInCalendar = 1
       $sql =" SELECT missionId,MinDuration FROM mission WHERE mission.DisplayInCalendar=1";
 
       $Missions = $db -> select_sql($sql);
